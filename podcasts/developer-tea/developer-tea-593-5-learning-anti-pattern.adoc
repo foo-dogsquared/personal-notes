@@ -1,0 +1,252 @@
+== Personal main takeaways on https://developertea.simplecast.fm/aeb7c2cf[Developer Tea #593 - 5 Learning Anti-Patterns]
+
+=== Staying up late and giving every available time to active learning
+
+Most of us are amazed by the idea of someone who is very dedicated to
+learning, giving every time to consuming knowledge resources: watching a
+knowledge video on lunch break, reading a textbook after work, and just
+searching everything as long as they are teaching something to them
+
+However, *giving every available to active learning* is similar (or the
+same) to cramming. We are packing our brain with multitudes of
+information all at once when the brain could only take so little of it
+to be able to take a grasp of it in any given amount of time
+
+*Take a break every once in a while* — with this, you are already
+practicing _spaced repetition_ which is I believe to be a key habit when
+wanting to learn a new subject matter, concept, or information
+
+*Treat your brain as it is*: a physical matter just like how computers
+is an assembly of components: transistors, capacitors, wires, and
+electricity having to go through physical processes to create and
+interpret information
+
+Our brain and its individual components like the neurons, synapses, and
+the like also goes into similar physical processes to make the learnt
+information stick into our mind
+
+Integrating what I've learned from one of Coursera's top course,
+https://www.coursera.org/learn/learning-how-to-learn/[Learning How to
+Learn], information takes time to be cemented into our brain; as the
+instructor, Barbara Oakley, mentioned, it is like a brick wall held by a
+cement — rushing through the subject is like impatiently waiting for the
+cement to fully harden and because you're an impatient person, you just
+build some around it despite the problem it will cause
+
+When we think in a larger scale, it is like a foundation of a house
+which is important if we want to build further on top of it; having a
+wonkily-made foundation makes the entire house building to be completely
+messy, troubling, and at the worst case, difficult to undo (I said
+difficult, not impossible 🙂)
+
+*Also, don't forget to sleep.*
+
+Integrating another lesson from the "Learning How to Learn" course, it
+is said that having sleep is a way of removing toxins from your brain
+that can slow down cognitive and mental processes and causes tiredness
+and fatigue
+
+While our body is at rest, recovering its energy to be used for the next
+day, our brain is actively working and processing all of the information
+on the background, sort of like working in _diffused mode_ which is why
+some of us may have this "Eureka!" moment the instance we get up when
+we're trying to understand something
+
+So yes, sleep is much more important than most of us thought; albeit
+seems counterintuitive but once you know the background processes of the
+brain during sleep, you'll be recognizing the power of sleep (of course,
+in moderate amounts)
+
+*Practice spaced repetition*. As said, it is a type of practice that
+simply iterates understanding of a subject or a concept in a time
+interval
+
+Say that I want to understand a mathematical lesson; with spaced
+repetition in mind, I could practice and solve 5 practice problems every
+two days
+
+But that's not all, if I understood and mastered the concept matter, I
+could make the gap of practice days into 3 days, then 5 days, and so
+forth
+
+The incremental gap of days also leaves an opening for me to understand
+more complex subjects (but not too much, remember) while retaining my
+mastery of foundational concepts
+
+=== Being hyperfocused on one specific thing
+
+Having focus is cool and all but having too much focus on one thing is
+another, it is said that hyperfocusing on one subject or one concept is
+detrimental since information such as the subject lesson or the concept
+we study are often used in parallel with other information
+
+*Instead, interleave it with other subjects.*
+
+Of course, make sure that the concepts are in relation with the concept
+that you are studying for. How related the subjects depends on how you
+see it. For me, I see sewing, woodworking, electronics, and programming
+related to one another. Can you see why?
+
+This also gives you a sense of contrast to compare its mechanics to
+other concepts or subjects.
+
+Another thing with this is also compliments the spaced repetition so at
+least we are being more efficient.
+
+=== Waterfall learning
+
+This is referred by Cutrell (the host) as *a way of learning by pushing
+all of the studying in one phase and testing in another phase*
+
+This kind of practice is usually done in formal education wherein
+students are taught all of the needed information to know about the
+subject then given some tests afterwards
+
+Learning should be about getting feedbacks, evaulating with ourselves,
+improving the process if it's needed. Now that I think about it, it is
+similar to how the
+https://en.wikipedia.org/wiki/How_to_Solve_It#Four_principles[problem
+solving steps introduced from the book "How to Solve It"]
+
+*Instead of separating it into phases: the actions in learning should be
+repeating*, as complimented and repeated from the previous bullet point:
+`STUDY` - `TEST` - `EVALUATE` - `STUDY` - `TEST` - `EVALUATE` to ad
+infinitum until you understood the lesson.
+
+From the looping process, it should give you a sense of direction and
+progress, not just feeling anxiety or lost diving into the lesson
+aimlessly.
+
+As said by Cutrell, **testing could serve as the best teacher **. Most
+of us know the saying "experience is the best teacher" but testing is
+also an experience. It could lead you to failure but that it should be a
+feedback of your progress, not an indication of innate aptitude.
+
+Intregrating what I've watched from
+https://www.youtube.com/watch?v=qjBdcyueom8[a video from Freedom In
+Thought], failure is nothing more than a feedback and having that in
+mind can lead us challenging to understand concepts that our brain has
+no idea about
+
+=== Softball learning
+
+I don't know if I got the term right, I haven't found that kind of term
+on Google search results
+
+The `STUDY`-`TEST`-`EVALUATE` process loop is good and all but like all
+things, everything is bad when not in moderation
+
+You could do the looping process around a particular concept until you
+got it but it is not that effective, you are just falling into the
+specified anti-patterns again (remember the first and second
+anti-pattern)
+
+*Softball learning is the type of "learning" (if any) that consists of
+you repeating to study a specific concept over and over.*
+
+You may have guessed the reason of having those quotes around the word
+"learning". Simply because practicing this kind of learning is not
+making you any progress.
+
+An example of that would be my past self trying to master something and
+I would not move on to the next concept until I fully understood the
+concept that I'm trying to study. As you might've guessed, it is not an
+effective and could be very destructive at the very end. Tragic, isn't
+it?
+
+As I've recently learned and realized, you don't need to fully 100%
+understand everything when you move on to the next concept. However, I
+think there's should be a difference between rushing through the studies
+and mastering the underlying concepts when needed. There are is a lot of
+ways on how to study, after all.
+
+To get my point (read: personal opinion) across, I'll be speaking out
+what is my supposed experimental study workflow.
+
+. Try to understand the concept
+. Test that out with problems that are applicable whether be it practice
+problems, prototyping something, or an experiment of your hypothesis
+. Look at the result then evaluate whether or not you've understood
+enough or your process is efficient enough
+. If you think if it needs an improvement, redo the steps
+. Else, move on to the next concept (or take a break, first)
+. Back to step 1 with the next concept in mind
+
+As said before, this is all experimental and I have another study
+workflow in proposal. [line-through]*Ah, December is the perfect time
+for this. 🙃*
+
+As said, the point of learning is to get progress. As you'll grow and
+learn further, the complexity and difficulty of the concepts that you'll
+be tackling also goes along with you.
+
+That said, a simple (but not easy) solution to this to keep moving
+forward and push your limit. Even if it leads you to failure, it
+shouldn't stop you from doing so. *Remember that failure is a feedback,
+an indicator of your progress.*
+
+I'll be integrating this into another one of the things I've learned
+from the learning how to learn course from Coursera is the _illusion of
+competence_. In fact, I'm pretty sure that this anti-pattern exactly
+describes that.
+
+*As indicated by its name, it gives you a false sense of confidence by
+going through the same lesson over and over but in reality, you're just
+going nowhere with you circling around.* The illusion of competence
+happens when you repeatedly go through the lesson even if you mastered
+it at some point.
+
+At this point, *you could do an efficient study schedule that promotes
+spaced repetition, interleaving subjects, and pushing yourself to the
+limit*. This is kind of similar to a high school scheduling except that
+you are focusing more on the process and doesn't have to worry much
+about the result. Remember that the results are an indication of the
+effectiveness of your progress.
+
+As for me, I could also combine the `STUDY`-`TEST`-`EVALUATE` process
+loop I've made into those procedures: a weekly schedule that encourages
+exploring different but related subjects that are being studied in an
+efficient amount of time while having some time free time for other
+things
+
+=== Mockingbird learning
+
+This is my favorite solely because of the term alone although I would
+give another name like *parroting*.
+
+Another type of learning coined by the host, I think. Just like before,
+I don't know the formal terms of any of the previous learning practices
+that he talked about
+
+*Anyways, I understood that this is described as learning without
+direction*
+
+As Cutrell said, it is like a mockingbird whose able to imitate a human
+voice singing doesn't exactly mean that the mockingbird understood
+music.
+
+Or as I would describe it, just speaking everything that we just heard.
+You know, just like a parrot. 🐦
+
+Now most of the stuff here are mixed with personal opinions so beware.
+
+Personally, I think this relates to the other anti-patterns in a large
+way. Thus, I think that this anti-pattern is the most important to keep
+in mind and the reason is simple. It makes you think as to why you are
+learning things.
+
+Basically, this anti-pattern describes how we learn without pathways or
+a roadmap and just speaking about everything what we have heard,
+watched, or seen. As described, it could lead to a mess, a false sense
+of competency.
+
+We have to understand the whys and the hows of the concepts that we are
+studying. In the beginner phase, it may not be now but certainly in the
+future, we should. We have to understand how does a subject relates to
+another subject thus the why the second anti-pattern is formed. It makes
+us think about the other concepts in relation to the studied concept.
+
+So, what's my take for this? *Focus on the road to mastery and how does
+it make an impact on your life.* Whether it's for hobby, for fun, for
+career, or anything that doesn't make learning a useless time-wasting
+chore just because.

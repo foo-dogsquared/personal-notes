@@ -1,0 +1,398 @@
+== Personal main takeaways from https://syntax.fm/show/044/how-to-learn-new-things-quickly[Syntax EP#44 - How to Learn Quickly]
+
+Well, I already listened and have notes for this but I re-reviewed it
+for the sake for reviewing.
+
+Warning: full of opinionated stuff there.
+
+=== Learn how you learn best
+
+This is the best tip that they've given on this episode. Very fitting as
+this is also their first one to talk about.
+
+Simply put, experiment with things and don't be afraid to take risks. Go
+out of your usual way of learning and try something else. For example,
+you are usually learning through video tutorials (to be blunt, who
+learns through video tutorials alone?) and you don't have much any other
+way beyond that. Try to learn with textual tutorials instead for a few
+sessions and make the decision whether it is worth to try in the future
+or not.
+
+What's that, you learn to use a particular programming language's
+features mainly through tutorials? Try reading from the official docs
+instead and evaluate how's the experience going for you.
+
+To add my own perspective into the mix, take note that a failed approach
+with a different way doesn't mean that it is not worth it to try again.
+*Failure is just a feedback of our approach and our process.* Of course
+we will not feel very satisfied with the first try to look up on the
+official sources since they look like those comprehensive instructional
+manuals with too much info (I mean, they are instructional manuals...)
+on the new tool you just bought.
+
+____
+"Reading the docs is too hard, it's too comprehensive. Almost like
+reading a thesis from start to end."
+____
+
+You can take a mindful look at yourself while doing that approach and
+see where you're going wrong. Maybe you're just not used to the format.
+Or maybe, you focus too much on reading and understanding every sentence
+you read.
+
+Don't be afraid to take risks and think for the long-term effects
+affecting yourself. If you developed further as a programmer and you
+still stuck on your old ways, is it still worth to bash into the wall
+the same way you did as a budding programmer. Well... it depends on your
+perspective but most likely, yes, if I say so myself.
+
+I'm pretty sure most of time we learn with a mixed approach: reading on
+the explainer articles, watching a video tutorial, attending on an
+online course, referring to the docs, testing features yourself, and
+other stuff I didn't mentioned and/or unknownably know about it.
+
+Here's an approach I derived from reading the first few parts on
+https://www.goodreads.com/book/show/5608045-apprenticeship-patterns[Apprenticeship
+Patterns]: the test-driven "development".
+
+Say that you want to learn and master a programming language. Most of us
+would go to read a textbook or follow along a tutorial and integrate our
+pre-existing knowledge into the language if there's any.
+
+There's another efficient way on learning and mastering your main tool,
+the programming language, which is starting from the smallest of steps
+to get you started, testing those features continuously, understanding
+them, then as you grow further, you take wider steps. This is what I
+refer to as the test-driven "development".
+
+This test-driven "development" method helped me in getting started a bit
+on C++ and was able to continue on my way developing my first program
+written on C++,
+https://github.com/foo-dogsquared/automate-md/[automate-md], a SSG
+blogging assistant on managing your markdown files.
+
+=== Improve your foundational skills with supplemental concepts
+
+Basically, try to focus on the foundational concepts or skills while
+improving on some other aspects.
+
+On the web development context, try to improve your familiarity with the
+core version instead of its frameworks. An example of that would be
+focusing to improve vanilla JavaScript skills instead of relying on
+other frameworks such as jQuery or Lodash, for example.
+
+Although other frameworks are used with different concepts in mind,
+improving the core skills mostly leads you to understand its framework.
+Besides, relying too much on the frameworks can cause bad habits that is
+usually hard to unlearn. Old habits die hard, I guess.
+
+However, you can learn with other frameworks while improving your
+familiarity with the general version. Improving plain JavaScript with
+front-end frameworks like Vue, React, and Angular, for example can be a
+viable way to spread out your improvisation.
+
+This particular tip does not only goes to web development or software
+development in general but also to everything. Learning mathematics?
+Learn about the rudimentary concepts and improve your foundational
+skills like arithmetics and manipulation of basic algebraic expressions.
+Learning electronics? Learn about the underlying principles like the
+atoms and their movements, the material's atomic composition, Ohm's Law,
+and the usual electronic components and their functions.
+
+=== Narrow your focus
+
+Narrowing your focus helps in getting things done and not getting
+overwhelmed by the amount of information we have to learn and
+internalize.
+
+It also helps if you try to learn things by itself. For example,
+according to the hosts (Wes Bos and Scott Tolinski), learning React with
+Redux is very different from learning React alone and can result in
+getting different impressions from both perspectives.
+
+This is not one of the quickest way on how to learn quickly, despite the
+title of the episode. However, I do think this practice has one of the
+most beneficial effects in the long term. For this, we are being taught
+to integrate one thing with another thing.
+
+Integrating this lesson with one of the
+link:../developer-tea/developer-tea-593-5-learning-anti-pattern.md[anti-patterns
+I've learned from one of the Developers Tea podcast], we shouldn't
+however make focus too much on the lone subject. Rather, we could
+separate the two things and intertwine their concepts. An example from
+the hosts' example, we would study what is React on its own, then Redux
+on its own. After that, we could study React with Redux.
+
+=== Make side projects or throwaway code
+
+Or why not both?
+
+Making side projects is one of the most effective ways on how to learn
+quickly, in my opinion. Having this philosophy of doing and seeping
+through the way of learning through doing, I can clearly see why.
+
+First and foremost, it's because of things that side projects prepares
+you for. Usually, with side projects we are not limited to tutorials and
+walkthroughs which does not offer much room for error handling. In other
+words, having side projects make us fail hard and fast especially in the
+beginning. This idea of having failure bash through at the start might
+seems scary but it is one of the most important principle on the tech
+industry, as you might have heard the phrase of _fail fast until it
+breaks_ or something like that. Things like failures and breaking of
+things are encouraged in the tech industry, of course, except when
+dealing with the real deal or a product.
+
+Second is the freedom that a side project offers. With it, we can make
+anything, as long as it fits the bill whether it is in the context of
+using an unfamiliar programming language or testing out a framework. A
+side project does not only offer the creativity but also the offer of
+scale and scope. From it, we can create a side project with the scope
+that we are mostly fitted with. A small-scale project, for example is
+quite what most people go for since it is easy enough to start and
+finish. We could also go for a bigger one, testing our skills of
+handling such a project whether it will be a collaboration or a solo
+project.
+
+Lastly, side projects are a tool of learning by the end of the day. The
+biggest thing with side projects is the feedback that we're getting.
+Whether or not we completed the project without a deadline or none, we
+can still derive lessons and values from the feedback that we got. For
+example, I did not completed the project in due time that I set for
+myself. I can still get some feedback from it that maybe I didn't plan
+for the project efficiently or I didn't handle the project smoothly as I
+go. Having those feedback made me reflect on the process, evaluate
+through the steps I made, and create a more efficient workflow the next
+time I go with another project.
+
+If you can't go with side projects due to the investment of time or the
+busy schedule, having a smaller version of it is another way to go which
+is making throwaway codes. In fact,
+https://www.slightedgecoder.com/2017/09/05/throwaway-code-dont-recycle-throw-away/[it
+can be use as a tool for side projects].
+
+Throwaway code are often found with exercises or those programming
+practice sites but there is more than to it. It can be found pretty much
+anytime you're trying out something: found a new function and wanting to
+try it, prototyping a module or a function, testing out your logic in
+code form, etc.
+
+Making as much as throwaway code as you can with much time isn't so bad.
+This is especially reinforced with the previously linked article. As all
+code exercises and side projects do to progressing your skill, it helps
+you quickly understand a concept. Creating a lot of it can even
+reinforce the concept in your memory.
+
+We can even make throwaway codes as our first line of learning, then
+cementing it further with bigger side projects. We can loosely compare
+it to the traditional way on how traditional schools taught its lessons
+on their students, traditionally 😁. The throwaway codes are basically
+our way of absorbing the knowledge, same how traditional teachers would
+taught their students by lectures. The bigger side projects are
+basically like the after-lecture quiz that also happens around a
+traditional school setting.
+
+Integrating this further with the
+link:../developer-tea/developer-tea-593-5-learning-anti-pattern.md[study-test-evaluate
+process loop] that I've learnt from the same
+https://developertea.simplecast.fm/[Developers Tea] podcast episode, we
+can make this as our study-test loop, sprinkled with the non-coding
+processes such as making pseudocodes and planning on top.
+
+=== Find an external hobby
+
+You can find something that excites you and try to integrate it into
+programming. It could also be the other way around.
+
+The thing that I appreciate the most about programming is that I find it
+easy to integrate with anything.
+
+* Making circuits? You can start with programming microcontrollers and
+Raspberry Pis.
+* Woodworking? Might as well have an interest in circuits and
+micrcontrollers like Arduino that can introduce you to programming.
+* Sewing? Uhh... Still with an Arduino, but seriously look up on
+e-textiles and wearable computers.
+* Mathematics? Of course, programming is quite complementary with
+mathematics!
+
+In fact, I discovered the appreciation and newfound love for the things
+I listed above because of programming. I'm currently trying to review my
+high school mathematics so that I can learn the higher level concepts
+and integrate those into other stuff that requires mathematical
+understanding like with analyzing circuit systems.
+
+Almost anything are now integrated into digital computer systems
+nowadays: online banking, e-commerce, entertainment source, engineering
+designs, and much more. It isn't that suprising that it has something to
+do with programming systems around it. The same goes for our usual
+hobbies, we should find things that excites us and bring it to
+programming for the cause of being excited to work on it.
+
+=== Put some grind time
+
+Just like in an RPG video game, grinding your time programming levels
+you up in your programming skills [line-through]*(10/10 writing, bois)*.
+You can spend most of your time doing exercise and going over your
+comfort zone overcoming unfamiliar challenges and problems that are
+usually beyond your scope.
+
+However, I should say that don't put too much time on grinding. I've
+seen this quote somewhere (I forgot the link, however 😶):
+
+____
+Learning is useless. Validated learning is everything.
+____
+
+I know I've been an advocate of learning but still, there should be a
+moderation for everything, including the process of learning. *Emphasize
+on the __why__s and __how__s of your learning, put what you've learned
+to the test, then see if it is valuable to your own life or not.*
+
+This, of course, focus on the problem that there are some time that we
+learn just for the sake of learning.
+
+There should be a difference between learning for the sake of fun and
+learning for the sake of our advancement. Also, that is what the purpose
+of the last process on the boldfaced sentence on the previous paragraph.
+
+Now that I think about, this is pretty similar to the
+link:../developer-tea/developer-tea-593-5-learning-anti-pattern.md[study-test-evaluate
+process loop] that I'm talking about earlier. In fact, in the
+https://agileleanlife.com/validated-learning/[first search result that I
+found], it also shows a similar process. We're going on a full circle
+here, folks.
+
+=== Break things all the time
+
+We previously talked about the _fail hard and fail fast_ principle that
+most engineering teams like in Facebook, Google, and IBM usually
+promotes.
+
+You can and should totally commit yourself to screwing things up. Don't
+be afraid to break things since breaking them lead you to troubleshoot
+and debug which is a big part when it comes to being a developer. These
+firsthand experience is what makes you stand out among the rest who
+mostly rely on the tutorials and the safe side of things.
+
+It seems counterintuitive at first but remember that breakage and
+failures such as these experiences are feedback. They are also a call
+for polishing up your skills since they are more worth of going up the
+road to mastery.
+
+=== Iterative-driven development
+
+When starting at the beginning, it is important to create as much stuff
+as possible. This is particularly calls true in our development career.
+I think the hosts have talked about the potmaking situation wherein
+there are two group of people to make the pot that'll be graded at the
+end of the session. The first group focus solely on how to make the
+perfect pot, theorizing what makes a pot beautiful, sturdy, etc. While
+the second group, repeatedly made pots and basically does not care
+whether or not it is beautiful as long as they make progress by
+evaluating through their previous iterations.
+
+At the end of the session, the work of the group that focuses on the
+quantity was graded higher than the group that focuses on quality.
+
+The main point here is that we shouldn't focus too much on how to create
+the version of our product as we imagined right at the very start. It is
+not going to build itself once we started on it. It is going through
+some iterations before we get close to our visioned version of our
+program.
+
+That is also the main point of what Wes Bos and Scott Tolinski called as
+_iterative-driven development_. We are repeating throughout the process
+in order to improve our program. Again, for the fourth(?) time, this is
+quite similar to the study-test-evaluate process loop that I keep
+referring to when we want to improve, understand, and internalize the
+concept on our study.
+
+=== Total immersion
+
+This is said to be one of the best tips that they ever gave. It is
+simple and quite effective. They also said as this is learning without
+doing something and focus, as long as you practice it, of course.
+
+And that is _total immersion_.
+
+What total immersion means is that you are immersing yourself with a
+community. Filling up your Twitter feed with development-related tweets,
+reading up dev-related articles, subscribing to development newsletters,
+joining a programming discussion community, etc. *You're basically
+committing yourself to interact with the surrounding community and the
+resources that they share with one another.*
+
+I can say that this is perhaps the best tip they could ever give (aside
+from the learning how you do best, of course). Immersing yourself
+totally is quite a simple act with a ton of impact. Of course, in a
+community setting, it's all about give and take. You take these
+resources, values, and contributions from the community and give back to
+it as a token of appreciation when the time is right and you dedicated
+to it. You're giving contributions which could lead to the community to
+give you feedback and ultimately the tool for you to improve as a
+developer.
+
+I also read from the book, link:[Apprenticeship Patterns], that the
+community has some knowledge that is exclusive to them. Interacting with
+the community for so long allows you to eventually tap into the pool of
+knowledge. Not only that but it also gives you a network of developers
+to connect with, giving feedback to one another. That is quite a benefit
+if you ask me. Like I said, simple and effective.
+
+[[scan-the-docs--the-rtfm-rule]]
+=== Scan the docs / the RTFM rule
+
+Even though, fully immersing and doing a side project is good and all.
+You should be relying on the manual. Programming languages, libraries,
+and frameworks are tools in order to build your project or product.
+
+Like how most tools are pre-packaged with, they come with a manual. The
+manual is important as that is your way of knowing what the tool is all
+about. For example, a multimeter should come with a manual, or at least
+a reference manual from the manufacturers themselves should be available
+whether it is online or onsite.
+
+You're probably seeing what is the point in here, the tools that we use
+most likely have a documentation on them. This especially rings true if
+the developer or the organization freely shares their tool all around
+the world on the web. Don't waste the chance to refer back to manual
+whether it is a simple syntax to a function. I remember a video that
+features the creator of Ruby going back to the docs to look for a simple
+syntax that they got wrong. *This goes to show that even the
+professionals and the experts themselves do not know everything and have
+to refer back to the source docs.* You shouldn't hold the belief that
+you should know everything from the heart.
+
+This is true especially when learning a new programming language or with
+a library of functions. If any, you should master the underlying
+concepts, not the syntax themselves.
+
+=== Put out your output somewhere
+
+[line-through]*C wat ay deed ther? 🙂*
+
+Of course, you shouldn't just be content of the fruits of labor of your
+study. Whether you have a study group network or none, you should put
+the results out on the public. This depends on your situation whether
+you train under a closed source, whether it is required to be private,
+etc.
+
+For example, you should put your side projects out on GitHub as it is
+one (really, arguably the most popular) of the most popular repo hosting
+site out there. For smaller projects, you could even put it out as a
+repo that shows as a demo
+https://www.slightedgecoder.com/2017/09/05/throwaway-code-dont-recycle-throw-away/[just
+like how this guy did]. You could also put it in one repo or a
+collection of repo, categorizing your smaller projects. There's quite a
+lot of ways on how you could show your efforts out there.
+
+*If you're quite afraid of being judged, get over it.* I can't just say
+it and it'll make your avoidance go away like magic but I'm going to say
+it: get over it. It is inevitable in a way but you could also get the
+positive side of things. Besides, most of the time, the worst-case
+scenario in here is that someone will correct you and that is on itself,
+a learning opportunity.
+
+=== Practice
+
+Of course, practice makes permanent. 🙂

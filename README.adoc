@@ -1,0 +1,17 @@
+= personal-notes
+
+A repo of my notes that is about anything that is not too detailed 
+to talk about anything, really.
+
+If you want to find my detailed notes on anything that I don't know, you can find it 
+https://github.com/foo-dogsquared/a-remote-repo-full-of-notes-of-things-i-do-not-know-about[here].
+Bear in mind that unlike this repo which contains `.adoc` files, the
+previously linked repo contains LaTeX files which means you need to 
+have a LaTeX distribution to compile it. 
+If you're not familiar with LaTeX, I've written more about it how 
+you can compile it yourself in the said repo.
+
+For now, enjoy my whatever-the-crap-that-is-put-in-here. Like with the 
+remote repo full of notes of things I do not know, the notes here are 
+written with the priniciple of https://collegeinfogeek.com/feynman-technique/[Feynman technique].
+At the very least, you could find something useful here.

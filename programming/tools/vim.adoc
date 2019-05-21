@@ -1,0 +1,401 @@
+= Vim
+Gabriel Arazas <foo.dogsquared@gmail.com>
+:toc:
+
+FUN FACT: No surprise but this post is written with Vim.
+
+Yes, the dreaded Vim. The text editor that has been memed by so many 
+developers (including myself) from its notorious difficulty, outdated 
+aesthetics, and initial steep learning curve especially if you're coming 
+from other text editors.
+
+I decided to learn about Vim after reading  
+https://castel.dev/post/lecture-notes-1/[this particular post] since I'm
+also committing to learn about LaTeX for my upcoming class. I have a month
+to learn and fiddle with both of the tools so I took my time with it
+learning more about it.
+
+What's more is that Vim is not that hard as the internet legends passed 
+on to it. Though, it is initially difficult to get the hang of it due to 
+the differences of conventions compared to other text editors but it'll 
+come with practice and time.
+
+So let's get right into it.
+
+== What is Vim?
+First, we'll have a talk about what is Vim.
+
+To put it simply, Vim is a modal text editor based on 
+https://en.wikipedia.org/wiki/Vi[Vi] with improved features.
+It is originally called as _Vi Imitation_ but eventually shortened to simply _Vim_
+and the name stuck after that.
+
+What's more is that it's free, https://github.com/vim/vim[open source], and 
+cross-platform, allowing you to use it on virtually any machine.
+
+Like its predecessor, Vim is a terminal-oriented text editor. Its setup and 
+features are all possible to use only with a keyboard, rendering you unable to 
+rely much on the mouse. You can save your file, edit other files, do version 
+control magic on your repo, and quickly navigate through the filesystem without 
+leaving either of your hands from the keyboard.
+
+Though, Vim on its whole, is not a complete replacement for your production workflow...
+https://vim.fandom.com/wiki/Use_Vim_like_an_IDE[unless you put some effort into making 
+it so].
+
+Personally, I use Vim as a LaTeX editor (which I'll go into deep detail about it 
+in another entry). With the flexibility it offers, there's seriously tons of 
+possibilities you can do with it.
+
+But for now, let's discuss Vim in its default state.
+
+Going back into the definition, Vim has the philosophy of using _modes_ where
+inserting text, navigating through the file, and selecting text, etc. should 
+be separated into actions. It may be uncomfortable to think about but it makes 
+the most sense once you use more of Vim.
+
+== How to use it?
+Check if Vim is installed with `vim --version` in your terminal. If it's not 
+installed yet, just go to the https://www.vim.org/download.php[download page of 
+the official site] and follow the instructions intended for the OS you're 
+using with.
+
+If you're using a Linux-based distro, chances are Vim is preinstalled. You can 
+update it if it's needed.
+
+NOTE: Frankly, I would just recommend you to go through `vimtutor` but you can 
+still carry on. There are some points I made here that are quite useful to know 
+that the tutorial didn't provide.
+
+Anyways, we'll be using the original and terminal-oriented interface of Vim. 
+In order to use it, just enter the command `vim` and you'll be entered in an 
+empty Vim file. As of Vim 8.1, there should be a bit of a welcome screen 
+telling you the version and a handful of commands in order to get started.
+
+Furthermore, the first moment you entered into Vim, you cannot insert text 
+just yet. This is the first moment you should know about _modes_.
+
+== Modes
+We already tackled that Vim is a modal text editor which means there should be 
+a separate mode for each major actions in the file: inserting text, navigating 
+the file, doing something with the editor, and selecting text. 
+
+=== Normal mode
+When you start out using Vim, you start in the _normal mode_, also known as 
+the _command mode_ where your keyboard are bound to commands instead of inserting 
+text as you initially expect.
+
+This is also the mode where you can navigate within the file and there are a lot 
+of cool things you can do with it.
+
+Within the normal mode, you can also type out commands yourself. In order to start 
+a command, type the colon (`:`) character and the cursor should be at the very bottom 
+of Vim.
+
+For our first command, we'll exit through Vim. **Now pay full attention and read the 
+next whole paragraph before doing the thing.**
+
+In order to do this, just type the starting character for a command (`:`, remember) 
+and type `q`. As you most likely guess, `q` stands for quit and it'll simply quit 
+the Vim session. Now enter through into Vim the same way you previously did before.
+
+Alright, you're back I'm assuming and did not read this part before doing the thing?
+I sure hope so you did. Now let's do more on the normal mode.
+
+Let's write a file with `:w` and provide a filename as the second argument. Enter it 
+and you should see the status that the file you've entered is now written and saved 
+into the disk.
+
+How to be sure if the file is indeed saved? You could exit Vim and type something or 
+`ls` (or `dir` if you're on Windows terminal) but there is a way to check your files 
+while inside of Vim. Just prepend your command with the exclamation point (`!`) and 
+you can execute shell commands. Try it now!
+
+Assuming you've entered `ls`, you should be able to see the list of files afterwards. 
+Furthermore, you can provide arguments from the shell command. Try to enter the help 
+page of the command (with `-h`, `--help`, or anything equivalent) and you should be 
+able to see the help page of the command.
+
+Speaking of help, Vim has a built-in help system for your commands and it is simply 
+accessed with the command `:h` (with `h` stands for **h**elp). It should create another 
+window being split within the terminal and a manual page should be opened within the 
+newly created window. In order to close the window, simply enter the quit command (what 
+was that again?).
+
+Scratch that, open the help window again. This is the perfect time to introduce 
+navigating around. It's late but it's better late than never, am I right. I haven't 
+introduce navigation yet since we didn't write anything yet which we'll cover later 
+but for now, the help window will do.
+
+File navigation can be done with arrow keys but it's much more recommend to navigate 
+with the `h`, `j`, `k`, and `l` button. "What in the everloving hell is this?", you 
+ask. "With those buttons, REALLY?!", you exclaim. It's entirely out of place at first 
+but it'll make more sense when we walk through the road further.
+
+What directions those seemingly unfit navigation buttons indicate? As the help 
+section already helped with, well...
+
+- `h` is left (located at the **left-most** location in a QWERTY keyboard)
+- `j` is down (with `j` **looks like a down arrow**)
+- `k` is up (with `k` looks like an up button that hit a wall)
+- `l` is right (located at the **right-most** location in a QWERTY keyboard)
+
+Try navigating through the help section and see more available commands with it.
+
+You done now, right? I assume your comfortable with navigating now but it's quite 
+slow that you can only travel one character/line at the time. 
+
+==== Summary
+In summary, normal mode is:
+
+- a way to navigate around a file
+- a way to exit Vim :D
+- where most file operations happen
+- the mode you'll be mostly staying in, for sure :)
+
+Normal mode, being the default mode, is also the bridge for entering between 
+different modes. 
+
+Now here's the part where we use Vim as we initially expected. As a part of your 
+reward, enter the `i` key and you'll be entering the...
+
+=== Insert mode
+In Insert mode, you can enter characters now... and that's pretty much it. You can't 
+do much navigation aside from the arrow keys and you can't enter commands at all now 
+that pressing `:` is now meant inserting a `:`.
+
+If you want to go back into Normal mode, press the almighty Escape button (`<Esc>`). 
+
+Mind you that there are multiple ways of entering through the Insert mode. Here's a list of 
+mappings for entering to Insert mode with slight variations:
+
+- `A` - **append** to the end of the current line
+- `a` - **append** to the next character relative from the cursor
+- `o` - **open** (create) a new line _below_ the cursor 
+- `O` - **open** (create) a new line _above_ the cursor
+- `s` - **slice** (cut) the current character 
+- `S` - **slice** (cut) the current line
+- `C` - **change** the current line
+
+Experiment it with a bit and after that, we can continue to downward spiral on the 
+Normal mode.
+
+=== Mappings
+Mappings are functions binded to certain key combinations. Simply put, they are 
+basically _keyboard shortcuts_. 
+
+The `h`, `j`, `k`, and `l` key is one (or four?) of them. As previously mentioned, they 
+are used to move left, up, down, and right, respectively.
+
+WARNING: Make sure that Caps Lock is not activated since of the some of the mappings are 
+case-sensitive and you may encounter some unexpected things while using it.
+
+Mappings range from one character like the following list of mappings:
+
+- `w` - skip at the beginning of the next **word**
+- `b` - go **back** at the beginning of the previous word 
+- `e` - skip at the **end** of the next word
+- `u` - **undo** file changes
+- `r` - **replace** the current character with the next character to be pressed by the keyboard
+- `gg` - **go to the very beginning of the file**
+- `G` - **go to the end of the file**
+- `M` - move cursor to the **middle** of the screen (very useful for repositioning the cursor)
+
+To two characters...
+
+- `yy` - **yank** (the Vim term for copy) the current line
+- `dd` - cut and **delete** the current line
+- `cc` - **cut** and replace the entire line
+
+To more than two characters...
+
+- `3dd` - **delete 3 lines starting from the line where the cursor lies**
+- `3yy` - **yank 3 lines starting from the cursor**
+- `3gg` - **go to line number 3 starting from the beginning of the file**
+
+And this is the part where we have to know about motions. But first, we'll have to discuss
+special keys to clarify some things before we move on.
+
+Special keys such as Escape and Control button are referred with angled brackets (`<` and `>`).
+For referential purposes, here's a list of the special keys:
+
+[cols=2*,options=header]
+|===
+|Vim special key mapping
+|Button
+
+|`<Esc>` 
+|the Escape button
+
+|`<C>`, `<Ctrl>` 
+|the Control button
+
+|`<A>`, `<Alt>` 
+|the Alt button
+
+|`<Space>` 
+|the keyboard space button
+
+|`<Enter>` 
+|the Enter button
+
+|`<Left>` 
+|the left arrow key
+
+|`<Up>` 
+|the up arrow key
+
+|`<Down>` 
+|the down arrow key
+
+|`<Right>` 
+|the right arrow key
+
+|`<BS>` 
+|the backspace key
+
+|`<F1>` ~ `<F12>` 
+|the function keys 1 to 12
+|===
+Any combination with the special keys are also referred with angled brackets to differentiate 
+them with other keyboard combinations that may look like the same (`<Esc>` is the Escape key 
+and `Esc` is a mapping).
+
+Here's some of the default keybindings you can find on Vim that utilizes the special keys:
+
+- `<C-R>` (`Ctrl + R`) - **redo** file changes
+- `<C-U>` (`Ctrl + U`) - move the cursor **up** halfway
+- `<C-D>` (`Ctrl + D`) - move the cursor **down** halfway
+- `<Enter>` (well, `Enter`) - move the cursor down one line
+- `<C-O>` (`Ctrl + O`) - jumps the cursor from the previous item in the "jump list" (a list of places your cursor
+has travelled before)
+- `<C-I>` (`Ctrl + I`) - jumps the cursor to the next item in the "jump list" (for more info about it
+enter the command `:h jumplist`) 
+
+Memorizing commands is one thing but understanding how these commands came into form is another.
+With the mostly keyboard setup that Vim provides, there is another way on how to do things faster.
+
+=== Motions
+Enter the concept of _motions_. As you can understand from the word itself, motion describes an 
+action in Vim. To help you understand it, take this basic example.
+
+Remember the keys to navigate through a file? Each of the key describes a motion which is basically 
+their function.
+
+- `h` move the cursor to the left
+- `j` move the cursor one line down 
+- `k` move the cursor one line up
+- `l` move the cursor to the right 
+
+You can include a number (or a _count operator_) for more specific and faster navigation. Take these 
+examples:
+
+- `2h` moves the cursor 2 characters to the left
+- `6j` moves the cursor 6 lines down
+- `3k` moves the cursor 3 lines up
+- `10l` moves the cursor 10 characters to the right
+
+You see how powerful these can be? Here's an incomplete reference list of motions:
+
+[cols=2*,options=header]
+|===
+|Mapping
+|Motion
+
+|`w`
+|skip to the beginning of the next **word**
+
+|`b`
+|skip to the **beginning** of the previous word
+
+|`$`
+|skip to the end of the line
+
+|`0`
+|skip to the beginning of the line
+
+|`d`
+|**delete**
+
+|`c`
+|**changing** a line
+
+|`x`
+|**cutting**
+
+|`i`
+|**inserting** a character
+
+|`p`
+|**putting/pasting**
+
+|`o`
+|**opening** a new line
+
+|`y`
+|**yanking** (copying)
+
+|`v`
+|**Visual** mode
+|===
+
+Most of the basic mappings you've known is a motion and can be combined with other motions 
+in order to form more powerful commands.
+
+Take these commands, for example:
+
+- `4w` to skip through 4 words
+- `2dw` to delete 2 words
+- `3i` to insert the edited buffer 3 times
+- `2o` to open 2 new lines with the same edited line
+- `5dk` to delete 5 line above the cursor including the current line
+- `2yj` to yank/copy 2 lines below the cursor including the current line
+- `3p` to put/paste the yanked line 3 times
+- `4G` to go to line 4
+
+You now see where this is getting at? Now go out there and experiment with Vim a little 
+bit and try if it's worth your time and effort to be included in your toolbelt.
+
+== Conclusion
+Vim, overall, is a very great tool. With practice and effort, it can help you on text editing 
+tremendously. Its simplicity and tinkerability is what makes it so great especially for developers 
+who want to set it up to suit their workflow.
+
+It's quite obvious but it's better to say that Vim is not a total replacement for anything, 
+https://dev.to/allanmacgregor/vim-is-the-perfect-ide-e80[including Vim as an IDE]. You have to 
+put out great effort in order to do so and most of the time it only affects you. It may make 
+us _feel_ productive but does it _make_ us truly productive? 
+
+Like I said before I only use Vim for LaTeX, Asciidoc, and Markdown editing but I don't think 
+it'll be my go-to editing when coding my projects. It cannot be a total replacement especially when 
+other editors and tools do have a particular feature out-of-the-box.
+
+== What now after this?
+I recommend to learn about learning more motions and if you're going to expand Vim's features, 
+you may want to look at configuring Vim with a `.vimrc` file. With it, you can bring your custom 
+editor look and even your custom mappings anywhere.
+
+If you want a bigger way of expanding Vim's features, you might want to look at the plugin management. 
+For this, I recommend https://github.com/junegunn/vim-plug[vim-plug] as the plugin manager.
+
+You might also want to explore other utility plugins that can help you a lot like a snippet manager, 
+a new color scheme, and a filesystem explorer, if you want any. 
+
+For now, don't focus too much on those and practice on navigating and editing files with only the 
+vanilla version of Vim.
+
+== Other readings and references
+- https://www.reddit.com/r/vim/wiki/index[_/r/vim wiki_] - A wiki compiled by the 
+https://www.reddit.com/r/vim[/r/vim] community. It includes the best practices for managing Vim, 
+getting started, and exploring other features.
+- https://www.youtube.com/watch?v=NzD2UdQl5Gc[_How vim Makes my Daily Life Easier_ by Luke Smith] - A 
+YouTube video by https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA[Luke Smith], a YouTuber that 
+focuses on tech and dev life.
+- http://learnvimscriptthehardway.stevelosh.com/[_Learn VimScript the Hard Way_] - It's a long read. I 
+recommend it to read it in sessions and if you're willing to bet on adding Vim to your toolbelt.
+- https://learnxinyminutes.com/docs/vim/[_Learn X in Y Minutes - Vim_] - A community-made compilation of 
+docs for different programming languages and tools. Here's one for Vim.
+- https://vim.rtorr.com/[_Vim Cheatsheet_ from _rtorr_] - You can check out the source on 
+https://github.com/rtorr/vim-cheat-sheet[GitHub].
+- `vimtutor` program (located alongside with Vim, just open it on your shell)
+

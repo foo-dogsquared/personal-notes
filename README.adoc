@@ -15,3 +15,33 @@ For now, enjoy my whatever-the-crap-that-is-put-in-here. Like with the
 remote repo full of notes of things I do not know, the notes here are 
 written with the priniciple of https://collegeinfogeek.com/feynman-technique/[Feynman technique].
 At the very least, you could find something useful here.
+
+== Documentation
+In order to fully utilize this repo, you need the following programs:
+
+[cols=3*,options=header]
+|===
+| Program
+| Minimum version
+| My version of the program as of this writing
+
+| https://www.python.org/[Python 3]
+| 3.5
+| 3.7.3
+
+| https://asciidoctor.org/[Asciidoctor]
+| 2.0
+| 2.0.9
+|===
+
+Feel free to file an issue regarding the required minimum version. I'm not so 
+sure about it myself.
+
+There's a Python script named `compile.py` that compiles all of the Asciidoctor notes 
+into HTML. Just run that script at the shell and the resulting files should be 
+dropped off in a build directory. The script itself is a CLI program with options you 
+can add a help flag (`-h`) to see the possible options since the program can run 
+without given arguments.
+
+The build directory is located at `.output` with all of the directory structure 
+being retained.

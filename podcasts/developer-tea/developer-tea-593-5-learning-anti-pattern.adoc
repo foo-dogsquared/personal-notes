@@ -1,6 +1,6 @@
-== Personal main takeaways on https://developertea.simplecast.fm/aeb7c2cf[Developer Tea #593 - 5 Learning Anti-Patterns]
+= Personal main takeaways on https://developertea.simplecast.fm/aeb7c2cf[Developer Tea #593 - 5 Learning Anti-Patterns]
 
-=== Staying up late and giving every available time to active learning
+== Staying up late and giving every available time to active learning
 
 Most of us are amazed by the idea of someone who is very dedicated to
 learning, giving every time to consuming knowledge resources: watching a
@@ -73,7 +73,7 @@ The incremental gap of days also leaves an opening for me to understand
 more complex subjects (but not too much, remember) while retaining my
 mastery of foundational concepts
 
-=== Being hyperfocused on one specific thing
+== Being hyperfocused on one specific thing
 
 Having focus is cool and all but having too much focus on one thing is
 another, it is said that hyperfocusing on one subject or one concept is
@@ -93,7 +93,7 @@ other concepts or subjects.
 Another thing with this is also compliments the spaced repetition so at
 least we are being more efficient.
 
-=== Waterfall learning
+== Waterfall learning
 
 This is referred by Cutrell (the host) as *a way of learning by pushing
 all of the studying in one phase and testing in another phase*
@@ -128,7 +128,7 @@ Thought], failure is nothing more than a feedback and having that in
 mind can lead us challenging to understand concepts that our brain has
 no idea about
 
-=== Softball learning
+== Softball learning
 
 I don't know if I got the term right, I haven't found that kind of term
 on Google search results
@@ -209,7 +209,7 @@ exploring different but related subjects that are being studied in an
 efficient amount of time while having some time free time for other
 things
 
-=== Mockingbird learning
+== Mockingbird learning
 
 This is my favorite solely because of the term alone although I would
 give another name like *parroting*.

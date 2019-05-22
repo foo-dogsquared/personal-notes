@@ -1,6 +1,6 @@
-== Personal main takeaways on http://www.metalearn.net/podcasts/ml97-how-to-choose-what-to-learn[Metalearning Podcast #97 - How to Choose What to Learn]
+= Personal main takeaways on http://www.metalearn.net/podcasts/ml97-how-to-choose-what-to-learn[Metalearning Podcast #97 - How to Choose What to Learn]
 
-=== Passion projects and professional projects
+== Passion projects and professional projects
 
 Passion projects are projects that usually requires you to have an
 amount of investment (like motivation) but has little to no tangible
@@ -35,7 +35,7 @@ on our passion list about learning a musical instrument so that you can
 jam with your friends. Yet, it doesn't practically help you (except when
 you make it into a gig or something). It is just for the enjoyment.
 
-==== Practicality, enjoyment, and professionalism
+=== Practicality, enjoyment, and professionalism
 
 Now this is a major point when it comes to initiating passion projects
 and professional projects.
@@ -84,7 +84,7 @@ For others, it is more sensible to make our enjoyment a part of our
 professional aspect. When it comes to these things, you are the best
 judge to evaluate this as you know the context and the situation.
 
-=== Focusing on your strength
+== Focusing on your strength
 
 Focusing on what you're good at is quite a very important skill to have.
 It opens up opportunities that lead you to explore other things. Now
@@ -112,7 +112,7 @@ be wary about the resources you could spent and could have spent on
 other opportunities that could net more benefits. Like what the host
 said, take those statements as a word of caution.
 
-==== Convergent and divergent thinking framework
+=== Convergent and divergent thinking framework
 
 Although the host only gave a taste of what does it mean to have
 divergent and convergent thinking but he does gave a process that uses
@@ -134,9 +134,9 @@ questions that you can ask are:
 * What practical effects does learning this particular skill have?
 * What kind of opportunities will I get from learning this skill?
 
-=== The 3 skills that everyone should learn
+== The 3 skills that everyone should learn
 
-==== Self-awareness
+=== Self-awareness
 
 This is the ability to reflect about themselves. They are quite aware
 about what they should be doing and what they should don't.
@@ -157,7 +157,7 @@ you enjoy and not enjoy, what are your strengths and weaknesses, what
 skills that could use some leverage, what skills that are not balanced
 with the rest of your skills, etc.
 
-==== Understanding the world around you
+=== Understanding the world around you
 
 This could be described as the skill of filtering noise and seeing the
 bigger picture. For example, seeing the daily news is not that entirely
@@ -176,7 +176,7 @@ future, etc. Just keep an eye out for these things because sooner or
 later, they're also going to affect you and surely you don't want to be
 left out on such things.
 
-==== Learning how to learn
+=== Learning how to learn
 
 As Nasos (the host) would say, this is mostly considered as the 21st
 century superpower. In a ever-changing world where things are coming by

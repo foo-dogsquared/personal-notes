@@ -1,11 +1,11 @@
-== Personal main takeaways from https://syntax.fm/show/044/how-to-learn-new-things-quickly[Syntax EP#44 - How to Learn Quickly]
+= Personal main takeaways from https://syntax.fm/show/044/how-to-learn-new-things-quickly[Syntax EP#44 - How to Learn Quickly]
 
 Well, I already listened and have notes for this but I re-reviewed it
 for the sake for reviewing.
 
 Warning: full of opinionated stuff there.
 
-=== Learn how you learn best
+== Learn how you learn best
 
 This is the best tip that they've given on this episode. Very fitting as
 this is also their first one to talk about.
@@ -71,7 +71,7 @@ written on C++,
 https://github.com/foo-dogsquared/automate-md/[automate-md], a SSG
 blogging assistant on managing your markdown files.
 
-=== Improve your foundational skills with supplemental concepts
+== Improve your foundational skills with supplemental concepts
 
 Basically, try to focus on the foundational concepts or skills while
 improving on some other aspects.
@@ -99,7 +99,7 @@ Learning electronics? Learn about the underlying principles like the
 atoms and their movements, the material's atomic composition, Ohm's Law,
 and the usual electronic components and their functions.
 
-=== Narrow your focus
+== Narrow your focus
 
 Narrowing your focus helps in getting things done and not getting
 overwhelmed by the amount of information we have to learn and
@@ -123,7 +123,7 @@ separate the two things and intertwine their concepts. An example from
 the hosts' example, we would study what is React on its own, then Redux
 on its own. After that, we could study React with Redux.
 
-=== Make side projects or throwaway code
+== Make side projects or throwaway code
 
 Or why not both?
 
@@ -198,7 +198,7 @@ https://developertea.simplecast.fm/[Developers Tea] podcast episode, we
 can make this as our study-test loop, sprinkled with the non-coding
 processes such as making pseudocodes and planning on top.
 
-=== Find an external hobby
+== Find an external hobby
 
 You can find something that excites you and try to integrate it into
 programming. It could also be the other way around.
@@ -228,7 +228,7 @@ do with programming systems around it. The same goes for our usual
 hobbies, we should find things that excites us and bring it to
 programming for the cause of being excited to work on it.
 
-=== Put some grind time
+== Put some grind time
 
 Just like in an RPG video game, grinding your time programming levels
 you up in your programming skills [line-through]*(10/10 writing, bois)*.
@@ -262,7 +262,7 @@ https://agileleanlife.com/validated-learning/[first search result that I
 found], it also shows a similar process. We're going on a full circle
 here, folks.
 
-=== Break things all the time
+== Break things all the time
 
 We previously talked about the _fail hard and fail fast_ principle that
 most engineering teams like in Facebook, Google, and IBM usually
@@ -279,7 +279,7 @@ failures such as these experiences are feedback. They are also a call
 for polishing up your skills since they are more worth of going up the
 road to mastery.
 
-=== Iterative-driven development
+== Iterative-driven development
 
 When starting at the beginning, it is important to create as much stuff
 as possible. This is particularly calls true in our development career.
@@ -307,7 +307,7 @@ quite similar to the study-test-evaluate process loop that I keep
 referring to when we want to improve, understand, and internalize the
 concept on our study.
 
-=== Total immersion
+== Total immersion
 
 This is said to be one of the best tips that they ever gave. It is
 simple and quite effective. They also said as this is learning without
@@ -340,7 +340,7 @@ to connect with, giving feedback to one another. That is quite a benefit
 if you ask me. Like I said, simple and effective.
 
 [[scan-the-docs--the-rtfm-rule]]
-=== Scan the docs / the RTFM rule
+== Scan the docs / the RTFM rule
 
 Even though, fully immersing and doing a side project is good and all.
 You should be relying on the manual. Programming languages, libraries,
@@ -367,7 +367,7 @@ This is true especially when learning a new programming language or with
 a library of functions. If any, you should master the underlying
 concepts, not the syntax themselves.
 
-=== Put out your output somewhere
+== Put out your output somewhere
 
 [line-through]*C wat ay deed ther? 🙂*
 
@@ -393,6 +393,6 @@ positive side of things. Besides, most of the time, the worst-case
 scenario in here is that someone will correct you and that is on itself,
 a learning opportunity.
 
-=== Practice
+== Practice
 
 Of course, practice makes permanent. 🙂

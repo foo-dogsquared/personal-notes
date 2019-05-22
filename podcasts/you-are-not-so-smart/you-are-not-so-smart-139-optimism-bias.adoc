@@ -1,4 +1,4 @@
-== Personal main takeaways on https://youarenotsosmart.com/2017/07/25/yanss-105-optimism-bias/[You Are Not So Smart Podcast EP#139 Optimism Bias]
+= Personal main takeaways on https://youarenotsosmart.com/2017/07/25/yanss-105-optimism-bias/[You Are Not So Smart Podcast EP#139 Optimism Bias]
 
 Overall, the podcast episode composes of an interview with Tali Sharot,
 the leading director of http://affectivebrain.com/[Affective Brain Lab],
@@ -7,7 +7,7 @@ also made a https://www.youtube.com/watch?v=B8rmi95pYL0[TED talk on the
 subject of the interview]. And as you can tell, David McRaney (the host)
 talked with the Affective Lab director about optimism bias.
 
-=== What is optimism bias?
+== What is optimism bias?
 
 Of course, this is the first thing that they've talked about in order to
 make an introduction for the listeners. *Optimism bias is a behavior
@@ -19,7 +19,7 @@ phenomena, basically all cultures have a manifestation of this intrinsic
 behavior of some kind. Her research with her team indicates that about
 80% of us have this bias.
 
-=== How does this affects us?
+== How does this affects us?
 
 On the first few minutes on their interview, they've talked about how
 optimism bias affects how people view themselves and other people. It is
@@ -63,7 +63,7 @@ amount included with a scientific explanation as to why it is dangerous
 despite of its small amount, most of us would underestimate or worse,
 completely ignore it and continue with reckless abandon.
 
-=== What are the observation of this bias to most of us?
+== What are the observation of this bias to most of us?
 
 Sharot told the host about an experiment (that is also talked about in
 the TED talk) about how people changes perspective depending on the kind

@@ -1,0 +1,38 @@
+= Web content feeds 
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-09-16
+
+I know that web feeds exist but I've never closely examined them until I develop my https://github.com/foo-dogsquared/hugo-theme-arch-terminal[own Hugo theme]. 
+
+Here's my notes on the matter. 
+
+
+
+
+== What are web feeds?
+
+They are an easy way of keeping up with the updates of a website and making your content available to other sites/programs (web syndication). 
+When we talk about the internals, they are simply files describing the content of a website. 
+
+You can certainly manually create one but most of these feeds are automatically generated to easily update the content, prevent human errors, and avoid outdated information. 
+
+They are mostly used by content aggregators and feed readers to gather and show you the available content of a website. 
+
+The https://cyber.harvard.edu/rss/rss.html[RSS] and https://tools.ietf.org/html/rfc4287[Atom] feeds are the leading formats for web content feeds but other data formats such as CSV and https://jsonfeed.org/version/1[JSON] are used as well. 
+
+
+
+
+== Other uses 
+
+Web feeds are also used as a tool for migration between publication platforms like 
+https://dev.to/[dev.to] and https://medium.com/[Medium]. 
+
+That said, it is also used for easy spreading of your content to different platforms. 
+This also prevents you from copy-pasting your post and preventing your cross-posted content to be flagged as spam by web robots. 
+
+NOTE: Of course, this depends on how well the publication platform integrates well with web feeds. 
+
+For example, in dev.to, you can cross-post your blog by setting your RSS link from the "Publishing from RSS" section in the settings. 
+Depending on how well the RSS feed was made and how close it complies from the https://dev.to/p/publishing_from_rss_guide[dev.to RSS publication guide], you can easily publish your content on the platform. 
+It also sets the appropriate SEO tags for your content to be shareable on social platforms like Twitter and Facebook. 

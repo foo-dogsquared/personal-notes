@@ -1,0 +1,180 @@
+= A two-themes toggle system
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-09-16
+
+I always thought implementing a theme toggle system is somewhat complex. 
+It turns out it's not. 
+Here's how I figured it out. 
+
+For now, this note is just for applying between two themes. 
+The multiple themes version is for another note. 
+
+CAUTION: The code in this note is not perfect. 
+Use it with caution. 
+
+I've initially discovered it while developing my https://github.com/foo-dogsquared/hugo-theme-arch-terminal[custom Hugo theme]. 
+I'll just write it out so that I don't have to go through much research for the second time. 
+
+In my version, we're going to use only with the modern features of JavaScript and CSS. 
+The browser support in this system is https://caniuse.com/#feat=css-variables[widely] https://caniuse.com/#search=localStorage[supported] as of this writing (on 2019-09-16). 
+If you would choose this implementation, you would choose to not support about <10% of the market. 
+That's not a show-stopper, if you ask me. 
+
+
+
+
+== Using CSS variables
+
+For this implementation, we're going to use https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties[CSS variables] (also called as custom properties). 
+As previously implied, the major browsers support it so you have not much to worry about (READ: much). 
+
+First, let's construct a color palette scheme. 
+This will be used as the structure for our themes. 
+For my example, I have three main colors: the background, foreground, and the accent. 
+I would also assign the lighter and darker variants of the colors so there is a total of nine colors in a palette. 
+
+Pretty much, a theme would look like this:
+
+[source,css]
+----
+background: <BACKGROUND_COLOR>
+background-light: <BACKGROUND_LIGHT_VARIANT>
+background-dark: <BACKGROUND_DARK_VARIANT>
+
+foreground: <FOREGROUND_COLOR>
+foreground-light: <FOREGROUND_LIGHT_VARIANT>
+foreground-dark: <FOREGROUND_DARK_VARIANT>
+
+accent: <ACCENT_COLOR>
+accent-light: <ACCENT_LIGHT_VARIANT>
+accent-dark: <ACCENT_DARK_VARIANT>
+----
+
+Now, let's create a real color palette. 
+Just choose three main colors and choose their lighter and darker variants (or not, just go crazy). 
+
+After lazily choosing colors, here's the CSS of the (default) color scheme: 
+
+[source,css]
+----
+:root {
+    --background: #02020b;
+    --background-light: #47474d;
+    --background-dark: #000000;
+
+    --foreground: #fbfaf1;
+    --foreground-light: #ffffff;
+    --foreground-dark: #f4f0d7;
+
+    --accent: #8fc93a;
+    --accent-dark: #76a530;
+    --accent-light: #b7dc81;
+}
+----
+
+In order to apply those variables to our webpages, we just simply use the https://developer.mozilla.org/en-US/docs/Web/CSS/var[`var()` CSS function] for our CSS code. 
+
+[source,css]
+----
+html {
+    background: var(--background); 
+    color: var(--foreground);
+}
+
+a {
+    color: var(--accent); 
+}
+----
+
+Simple enough, right? 
+You see where are we going with this? 
+
+In order to apply the alternative themes, we could simply set a selector, set the new values in it, and the browser will apply the new values of the variables when that condition has been met. 
+For this version, we will set 
+https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*[a data attribute] as our condition. 
+Let's say the name of that data attribute is `theme` and holds a number referring to the palette. 
+This way, we could also attach an identifier for our themes. 
+
+NOTE: We can also do this with classes but they can be troublesome at times. 
+Managing with a data attribute is much easier. 
+
+In our system, the default theme holds the ID number 0 and can be applied even when there's no value for the `data-theme` attribute. 
+
+After lazily choosing the alternative color palette (which is basically the light theme). 
+Here's the resulting CSS code: 
+
+[source,css]
+----
+[data-theme="1"]:root {
+    --background: #fbfaf1;
+    --background-light: #ffffff;
+    --background-dark: #f4f0d7;
+    
+    --foreground: #02020b;
+    --foreground-light: #47474d;
+    --foreground-dark: #000000;
+
+    --accent: #A674B3;
+    --accent-dark: #795583;
+    --accent-light: #be99c7;
+}
+----
+
+It's self explanatory enough, right? 
+When the element (in this case, the HTML element itself) holds a data attribute `theme` with a value of `1`, replace the CSS variables with the given values. 
+
+Simply apply the data attribute for the HTML element and you'll see the alternate color schemes. 
+
+
+
+
+== Using HTML and JavaScript
+
+The themes are not going to move themselves. 
+You need a way to toggle them that doesn't rely on making your user visit the console or manually editing the HTML. 
+
+What you need is an interface for quickly switching the themes. 
+In our example, a simple button would do since we're only implementing with two themes. 
+
+Let's just create a simple theme toggle component. 
+
+[source,html]
+----
+<button class="theme-toggle" aria-label="theme-toggle" role="button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 12c0 6.627 5.373 12 12 12s12-5.373 12-12-5.373-12-12-12-12 5.373-12 12zm2 0c0-5.514 4.486-10 10-10v20c-5.514 0-10-4.486-10-10z"></path></svg>
+</button>
+----
+
+I also considered some accessibility features like the https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role[button `role` attribute] and the https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA[`aria` label]. 
+
+As for the JavaScript, the code simply checks for the current theme and inverts the data since we're only using two themes. 
+Since we're attaching the code to an event (when the user clicks the toggle), we'll have to use an event listener for our button with `onclick=$NAME_OF_FUNCTION`. 
+
+[source,html]
+----
+<script type="text/javascript">
+    function toggleTheme(event) {
+        const theme = Number(!localStorage.getItem("theme"));
+        localStorage.setItem("theme", theme);
+
+        event.target.dataset.theme = theme; 
+    }
+</script>
+----
+
+This is a crude implementation, if you ask me but it works especially we're working with only two themes. 
+
+This doesn't solve the problem of persistent settings, though. 
+Every time the user reloads/visit the page, it would just revert to the default theme. 
+
+A small script would come in handy. 
+The script would have to be a part of the DOM rendering (blocking) since the user may see the page switching themes automatically and it would be off-putting for them. 
+The script is small that its impact on performance is negligible so no big worries here. 
+
+You can a similar script to the `<head>` element. 
+
+[source,html]
+----
+<script>document.documentElement.dataset.theme = localStorage.getItem("theme")</script>
+----
+

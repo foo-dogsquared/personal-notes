@@ -1,0 +1,79 @@
+= Fonts on Linux 
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-09-26 
+
+In this note, I describe how Linux-based distros usually manage fonts. 
+The need to know about this arrived when I have to install a font in a CI build machine. 
+I thought it'll be handy how fonts are managed in Linux. 
+
+
+
+
+== Background knowledge 
+
+Font rendering can be done server-side by requesting to the display server like Xorg. 
+It can also be done through a specialized program like https://www.freetype.org/[FreeType]. 
+Most modern applications rely on the latter and https://www.freedesktop.org/software/fontconfig/fontconfig-user.html[Fontconfig] to give information on the fonts they are going to use. 
+
+GUI libraries such as https://qt.io[Qt] and https://www.gtk.org/[GTK] already handles the font rendering for softwares built with it. 
+
+To make it clear between FreeType and Fontconfig, the former is the font renderer library and the latter is a set of libraries that provides a way of configuring and matching fonts on the system. 
+
+
+
+
+== Font managing basics  
+
+
+=== List installed fonts 
+
+On managing fonts, they can be done both for local and system-wide fonts. 
+Both OpenType and TrueType font formats are supported (and usually done with) in font management. 
+For system-wide fonts, it is usually located on the root filesystem at `/usr/share/fonts/`. 
+footnote:[Depending on the distro, the location may be different.] 
+For local fonts, the recommended location is at `~/.fonts` or `~/.local/fonts`. 
+
+This relies on Fontconfig to build the list. 
+To list out the installed fonts, you can run the command `fc-list`. 
+You can pipe it with `grep` to search for a specific font. 
+
+[source,shell]
+----
+fc-list | grep "Source" 
+# /usr/share/fonts/adobe-source-serif-pro/SourceSerifPro-Semibold.otf: Source Serif Pro,Source Serif Pro Semibold:style=Semibold,Regular
+# ...
+# /usr/share/fonts/adobe-source-code-pro/SourceCodeVariable-Italic.otf: Source Code Variable:style=Light Italic
+----
+
+
+=== Installing fonts 
+
+To install fonts, you have to update the font cache files used by the Fontconfig program with `fc-cache`. 
+It accepts a path of the directory where valid font files readable by FreeType (e.g. `\*.otf`, `*.ttf`) are located. 
+If there's no argument given, it scans the current directory for valid font files. 
+
+[source,shell]
+----
+fc-cache -v 
+----
+
+By rebuilding the font cache, it updates to include the scanned files to the user/system. 
+Verify the installation was successful simply by executing `fc-list`. 
+
+
+
+
+== References 
+
+https://linux.die.net/man/1/fc-cache[`fc-cache` manual page]:: 
+An online version of the `fc-`cache manual. 
+
+https://linux.die.net/man/1/fc-list[`fc-list` manual page]:: 
+An online version of the `fc-list` manual. 
+
+https://unix.stackexchange.com/q/7461[_How does Linux manage fonts?_ from Unix StackExchange]:: 
+A Unix StackExchange thread that discuss on the font management of Linux-based distros. 
+The https://unix.stackexchange.com/a/7483[chosen answer] is the main reference to this note. 
+
+https://unix.stackexchange.com/q/398596[_What is the relation between FreeType, Fontconfig and Xft_ from Unix StackExchange]:: 
+Another Unix StackExchange discussion that tackles the difference between the usual font-related programs like FreeType and Fontconfig. 

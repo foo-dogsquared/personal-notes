@@ -1,6 +1,5 @@
 = Vim
 Gabriel Arazas <foo.dogsquared@gmail.com>
-:toc:
 
 FUN FACT: No surprise but this post is written with Vim.
 

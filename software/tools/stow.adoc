@@ -1,0 +1,122 @@
+= GNU Stow 
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-09-30
+
+https://www.gnu.org/software/stow/[Stow] is a symlinks manager usually found on Unix-based systems such as MacOS and Linux. 
+Per se, you'll see the use of symbolic links which are basically references to the files in the filesystem. 
+It allows for easier management of files by adding the symbolic links around the filesystem while having the original files contain in one folder. 
+
+It was originally intended to be a helper tool for system administrators (or sys admins) managing software without much conflicts. 
+Nowadays, the function of managing software is lended to package managers such as https://wiki.archlinux.org/index.php/Pacman[pacman], https://www.debian.org/doc/manuals/apt-guide/index.en.html[apt], and http://www.rpm.org/[rpm]. 
+
+As for the software, it is modernly known as a configuration management tool which I also intended to use. 
+It is common practice to be used alongside a version control system (VCS) for finer package control and less problematic conflicts because of the usual VCS features such as branching. 
+Popular version control systems like https://git-scm.com/[Git] also allows for more integrations with online services such as https://github.com/[GitHub], enabling for easier backup and sharing of your configurations. 
+
+Although https://github.com/TheLocehiliosan/yadm[modern] https://github.com/twpayne/chezmoi[configuration] https://github.com/anishathalye/dotbot[management] tools exist, I still chose Stow only because it is commonly found throughout the Linux ecosystem. 
+
+NOTE: From this point, I'll refer the configurations as dotfiles. 
+It got its name from the fact the Unix-based systems (such as MacOS and Linux) consider files and directories whose name starts with a dot (`.`) to be hidden. 
+It is also where most of the program configurations are kept. 
+
+
+
+
+== Getting started 
+
+Installing Stow can be done via package manager or using a binary distribution. 
+If it's not readily available in your package manager or operating system, you can simply download the tarball at their http://ftp.gnu.org/gnu/stow/[HTTP mirror] or ftp://ftp.gnu.org/gnu/stow/[FTP repo]. 
+It also comes with a signature file to securely verify your download. 
+
+The way how Stow works is simple. 
+It takes a folder tree referred to as a **stow directory**. 
+
+Let's say you have the stow directory in the following block. 
+
+----
+path/to/the/folder
+├── alacritty
+│   └── alacritty.yml
+├── compton
+│   └── compton.yml
+├── dunst
+├── i3
+│   └── config
+├── ranger
+│   ├── commands_full.py
+│   ├── commands.py
+│   ├── rc.conf
+│   ├── rifle.conf
+│   └── scope.sh
+├── rofi
+│   └── config.rasi
+├── vim
+│   ├── .vim
+│   │   └── own-snippets
+│   │       ├── all.snippets
+│   │       ├── asciidoc.snippets
+│   │       ├── snippets.snippets
+│   │       └── tex.snippets
+│   └── .vimrc
+├── xorg
+│   ├── .xinitrc
+│   └── .Xresources
+└── zsh
+    ├── .zprofile
+    └── .zshrc
+----
+
+Each top-level folder inside of the root is a **package**. 
+The folder name is the name of the package. 
+In this case, we have the packages `alacritty`, `compton`, `dunst`, etc. 
+
+The packages may contain anything as in any files. 
+From the configuration files, scripts, manuals, spreadsheets, pictures, audio, and beyond. 
+
+If you have setup your configurations under one folder, you're good to go for the next section. 
+
+
+
+
+== How to use 
+
+Using Stow is pretty easy. 
+Assuming you're in the stow directory as the working directory, you can invoke `stow` along with the name of the packages you want to be linked in the target directory. 
+If no target directory is specified with the `-t` flag, Stow links the packages at the parent directory. 
+
+If you screw up, you can reset by adding the `-D` option with the name of the packages. 
+It will delete the symbolic links associated with the package. 
+
+Let's say I want to link my https://www.vim.org/[Vim] dotfiles. 
+As you can see on the example at the previous section, it is already structured to be placed simply on the home directory. 
+
+You can specify the **target directory** where the package files will be dropped with the `-t` flag (or the `--target` longhand option). 
+
+Now, for our specific use case, we can do that by running `stow vim -t $HOME`. 
+The files inside of the `vim` package will have its symbolic link placed in the home directory. 
+You can verify it by simply taking a peek at the home directory (`ls -a $HOME`). 
+
+Being a symbolic link, changes occurred at the files will be in effect. 
+You can edit it either from the symbolic link or the original and both will result in the same change. 
+
+However, files added after the command will not be recognized. 
+For this, you'll have to run the `stow` command again. 
+Fortunately, Stow provides a convenient way of redoing it with `-R` (or `--restow`) option. 
+Simply provide a whitespace-separated list of the name of packages to be reapplied after the option. 
+
+How could I forget to recommend you to refer to the help section often with `stow --help`. 
+
+
+
+== References 
+
+https://www.gnu.org/software/stow/[GNU Stow homepage]:: 
+Self-explanatory link title is self-explanatory. 
+Provides the release notes, 
+
+https://www.gnu.org/software/stow/manual/stow.html[Online GNU Stow manual]:: 
+Contains the full documentation of GNU Stow. 
+Provides all of the knowledge you may need to know about it. 
+
+http://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html[_Using GNU Stow to manage your dotfiles_ by "Brandon Invergo"]:: 
+A short and sweet article on using Stow to manage your dotfiles. 

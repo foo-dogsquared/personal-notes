@@ -16,6 +16,9 @@ remote repo full of notes of things I do not know, the notes here are
 written with the priniciple of https://collegeinfogeek.com/feynman-technique/[Feynman technique].
 At the very least, you could find something useful here.
 
+
+
+
 == Documentation
 In order to fully utilize this repo, you need the following programs:
 
@@ -45,3 +48,18 @@ without given arguments.
 
 The build directory is located at `.output` with all of the directory structure 
 being retained.
+
+
+
+
+== Style guide 
+
+The style guide of writing and expanding the notes can be found in my https://github.com/foo-dogsquared/personal-style-guides[repo of personal style guides]. 
+
+For a quick summary, there is the following list. 
+
+* Use https://asciidoctor.org/[Asciidoctor] for writing notes. 
+* Make sure a date string formatted in https://www.iso.org/iso-8601-date-and-time-format.html[ISO 8601 standard] is present. 
+It serves as the revision string of the document and should be updated in case the note is updated. 
+* Have the author name and the email present as well. 
+* Files should be named in kebab case. 

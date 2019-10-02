@@ -1,0 +1,124 @@
+= C/C++ Toolchain
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-10-02
+
+For developing C/C++ projects, you need to understand a bit more on the toolchain. 
+Here are the common toolchain you can find in the development workspace. 
+
+This note does not dwelve in details nor it teaches how to use the tools listed here. 
+You need to find the appropriate note for that, if available. 
+
+
+
+
+== GCC
+
+The https://gcc.gnu.org[GNU Compiler Collection (GCC)], as already indicated by its name, is a set of compilers and serves as a front-end for compiling https://gcc.gnu.org/onlinedocs/gcc-9.2.0/gcc/G_002b_002b-and-GCC.html#G_002b_002b-and-GCC[supported languages] like http://www.open-std.org/jtc1/sc22/wg14/[C], https://isocpp.org/[C++], https://wg5-fortran.org/[Fortran], and https://dlang.org/[D]. 
+They also provide a standard set of libraries for the supported languages. 
+
+It was originally created to be a compiler for the C language. 
+In fact, the acronym originally stood for "GNU C Compiler". 
+Today, it is still mainly used to compile C programs. 
+
+
+=== GDB 
+
+The GCC toolchain also comes with a debugger named the GNU Project Debugger (GDB). 
+Being a debugger, it can specify what parts of the program to stop and let you examine what is wrong with it. 
+
+It is commonly used as an integration with the popular text editors and IDEs like https://code.visualstudio.com/[Visual Studio Code] and https://www.jetbrains.com/clion/[CLion]. 
+However, you can also work with GDB on the command line. 
+
+In order to get started on working with GDB, you need to compile your program with debugging symbols. 
+You can enable this in GCC by adding the `-g` flag. 
+
+
+
+
+== LLVM 
+
+The http://llvm.org/[LLVM Project] is similar to GCC — a toolchain composed of a collection of compilers and libraries for supporting languages. 
+
+It is more or less built to be the opposite what GCC wants to do with other softwares: modular, simple, and obscurity-free licensing. 
+Other than that, it is practically the same when it comes to C and C++ projects. 
+footnote:[Of course, in rare cases, you might have a valid reason to exclusively use one or the other such as support for an obscure platform or architecture.] 
+
+LLVM is also known to be a good starting point for researching compiler design and optimizations. 
+As long as you have the required understanding of compilers and languages, you can learn something from here. 
+
+
+=== LLDB
+
+Like GCC, the LLVM toolchain also comes with a debugger. 
+Named as https://lldb.llvm.org/[LLDB], it supports the usual supported languages from C, C++, Objective C, Ada, and more. 
+
+Since it is a debugger, it needs the executable to compiled with debugging symbols. 
+You can enable it with the `-g` flag. 
+
+
+
+
+== Make 
+
+Make is a tool to automate compilation of the output by invoking only one command. 
+
+There are many variations of the tool but https://www.gnu.org/software/make/[the version from GNU] is the most commonly used variant out there. 
+
+This is normally used for making executables of C and C++ projects. 
+
+For other examples, I also use it to compile https://www.latex-project.org/[LaTeX documents] into a PDF. 
+
+One of the neat features of Make is you can configure certain files and run the command to be associated. 
+For example, you can specify a rule that detects files end in `.png` extension and process them through a tool like http://www.imagemagick.org/[ImageMagick] to add a filter. 
+
+Another neat feature of Make is that it will only generate the output if it detected some changes. 
+For example, in a C project, it will rebuild the executable if it detected there's a new library linked with the codebase. 
+
+
+
+
+== CMake 
+
+While GNU Make is a great tool and all, it can be limiting especially that it can work on certain platforms but not for others (e.g., Windows). 
+You can make different makefiles for specific platforms but it can be messy maintaining different versions at a time. 
+
+Fortunately, there is a system built for automating such a task. 
+Enter https://cmake.org/[CMake] — a build system for generating Makefiles that is compatible across different platforms. 
+In other terms, a build system that generates a compatible build system files for a low-level build system. 
+Fancy. 
+
+There are a lot of benefits using with this tool. 
+
+One of which allows for easier build system that works across major platforms with only one file. 
+Furthermore, the files generated to build the output is made by the machine which means it is not prone to manual error. 
+
+The other benefit is that it is more intuitive to write build scripts with CMake compared to its derivative. 
+
+However, it can also add complexity to your project depending if the project itself is complex. 
+It also adds another step in the build workflow which can help or worsen the whole process. 
+footnote:[In my opinion, it can also pay off for simple projects since it is easier to write build scripts with CMake.]
+
+CMake generates a set of files namely, a Makefile, the project files, and anything else that might be used by CMake later on. 
+Fortunately, you don't have to know more about the generated files since CMake is pretty good at abstracting that away from you. 
+footnote:[Unless you are very intrigued.]
+
+
+
+
+== References 
+
+https://gcc.gnu.org/onlinedocs/[GCC online Manual]::
+Contains the manual for the GCC toolchain. 
+Also features separate manuals for different versions (as it should be). 
+
+http://llvm.org/docs/[LLVM documentation]:: 
+The official and elaborate documentation for the LLVM toolchain. 
+It has some guides and overview to get you oriented on the tool. 
+
+https://www.gnu.org/software/make/manual/make.html[GNU Make online manual]:: 
+The full documentation of GNU Make tool. 
+It also gives you a good introduction on what and how Make works in your build. 
+
+https://cmake.org/cmake-tutorial/[CMake tutorial]:: 
+An official tutorial on CMake. 
+You can also visit the https://cmake.org/documentation/[official reference documentation] which also offers documentation for the previous versions. 

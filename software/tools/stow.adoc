@@ -108,7 +108,7 @@ How could I forget to recommend you to refer to the help section often with `sto
 
 
 
-== References 
+== Appendix 
 
 https://www.gnu.org/software/stow/[GNU Stow homepage]:: 
 Self-explanatory link title is self-explanatory. 

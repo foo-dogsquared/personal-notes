@@ -1,0 +1,176 @@
+= Hypertext Transfer Protocol (HTTP)
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-10-09
+
+The Hypertext Transfer Protocol (HTTP) is a protocol for transferring resources. 
+These resources include anything from raw text to HTML documents, graphics, videos, and more. 
+
+Its use was widely implemented for exchanging resources in the web. 
+This also establishes a simpler client-server model for the web. 
+
+NOTE: This note tackles the HTTP version 1.1 (HTTP/1.1). 
+
+
+
+
+== Components of HTTP model 
+
+Like most of the communication model, there are mainly two components in the protocol: the client and the server. 
+
+It's a given that the roles are not permanent. 
+It can depend on the context. 
+Thus, the role of the client and the server can be reversed. 
+
+
+=== The client 
+
+The client is the one initially sending what they call a **request**. 
+A request contains a **message** with **headers** and the **body**. 
+It indicates the **action** a client want to do while inside of a website. 
+These actions range from simply fetching the resources (e.g., webpages, images, videos) to authorization actions (e.g., signing in, logging out, signing up). 
+
+In order to have some form of identification, a **user agent** has to be presented. 
+The user agent is any tool that represents the user. 
+An example of a user agent is web browsers, web crawlers, robots, and https://curl.haxx.se/[cURL]. 
+In a user agent, there is an associated string attached to the request (which may be referred to as the user agent itself). 
+
+For a practical example, you can see the user agent in the web browser by going to the console and typing `window.navigator.userAgent` (effective as of 2019-10-09). 
+footnote:[You may have to refer to the respective web browser documentation to get the correct details.] 
+
+
+=== The server 
+
+The server simply provides the resources needed by a client. 
+It can handle processing more than one client at any given time limited by its hardware and practical design. 
+
+In the data exchange model, the server receives the request and returns a **response**. 
+Its structure is similar to the request composing of headers and the body. 
+
+The response indicates certain things either on the server side or the client side. 
+It can indicate the fetching was a success, a failure, or other things that may be outside of scope. 
+In order to easily read the status of the response, a set of **status codes** has been established. 
+
+
+=== The proxies
+
+Due to the structure of the web stacking on one network to the next, the request may have to be passed between a chain of **proxies** before getting to the server. 
+Those proxies can be the modem, routers, the administrator, firewall, and the higher-level systems in a network. 
+footnote:[Most of the time, it always has to be passed through a series of proxies.] 
+
+Proxies can perform functions that modify the request. 
+These can range from caching, filtering, and logging. 
+Conversely, some proxies are set up to be malicious and can change the request to cause damage such as stealing information, changing routes to harmful websites, and taking the credentials to pose as you. 
+
+
+
+
+== The protocol
+
+The protocol itself has some properties that it is worthy to keep in mind. 
+
+* It is stateless. No two connections will have to carried over. 
+* It is simple to the point of being human-readable. 
+
+The protocol is also extensible enough that it is able to address with the modern needs. 
+Three of the most common use cases are caching, authentication, and session management. 
+These three use cases makes up a simple web application and improved page loading experience. 
+
+
+
+
+== Workflow 
+
+The process starts with the client sending a request to the server. 
+As previously discussed, the request is made with a message. 
+Similar to HTML documents, it should have a head and an optional body. 
+The request also follows a format. 
+
+Let's say I want to send a request to `https://examplecat.com/cat.txt` with https://curl.haxx.se/[cURL]. 
+The request should be similar to the following verbatim. 
+
+[source, http]
+----
+GET /cat.txt HTTP/1.1
+Host: examplecat.com
+User-Agent: curl/7.66.0
+Accept: */*
+----
+
+The important part here is the first line. 
+It is composed of mainly three parts: the **method**, the **resource** (URL), and the HTTP version. 
+
+After the first line are the headers of the request. 
+Each header is simply a key-value object. 
+Since HTTP is simple, we can intuitively know what the request is all about. 
+
+When the request is sent, it is passed through multiple networks (proxies) until it reached the destination (server). 
+The server then inspects the request and send a response back to the client. 
+Similarly, the response will be passed through multiple networks until it reached back to the client that sent the request. 
+
+In our example, the response could look like the following. 
+
+[source, http]
+----
+HTTP/1.1 200 OK <1>
+Accept-Ranges: bytes <2>
+Cache-Control: public, max-age=0, must-revalidate
+Content-Length: 33
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 09 Oct 2019 16:55:17 GMT
+Etag: "ac5affa59f554a1440043537ae973790-ssl"
+Strict-Transport-Security: max-age=31536000
+Age: 52211
+Connection: keep-alive
+Server: Netlify
+X-NF-Request-ID: 79cb77a8-ceaa-4af3-a30c-d83863684114-5135402
+<3>
+\    /\
+ )  ( ')
+(  /  )
+ \(__)|
+----
+
+<1> The response is similarly structured to the request. 
+The first line, called as the **status line**, denotes the HTTP version, the status code, and the associated message. 
+
+<2> After the status line, there come the headers. 
+Similar to the headers in the request, it is a group of key-value objects. 
+It describes certain details such as the server, cache, and the body. 
+
+<3> Speaking of the body, it is the last part of the response. 
+The body contains any text from raw text to multimedia content (e.g., images, videos). 
+In our above example, we simply have received an ASCII art of a cat. 
+
+NOTE: The status codes are actually used in full discretion with server-sided programming. 
+Which means you can program the server to respond with a status code of 404 even if the request is valid. 
+
+
+
+
+== Versions 
+
+By the time the web has been developed and hardware (and demands) are improving, HTTP has recieved some upgrades. 
+As of 2019-10-10, HTTP has updated versions of it with the specifcations of version 2 (HTTP/2) in 2015 and version 3 (HTTP/3) in June 2019. 
+
+The updated specs are designed to combat against the modern demands of using web resources while being faster than the old specs. 
+Major web services and sites such as https://akamai.com/[Akamai], https://wordpress.com/[WordPress], https://www.cloudflare.com/[CloudFlare], https://www.google.com/[Google], and https://www.wikipedia.org/[Wikipedia] have enabled HTTP/2 support starting from 2015. 
+
+As mentioned earlier, the specifications of HTTP/3 has been completed in June 2019. 
+Major services and browsers are preparing to adopt to it in late 2019 with some tools such as https://curl.haxx.se/[cURL] offers https://daniel.haxx.se/blog/2019/08/05/first-http-3-with-curl/[experimental HTTP/3 support]. 
+It is based on Google's https://www.chromium.org/quic[QUIC] project, a new transfer protocol implemented at the top of UDC (compared to HTTP built on top of TCP). 
+
+A dedicated note for the other versions of HTTP will be written in time. 
+
+
+
+
+== Appendix
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP[HTTP from MDN Web Docs]:: 
+A set of documentations of the protocol presented by https://developer.mozilla.org/en-US/[Mozilla Web Docs]. 
+
+https://http2.github.io/[HTTP/2 specification website]:: 
+A working copy of the HTTP/2 specifications. 
+
+https://tools.ietf.org/html/rfc7540[IETF RFC 7540 (HTTP/2)]:: 
+The IETF standard for the updated version of HTTP which called known as HTTP/2. 

@@ -1,0 +1,343 @@
+= Make 
+Gabriel Arazas <foo.dogsquared@gmail.com> 
+2019-10-14
+
+This note tackles on introducing you to Make (only with my personal use cases). 
+Not really for the more advanced stuff but it could be useful as a reviewer. 
+
+https://www.gnu.org/software/make/[Make] is a build automation system for your project. 
+As of 2019-10-13, it is maintained by https://www.gnu.org/[GNU]. 
+
+Make is a popular tool to be included on building with http://www.open-std.org/jtc1/sc22/wg14/[C] and https://isocpp.org[C++]. 
+It is also a known tool for other setups such as compiling documents into one output such as creating a PDF from https://www.latex-project.org/[LaTeX files] or https://asciidoctor.org/[Asciidoctor-based documents]. 
+In any case, it is useful for output compilation from a set of files. 
+
+NOTE: For future references, the version of Make I'm using as of 2019-10-14 is `GNU Make 4.2.1`. 
+Additional reading may have to be done. 
+
+
+
+
+== An overview of a makefile
+
+In using Make, you mainly need a file named **makefile**. 
+The makefile is where the **rules** are stored. 
+
+Rules are the central concept of Make. 
+In order to do what Make does best, we give it a set of rules to evaluate and compile the project (or at least a part of it). 
+
+The rule has a certain syntax that Make enforces. 
+Below is a real-life example of a Make rule. 
+footnote:[It's the build rule from this project makefile.] 
+
+[source, make]
+----
+build: compile.py
+	./compile.py
+----
+
+Starting from the first line, separated by the colon is the **target** and the **prerequisite**. 
+
+The target is the output file to be generated. 
+It is required for a rule to have at least one target. 
+The target could also be the name of an action which is known as a **phony target** since there is no file named `$ACTION` to be generated. 
+In the example, it does use a phony target named `build`. 
+
+NOTE: Know more about phony targets in the <<Phony targets>> section. 
+
+The prerequisites are the dependencies of the target. 
+It is the input to be checked first before the rule is evaluated. 
+Unlike a target, dependencies are optional. 
+If a rule has no dependencies, Make will check if the target does not exist before it evaluates the rule. 
+
+One neat thing about Make is you can define more than one target and prerequisite. 
+
+[source, make]
+----
+output1.txt output2.txt : input1.txt input2.txt
+----
+
+After the first line, there is a set of instructions also known as a **recipe**. 
+It can range from a single command to multiple commands. 
+
+The recipe should be prefixed with the appropriate character at the start of each line following the target and/or prerequisites. 
+By default, Make needs a tab character (`\t`) as the prefix. 
+(It is also why most modern Make tutorials warn you about using only tabs instead of spaces.) 
+You can change the prefix by using a variable named `.RECIPEPREFIX`. 
+
+[source, make]
+----
+.RECIPEPREFIX = ">> "
+
+build: compile.py
+>> ./compile.py
+----
+
+If you have the wrong prefix, you should receive an error about a missing separator similar to the following message. 
+
+[source, sh]
+----
+makefile:4: *** missing separator.  Stop.
+----
+
+In some cases, you may also see some part of the recipe prepended with a particular character `@`. 
+This is used to suppress printing to `stdout` stream. 
+
+Now that we have a complete set, we can provoke Make with the appropriate rule. 
+Simply include the name of the rule in the command to be executed. 
+
+When Make is provoked with only `make`, it will execute the first target. 
+Since we only have one rule in our earlier example, our `build` rule can also be executed with only `make`. 
+
+
+
+
+== Phony targets 
+
+As previously discussed, phony targets does not generate an output file of the same name. 
+Instead, they describe actions (or any description, really) with a set of instructions. 
+Think of them as a process that is composed of little tasks to be done. 
+
+You can name any phony target you want. 
+One of the most common phony targets used are `build` and `clean`. 
+Then, provoke Make with the target name like `make build` to compile the project and `make clean` to clean up the output. 
+
+Since Make has a simple way of determining whether the target is a file or a phony target, a problem will arise if there's a file with the same phony target name (e.g., `./build`, `./clean`) in the directory. 
+In order to get around this, you can explicitly declare in the makefile which of the rules contain a phony target with the `.PHONY` variable. 
+
+[source, make]
+----
+.PHONY = "build clean"
+
+build:
+    # build stuff
+
+clean:
+    # clean stuff
+----
+
+
+
+
+== Variables 
+
+**Variables** (or **macros**) in Make are simple. 
+It simply needs an identifier, a value, and an equal sign (`=`) to separate them. 
+
+[source, make]
+----
+foo = "dogsquared"
+__flag__ = 2
+----
+
+The identifier can be any string of characters as long as it does not contain one of the reserved symbols (e.g., `:`, `#`) and whitespaces. 
+
+The value can be any string as long as it is properly formatted. 
+As you may inducted, Make can only have strings as the data type. 
+
+You have multiple ways to refer to a Make variable. 
+It can be done by prepending the identifier with a dollar sign (`$`) and either surrounding the identifier with a pair of parenthesis (`()`) or braces (`{}`). 
+Referring a variable with a single dollar sign (`$`) is also possible but it is strongly discouraged (except in certain variables). 
+
+[source, make]
+----
+$(foo) # this is OK
+${foo} # this, too
+$foo # nah
+----
+
+Variables in Make can come from different places such as the command line arguments, environment variables, and inside of the makefile. 
+
+Declaring variables from command line arguments is simple enough as you would declare a Make variable—e.g. `make foo=VALUE bar=VALUE2 target`. 
+
+Environmental variables are detected by Make so there's no need for additional actions or anything. 
+Simply refer to them as such (e.g. `$(PATH)`) and Make will be able to know it just fine. 
+
+Variables from various places also have different priorities. 
+
+Here is a list of variable sources with the priority starting from the most prioritized. 
+
+. Explicitly overriden variables—these are variables defined with the `override` keyword. 
+. Command line arguments. 
+. Defined variables in the makefile. 
+. Environmental variables. 
+. Make built-in variables. 
+
+
+
+
+== Automatic variables
+
+It would be great if Make provides an interface to easily update a part of the rule such as the name of the target and the prerequisite in your recipe. 
+Fortunately, Make exactly provides that through automatic variables. 
+
+Automatic variables let you easily refer to certain parts of the rule—eliminating manual updating in the process. 
+
+Here's an example of a rule using an automatic variable. 
+
+[source, make]
+----
+output.txt : input.txt 
+    cp $< ~/log/$@
+----
+
+It simply tells Make to copy `input.txt` to `~/log/output.txt`. 
+Even if you would change either the target or the dependency, it would require no more than changing the first line of the rule. 
+
+Below is a table of selected variables for quick references. 
+As previously hinted, the use of a single dollar sign is discouraged. 
+However, it is acceptable to use automatic variables with it. 
+
+[cols="2*", options="header"]
+|===
+| Variable 
+| Description
+
+| `$@` 
+| The name of the target output file. 
+
+| `$<` 
+| The name of the first prerequisite. 
+
+| `$^`
+| The names of the prerequisites separated with a space. 
+
+| `$+`
+| Similar to `$^` except duplicated prerequisites also appear. 
+
+| `$?` 
+| The names of the prerequisites newer than the target. 
+Also useful in explicit rules where newer inputs are needed. 
+
+| `$*` 
+| The name of the target without the file extension and preceding directory. 
+Also known as the stem. 
+If the target is `path/to/file.s` then the stem is `file`. 
+
+|===
+
+
+
+
+== Functions 
+
+Make also provides built-in functions for making life easier. 
+Most of them are for transforming text and file paths. 
+
+Invoking functions have the same syntax as referring variables except it needs at least two strings. 
+
+[source, make]
+----
+$(function arguments...)
+----
+
+Inside of the function call, you can refer to variables as well (e.g., `$(function argument1 $(foo))`). 
+
+Here is a table of selected functions with their descriptions. 
+This is just a small percentage of the whole set. 
+See more of your options from the official documentation. 
+
+[cols="4*", options="header"]
+|===
+| Name 
+| Description
+| Syntax
+| Example 
+
+| `subst`
+| Accepts a string, finds a substring from the given pattern, and replaces the valid substrings with the given replacement pattern. 
+| `$(subst from,to,string)`
+| `$(subst the,ZE,The quick brown fox jumps over the lazy dog.)`
+
+| `strip`
+| Simply strips the trailing and leading whitespace from the given string. 
+| `$(strip string)`
+| `$(strip The quick brown fox jumps over the lazy dog.)`
+
+| `findstring`
+| Searches for the given substring from a string. 
+| `$(findstring pattern,string)`
+| `$(findstring fox,The quick brown fox jumps over the lazy dog.)`
+
+| `dir` 
+| Extracts the directory name from the last slash (`/`). 
+If the path has no slash, it will return `./`. 
+| `$(dir paths...)`
+| `$(dir path/to/nirvana path/to/heck/lol)`
+
+| `notdir` 
+| Similar to `dir` except it extracts the last part of the path. 
+| `$(notdir paths...)`
+| `$(notdir path/to/nirvana path/to/heck/lol)`
+
+| `suffix` 
+| Extracts the file extension starting from the last period (`.`). 
+| `$(suffix paths...)`
+| `$(suffix path/to/nirvana path/to/heck/lol)`
+
+| `basename` 
+| Extracts all except the suffix. 
+| `$(basename paths...)`
+| `$(basename path/to/nirvana path/to/heck/lol)`
+
+|===
+
+
+
+
+== Built-in rules 
+
+Make also provides some built-in rules (or implicit rules) that can come in handy. 
+
+One of the more common use case is compiling http://www.open-std.org/jtc1/sc22/wg14/[C] and https://isocpp.org/[C++] files. 
+
+If you have a C file, say `double-linked-list.c`, you can let Make do the compiling with `make double-linked-list`. 
+It will then search for a file and execute the associated recipe. 
+
+Do note that Make mainly checks for the file extension. 
+With C files, for example, it searches for files that end in `.c`. 
+For C++ files, it searches for files with the extension `.cc` or `.cpp`. 
+
+This does not only effective for C and C++ files, it can also compile https://freepascal.org/[Pascal] and https://wg5-fortran.org/[Fortran] programs in the same way. 
+
+
+=== Pattern rules 
+
+Fortunately, Make lets us define implicit rules in the same way as the default ones with **pattern rules**. 
+
+Here's an example of a pattern rule that will automatically compile an https://asciidoctor.org/[Asciidoctor] document into an HTML file or a PDF file in the same directory. 
+
+[source, make]
+----
+%.html : %.adoc
+    asciidoctor --attribute toc $< --out-file $@
+
+%.pdf : %.adoc
+    asciidoctor --attribute toc $< --backend pdf --out-file $@
+----
+
+To compile an Asciidoctor document from `path/to/the/adoc/file.adoc` into an HTML file in the same directory, invoke Make with `make path/to/the/adoc/file.html`. 
+
+Compared to a normal rule, a pattern rule has its target and the dependencies contain one and only one percentage sign (`%`) representing the base file name. 
+The character `%` matches any nonempty substring and can only match against the target base file name. 
+Meaning with a certain rule with `%.html : %.adoc` and `path/to/the/adoc/file.html` as the target will match `path/to/the/adoc/file.adoc` only. 
+
+Creating implicit rules requires some knowledge of automatic variables since inputs and outputs are unknown. 
+See the <<Automatic variables>> for more information. 
+
+
+
+
+== Appendix 
+
+https://www.gnu.org/software/make/[GNU Make official website]:: 
+Self-explanatory description is self-explanatory. 
+
+https://www.gnu.org/software/make/manual/[GNU Make manual]:: 
+The official documentation of GNU Make. 
+It comes in various formats from HTML to PDF. 
+
+https://learnxinyminutes.com/docs/make/[_Learn Make in Y Minutes_]:: 
+The entry for Make by the https://learnxinyminutes.com[Learn X in Y Minutes] community. 
+It explains the basics in a practical way which I definitely appreciate. 
+

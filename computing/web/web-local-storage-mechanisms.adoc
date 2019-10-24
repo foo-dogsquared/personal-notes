@@ -1,0 +1,175 @@
+= Web local storage mechanisms 
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-10-19
+
+As obvious as it is, the web pages are commonly used alongside a web browser. 
+With HTTP and the nature of HTML documents, you cannot do much to push local persistent data. 
+The primary way of storing data is through cookies (which is also later discussed in this note). 
+
+However, as technology marches on, a standard set of methods been conceptualized and implemented by the major vendors in the web browser market. 
+
+This note lightly inspects the common modern ways of storing persistent web data. 
+
+For future references, here is a list the latest stable versions of the major web browsers as of 2019-10-22. 
+
+[cols="3", options="headers"]
+|===
+
+| Name
+| Latest version 
+| Notes
+
+| Chrome 
+| 77.0.3865  
+| 
+
+| Edge 
+| 44.18362.387.0
+| 
+
+| Firefox 
+| 70.0 
+| 
+
+| Opera 
+| 64.0.3417.61
+| 
+
+|===
+
+
+
+
+== Cookies 
+
+A web cookie is a small piece of data usually sent by the server and stored by the client. 
+
+Here's an example of a cookie. 
+
+[source, cookie]
+----
+name=foo-dogsquared; session_id=48293; _gid=IDKWhatIsAGID
+----
+
+It is simply a string of key-value objects delimited by a semicolon (`;`). 
+
+The cookies are usually created by the server. 
+It is made possible with HTTP, specifically with the HTTP header `Set-Cookie`. 
+
+[source, http]
+----
+HTTP/2 200 OK
+Content-Encoding: gzip
+Accept-Ranges: bytes
+Content-Type: text/html; charset=UTF-8
+Content-Length: 648
+Set-Cookie: name=foo-dogsquared
+Set-Cookie: session_id=48293
+Set-Cookie: _gid=IDKWhatIsAGID
+----
+
+After the cookie has been stored by the browser, it will be included as part of the request until it expires or being deleted by user request. 
+Usually, it is included in HTTP requests in the `Cookie` header. 
+
+[source, http]
+----
+GET / HTTP/2
+Host: example.com
+Cookie: name=foo-dogsquared; session_id=48293; _gid=IDKWhatIsAGID
+----
+
+Since cookies are simply embedded in the request in an HTTP header, it can be created on the client as well. 
+
+Major web browsers also let you properly create a cookie with JavaScript by using the https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie[`document.cookie`] property. 
+
+[source, javascript]
+----
+document.cookie = "favorite_color=skyblue"
+
+console.log(document.cookie)
+// favorite_color=skyblue; name=foo-dogsquared; session_id=48293; _gid=IDKWhatIsAGID
+----
+
+Cookies has been the traditional way of putting stateful information with each request-response pair are independent and isolated. 
+
+Cookies has several purposes but it can be summarized to mainly three: session management, user configured values, and user tracking. 
+
+Basically, cookies are the (temporary) ID of the client for a website. 
+The ID contains relevant information that is being inspected by the web application. 
+
+
+
+
+== Web storage 
+
+Aside from cookies, web browsers supports storing local persistent data with web storage. 
+
+Unlike cookies, storing through web storage is more intuitive and easier to deal with. 
+It is also larger in the maximum size limit that easily reaches up to megabytes on modern web browsers. 
+
+Setting data in the web storage also prevents attaching the data to every request. 
+Thus, it saves some bandwidth in the process. 
+Though it is only an affordable option for certain situations such as web applications that can work offline and doesn't rely much on server. 
+
+That said, the cookies and web storage are used differently. 
+Back then, web applications store all of the offline data on the cookies but it has been mostly handled by the web storage. 
+In other words, cookies are for relevant server data while web storage is for offline application data. 
+
+Similar to cookies, there are two types of web storage: the session storage and the persistent storage. 
+
+The session storage — usually accessible as `document.sessionStorage` — as its name indicates, has its data last until the browser session is closed. 
+
+The persistent storage — mainly called as `document.localStorage` — has its data to stored until one of the limits for web storage (differs between browsers) has been reached or the user requested for clearing the web storage. 
+
+
+
+
+== IndexedDB 
+
+IndexedDB is a low-level key-value database for storing data through indexes as indicated by its name. 
+
+IndexedDB is the latest additional method of storing application data as of 2019-10-23. 
+It has been https://www.w3.org/TR/IndexedDB/[standardized by the W3C] and https://caniuse.com/#feat=indexeddb[supported on modern web browsers]. 
+
+As of 2019-10-23, IndexedDB is at version 2.0 and https://w3c.github.io/IndexedDB/[there's a revision coming along the way]. 
+It is https://caniuse.com/#feat=indexeddb2[sufficiently supported by modern browsers] and its usage is gradually increasing among the web market. 
+One of the popular web apps that I know that extensively use IndexedDB is https://devdocs.io/[DevDocs] for the offline reading of the documentations. 
+
+Compared to cookies and web storage, IndexedDB is functionally the same: it is used to store data on your browser. 
+However, in terms of scale and flexibility, IndexedDB is superior. 
+
+IndexedDB can also store not only strings but all valid JavaScript data including https://developer.mozilla.org/en-US/docs/Web/API/Blob[blobs]. 
+Thus, it is advantageous to power https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps[progressive web apps] (PWA) for the offline functionality and bigger offline application data. 
+
+IndexedDB is also asynchronous in nature and has built-in integration with https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers[web workers]. 
+footnote:[Although you can set most web storage to asynchronous code with https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise[promises].]
+
+It is indeed a powerful tool leveraging web applications to another level comparable to desktop apps. 
+footnote:[However, it is more tedious to use being a low-level tool and all where you have the full control of things.] 
+
+
+
+
+== Web cache
+
+A cache in computer programming is a local store for your applications. 
+It is used for speeding up certain processes. 
+
+A real-life example of using cache is https://nodejs.org/[Node.js] where imported modules are only done once while making it a cache in the process. 
+Any further import calls use the cache. 
+
+https://www.python.org/[Python] modules also uses similar approach for importing modules. 
+
+A web cache is simply the local store used by the web browser. 
+
+The web cache is used to speed up the process of loading a web page and save some bandwidth for the user. 
+Compared to visiting a website for the first time, reloading pages are faster because the browser use the cache instead of downloading it again. 
+
+How the web browser adds to the cache depends on the implementation but what's common among them is that they save what they think the common assets such as the webpage and favicons. 
+While using a web cache is good, it may also present some problems when changes occurred in the web applications. 
+
+A minor example is when the favicon changed and the changes is not effective until the cache has been cleared or expired. 
+Though modern browsers does smarter checking for cache content. 
+
+Web applications can also take advantage of the web cache through the https://developer.mozilla.org/en-US/docs/Web/API/Cache[Cache API]. 
+It is mostly used alongside service workers to save the resources for offline use. 

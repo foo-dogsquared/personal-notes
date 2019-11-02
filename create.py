@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-import os
-import subprocess
 import sys
 import argparse
 import re
@@ -28,10 +26,6 @@ def kebab_case(string, separator="-"):
 
 
 def create_new_note(title, path):
-
-  if path.endswith(".adoc") is False:
-    path += ".adoc"
-
   title_filename = kebab_case(title)
   if path is None:
     path = title_filename + ".adoc"
@@ -39,7 +33,8 @@ def create_new_note(title, path):
   path = Path(path)
 
   if path.is_dir():
-    path = path / (title_filename + ".adoc")
+    title_path = title_filename + ".adoc"
+    path = path / title_path
 
   with open(path, mode="w+") as new_note:
     today = datetime.today()
@@ -61,4 +56,3 @@ def cli(args):
 
 if __name__ == "__main__":
   cli(sys.argv)
-  

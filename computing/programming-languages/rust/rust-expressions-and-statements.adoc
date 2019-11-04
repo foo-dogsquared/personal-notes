@@ -1,0 +1,167 @@
+= Rust expressions and statements
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-11-04
+
+
+The syntax of Rust is pretty simple although it has the difference of being overly strict about it. 
+
+Similar to the definitions from other programming languages and mathematics, Rust is an expressional language. 
+This note tackles the expressions and statements of Rust based on the similarities with other languages like C++ and JavaScript. 
+
+
+
+
+== Expressions 
+
+Being an expressional language, it features https://doc.rust-lang.org/reference/expressions.html[**expressions**]. 
+An expression is an element where it is evaluated to a single value. 
+
+.Many examples of an expression
+[source, rust]
+----
+2 
+"This is a string"
+true
+2 + 3 // evaluates to 5 
+!(2 <= 3) // evaluates to `false`
+----
+
+As you have seen from the example code listing, an expression can be a single value which evaluates to itself. 
+It also includes other expressions, also known as **subexpressions**. 
+
+The subexpressions are often made of keywords and operators with their operands. 
+They differ in meaning and properties such as the number and order of the operands, the syntax, and the precedence. 
+
+
+
+
+== Statements 
+
+With the expressions in place, we can then put them in a **statement** which is the most atomic and independent element in a language like Rust and C++. 
+A statement is the equivalent of sentences for natural languages like English which forms a complete idea. 
+Similarly, a statement forms a complete operation. 
+
+Unlike expressions, statements don't evaluate to a value. 
+
+According to the https://doc.rust-lang.org/reference/statements.html[official reference], Rust has two kinds of statements: **declaration statements** and **expression statements**. 
+
+Declaration statements introduce items in a module (or a namespace). 
+An example of declaration statements are variable declarations and function definitions. 
+
+.Examples of declaration statements
+[source, rust]
+----
+// variable declarations
+let v: i64;
+
+// variable initializations
+let i: i64 = 53;
+
+// function definitions
+fn add(x: i32, y: i32) -> i32 { x + y }
+
+// macro invocations
+println!("Hello");
+----
+
+Expression statements are self-explanatory. 
+They are expressions that can stand alone and has its evaluated value ignored. 
+
+[source, rust]
+----
+2 + 3;
+true;
+"This is now an expression statement";
+----
+
+Generally, a statement is usually denoted with a semicolon at the end of it. 
+
+Unlike C++ or JavaScript, there is no implicit semicolon insertion since Rust encourages you to be explicit about it. 
+In other words, the compiler will complain if you have missing or misplaced semicolons somewhere in your code. 
+
+[source, rust]
+----
+// This will work accordingly since the implicit return statement is an expression
+fn add(x: i32, y: i32) -> i32 {
+    x + y
+}
+
+// This will not work since the only line is a statement and its value is ignored
+fn add(x: i32, y: i32) -> i32 {
+    x + y;
+}
+----
+
+
+
+
+== Blocks 
+
+On most programming languages, a block is a group of statements. 
+In a way, it is comparable to paragraphs for natural languages. 
+
+Similar to C-style languages, a block in Rust is delimited with a pair of curly brackets (`{}`). 
+Inside of a block are statements, declarations, or another block. 
+Any declarations within the block can only have a maximum reach of its origin block and its inner blocks. 
+
+Once the program passes through the block, the declarations (such as variables) will go out of scope. 
+As you might have seen from a mile away, this is useful for namespacing your code. 
+
+[source, rust]
+----
+let i: i64 = 3;
+
+{
+    let i: i64 = 1;
+    println!("{}", i);
+}
+
+{
+    let i: i64 = 42;
+    println!("{}", i);
+}
+
+println!("{}", i);
+----
+
+Aside from avoiding potential namespacing conflicts, blocks in Rust have another interesting property: it can evaluate a value from an optional final expression. 
+With this property, a block is an expression itself! 
+In fact, the reference does list a https://doc.rust-lang.org/reference/expressions/block-expr.html[block as an expression]. 
+
+In other words, you can declare a variable like the following code listing. 
+
+[source, rust]
+----
+let i: i64 = {
+    function_1();
+    
+    let x: i64 = 3;
+    let y: i64 = 7;
+
+    x + y
+};
+----
+
+This also explains how function declarations return a value. 
+
+[source, rust]
+----
+// This is a block expression with a final expression
+fn add(x: i32, y: i32) -> i32 {
+    x + y
+}
+
+// This is a block expression without a final expression which is why the function will return nothing (and the compiler will complain about it)
+fn add(x: i32, y: i32) -> i32 {
+    x + y;
+}
+----
+
+
+
+
+
+== Appendix 
+
+https://doc.rust-lang.org/reference/statements-and-expressions.html[_Statements and expressions_ from the official reference]:: 
+A section on the official reference that describes the statements and expressions of Rust. 

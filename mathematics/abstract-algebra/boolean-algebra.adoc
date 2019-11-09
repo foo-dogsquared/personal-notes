@@ -1,0 +1,318 @@
+= Boolean algebra 
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-11-09
+
+
+In this note, it tackles the basics of boolean algebra commonly found in electronic systems and engineering. 
+
+
+
+
+== What is boolean algebra? 
+
+Boolean algebra is defined as a branch of algebra involving only two values. 
+
+It has its use on several fields. 
+For mathematics, it is used for making logical statements which in turn help in creating proofs. 
+For electronics and engineering, it is used to abstract designing circuits and systems with logic gates. 
+
+Boolean algebra also makes up the foundational concepts for https://en.wikipedia.org/wiki/Propositional_logic[propositional logic] which in turn helps in other fields such as computer programming. 
+
+Most importantly, boolean algebra is used in simplifying any procedures from lawmaking to menial decision making. 
+It also encourages certain aspects such as critical thinking and designing systems easier to manage. 
+
+
+
+
+== Boolean values 
+
+As previously stated, boolean algebra fundamentally works with only two values. 
+As such, the two values are often referred to as 0 and 1. 
+They may also be referred to as the false and true value, respectively. 
+Because of the naming conventions, they can be collectively referred to as **truth values**. 
+
+For the purpose of this note, we'll be referring to the pair of values as their numerical counterpart to easily comprehend the concepts to be discussed. 
+
+The key to understanding boolean algebra is the fact that you're working with two and only two values. 
+
+
+
+
+== Boolean arithmetic 
+
+Like elementary algebra, boolean algebra has a set of fundamental operations. 
+These primary operations include the **conjunction** (stem:[\land]), **disjunction** (stem:[\lor]) and **negation** (stem:[\neg]). 
+
+**Conjunction** — may be known as the AND operator — is a boolean operation where the output is 1 when all of the given values is 1. 
+Conversely, the output will be 0 if one of the values is 0. 
+
+Formally, we may represent the conjunction operator with a wedge (stem:[\land]), an ampersand (stem:[\&]), or a dot (stem:[\cdot]). 
+
+The process of conjunction needs at least two values to compare similar to the elementary arithmetic operations like addition and multiplication. 
+
+[stem]
+++++
+1 \land 1 \implies 1
+0 \land 0 \implies 0 
+
+1 \land 1 \land 0 \implies 0
+1 \land 1 \land 1 \implies 1
+++++
+
+Since the scope of boolean algebra is quite small compared to the algebra we've all known, we can list out all of the possible combinations from the number of the given values. 
+The list of possible outcomes may be referred to as the **truth table**. 
+
+Here's a truth table where we list out the possible combinations of conjunction between two values. 
+The values are labelled as stem:[X] and stem:[Y]. 
+
+[cols="3*"]
+|===
+| stem:[X] 
+| stem:[Y] 
+| stem:[X \land Y] 
+
+| 0 
+| 0 
+| 0 
+
+| 1 
+| 0 
+| 0 
+
+| 0 
+| 1 
+| 0 
+
+| 1 
+| 1 
+| 1 
+
+|===
+
+Next on the list is disjunction. 
+
+**Disjunction** is a boolean operation where the boolean value can only be 0 if the values given are all 0. 
+Conversely, the output will be 1 if one of the values is 1. 
+It has the V symbol (stem:[\lor]) and it may be referred to as the OR logical operator. 
+
+In other cases, you may see the disjunction operator is represented with a pair of parallel lines (stem:[\parallel]) or a plus sign (stem:[+]). 
+
+Similar to conjunction, the process of disjunction needs at least two values to compare. 
+
+[stem]
+++++
+1 \lor 1 \implies 1
+0 \lor 0 \implies 0
+
+1 \lor 1 \lor 0 \implies 1 
+1 \lor 0 \lor 0 \implies 1
+0 \lor 0 \lor 0 \implies 0
+++++
+
+For an example, let's formally list out all of the truth conditions of the OR operation with two labelled values, stem:[X] and stem:[Y]. 
+
+[cols="3*"]
+|===
+| stem:[X] 
+| stem:[Y] 
+| stem:[X \lor Y] 
+
+| 0 
+| 0 
+| 0 
+
+| 1 
+| 0 
+| 1
+
+| 1 
+| 0 
+| 1 
+
+| 1 
+| 1 
+| 1
+
+|===
+
+Lastly but certain not the least important on the list of elementary operations, we have negation. 
+
+**Negation** — may be referred to as the NOT operator — is a boolean operation where we simply flip a boolean value to its opposite value. 
+
+To formally refer to the operation, we may use the logical not operator (stem:[\lnot]), the tilde (stem:[\sim]), or the exclamation mark (stem:[!]). 
+If you've a familiar background with programming, you may notice that it does use similar symbols (`&`, `||`, `!`). 
+
+Anyway, unlike conjunction and disjunction, the process of negation only needs one value. 
+Thus, the truth table is smaller than the rest. 
+
+[cols="2*"]
+|===
+| stem:[X] 
+| stem:[\not(X)] 
+
+| 0 
+| 1 
+
+| 1 
+| 0 
+
+|===
+
+As you might intuitively suspect, there are compound operators which basically combines the elementary operations to make a new one. 
+These are used since certain operations are quite common that they have to make a new unit of operation for it. 
+Certain examples include the **exclusive disjunction**, the **nand** (not and), and the **nor** (not or). 
+You may look into it later but let's focus on the road for now. 
+
+
+
+
+== Boolean expressions and functions 
+
+Now that our rudimentary tools are in place, let's state the obvious and important things. 
+
+First, operators produce boolean values and only boolean values. 
+
+[stem]
+++++
+A \land B = X \text{ where $X$ \in \{ 0, 1 \}  }
+
+\lnot(A) = X 
+++++
+
+Second, being operators, we can combine them. 
+With the first obvious item, this means we also combine resulting values. 
+
+[stem]
+++++
+A \land B (\lnot(C) \lor \lnot(B))
+++++
+
+Similarly to the algebraic system, we also have expressions and functions for boolean algebra. 
+They are basically the same thing except it is suited for the system of boolean values. 
+
+.Examples of boolean functions
+[stem]
+++++
+f(x) = x \lor \lnot(x)
+g(x) = x \land (x \land \lnot(x))
+h(x) = f(x) || g(x)
+++++
+
+
+
+
+== Basic postulates and theorems
+
+Boolean algebra, like most of the mathematical systems, has a set of postulates to begin with. 
+
+It is useful to know the foundational statements in order to do advanced operations while complying with the system. 
+Conversely, most of the expressions and operations you'll observe can be reduced into deductions from these basic operations. 
+
+* **Commutativity** - A property of a binary operator that the output never changes if the order of the operands change. In other words, a binary operator stem:[*] is commutative if stem:[A * B = B * A]. 
+* **Associativity** - A property of a binary operator that the output stays the same even if the order of the operations change. A binary operator stem:[*] is associative if stem:[(A * B) * C = A * (B* C)]. 
+* **Distributivity** - A property of binary operators where certain operators can be distributed making the expression composed of smaller expressions. Binary operators stem:[*] and stem:[+] are said to be distributive if stem:[A * (B + C) = (A * B) + (A * C)]. 
+* **Identity** - A boolean value stem:[I] is said to be the identity element of the boolean operator stem:[*] if stem:[A * I = I]. A common example of an identity is the boolean value stem:[x] in the set (stem:[0] and stem:[1]) where stem:[x \land x = x]. 
+
+You can deduce all of the theorems and valid observations that have been proved on multiple occasions. 
+However, it is pretty handy to know some of them for a headstart. 
+
+One of the most common and important theorems to know (especially if you dabble on engineering) is the **De Morgan's Laws**. 
+It describes the relationship of the opposites of the values. 
+To put it mathematically, here are the equations. 
+
+[stem]
+++++
+\lnot(A \land B) = \lnot(A) \lor \lnot(B)
+
+\lnot(A \lor B) = \lnot(A) \land \lnot(B)
+++++
+
+
+
+
+== Evaluating boolean expressions 
+
+Like how we evaluate expressions in the mathematical system that we're used to, evaluating boolean expressions have a variety of purposes including simplifying it whereas possible, proving a value is true, and breaking it down to a single boolean value. 
+
+Here's an example where we want to simplify the expression: 
+
+[stem]
+++++
+\lnot(\lnot(A) \land (A \land \lnot(B)))
+++++
+
+We can see De Morgan's Law in place in here. 
+We just have to visualize the expressions accordingly. 
+In this case, I interpreted that stem:[\lnot(A)] is the first part and stem:[A \land \lnot(B)] as the second part. 
+
+[stem]
+++++
+\lnot(\lnot(A)) \lor \lnot(A \land \lnot(B))
+++++
+
+We can simplify it further. 
+Let's address the obvious one: the part with the double negation. 
+Even if we did not specify it explicitly, you can intuitively verify the value that a value is equivalent to a doubly negated value of itself. 
+This is known as the **double negation law**. 
+
+The second expression from the derivation of De Morgan's Law has resulted in another expression that can be applied with the same observation. 
+So we'll apply De Morgan's Law on it as well resulting in the following expression. 
+
+[stem]
+++++
+A \lor (\lnot(A) \lor \lnot(\lnot(B)))
+++++
+
+We can see another value that is doubly negated so we'll simplify it. 
+The resulting expression looks like the following. 
+
+[stem]
+++++
+A \lor (\lnot(A) \lor B)
+
+(A \lor \lnot(A)) \lor B
+++++
+
+Take note that we can apply the associative law in here. 
+I simply rearranged the group with the same variable for easily. 
+
+We can simply stop here with the variables retaining. 
+However, as you might see, it can be simplified further. 
+
+Let us look at the first grouping of the expression, stem:[(A \lor \lnot(A))]. 
+This is another one of the postulates that we did not list explicitly but we can easily verify it. 
+Basically, in a disjunction (the OR operator) with the complement (stem:[\lnot(A)]), it will always result in 1. 
+(Conversely, in a conjunction (the AND operator) with the complement will always result in 0.) 
+
+Now, the expression is stem:[1 \lor B]. 
+We can easily see the resulting expression from this. 
+Remember that a conjunction will output 1 if either of the operands is 1. 
+The value of stem:[B] does not matter anymore since one of them is explicitly 1. 
+
+The final expression now is simply stem:[1]. 
+
+Here is the original expression wrapped as a function with its simplifications. 
+
+[stem]
+++++
+f(A, B) = \lnot(\lnot(A) \land (A \land \lnot(B))) 
+
+f(A, B) = (A \lor \lnot(A)) \lor B 
+
+f(A, B) = 1 
+++++
+
+Basically, every combination of values plugged in the function will result in 1. 
+
+
+
+
+== Appendix 
+
+https://www.allaboutcircuits.com/textbook/digital/chpt-7/[_Boolean Algebra_ from "All About Circuits textbook", Volume 4]:: 
+A chapter devoted to boolean algebra from the https://www.allaboutcircuits.com/textbook/[All About Circuits textbook]. 
+Even if you don't have a background with electronics, this reference can help you gain intuition with boolean algebra. 
+
+https://en.wikibooks.org/wiki/Abstract_Algebra/Boolean_algebra[_Boolean Algebra_ from "Abstract Algebra" Wikibook]::
+A chapter on the boolean algebra with a more mathematical explanation. 
+

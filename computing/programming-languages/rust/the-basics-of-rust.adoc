@@ -1,0 +1,456 @@
+= The basics of Rust
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-10-26
+
+This note will lightly review the rudimentary knowledge when it comes to the https://www.rust-lang.org/[Rust language] from its syntax and how it differs from other languages. 
+
+For future references, the compiler (rustc) version is at `1.38`. 
+
+
+
+
+= What is Rust 
+
+First, we'll have to discuss what is Rust. 
+
+Simply put, Rust is a systems programming language with a static typing. 
+It is developed by Mozilla Research back in 2010 and ever since, it is still developing new features and improving issues. 
+
+Rust is known for having fast performance, safe code, and guaranteed memory safety. 
+Over the past days using it, I think it is because of the strict compiler. 
+It is heavily opinionated and enforces a certain standard. 
+Thankfully, the compiler is pretty good especially when it comes to error reporting. 
+
+Speaking of enforcing certain things, Rust also comes with a standard set of tools and libraries. 
+
+* The compiler which is simply named __rustc__. 
+* The https://doc.rust-lang.org/std/index.html[standard library] which offers a set of low-level interfaces for implementing higher-level implementations and whatnot. 
+* The https://github.com/rust-lang/cargo[package manager], Cargo. 
+* The toolchain installer called https://github.com/rust-lang/rustup.rs[rustup] which enables easy cross-platform installation and version management. 
+* The formatter, https://github.com/rust-lang/rustfmt[rustfmt]. 
+* The documentation generator, rustdoc. 
+* A set of linting standards named https://github.com/rust-lang/rust-clippy[clippy]. 
+
+Besides that, Rust also has a solid versioning system through https://doc.rust-lang.org/nightly/edition-guide/editions/index.html["editions"] similar to C++ standards. 
+
+Rust also comes in two releases: the stable and the nightly version. 
+It is self-explanatory: the stable release is, well, the stable release while the nightly edition is where the experimental features come by and go. 
+
+
+
+
+== How does it compare to other languages 
+
+Between the languages I've been fiddling over the past months, I only felt strong similarities with C and C++ (since it is the only other static programming languages I used so far as of 2019-10-27). 
+
+The biggest and most obvious difference is the how they manage third-party libraries. 
+
+As of 2019-10-27, http://www.open-std.org/jtc1/sc22/wg14/[C] and https://isocpp.org/[C++] does not a standardized way of integrating third-party libraries so everybody manages libraries in their own way. 
+Some of them have developed their own package manager, some of them simply includes the third-party in the repo, others have used CMake, and some of them utilized the version control system as the package manager. 
+Managing third-party in C++ can be like exploring in the Wild West. 
+It is not the worst problem. 
+In fact, it can be "fun" exploring new things but it can be frustrating when starting out with a lot of choices. 
+
+Rust, on the other hand, manages to standardize the third-party code management with https://github.com/rust-lang/cargo[Cargo]. 
+Overall, this enforces developers to stick with the default since it is a first-party tool. 
+
+Having an integrated set of tools also help for Rust. 
+The most helpful example out there is the toolchain installer which it makes installing and managing versions a breeze. 
+
+Rust bears some similarities with C\++ but has a different approach in certain aspects such as the https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html[ownership system] and https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html[borrowing] for memory management. 
+It also https://doc.rust-lang.org/reference/influences.html[takes cues from other languages] such as the "Resource acquisition is initialization" (RAII) principle and smart pointers from C\++, typeclasses from https://www.haskell.org/[Haskell], and attributes from http://sharp.net/[C#]. 
+
+
+
+
+== High-level overview 
+
+Rust is a statically typed systems programming language. 
+
+Being a systems programming language, it offers a low-level interface similar to C. 
+Despite that, you can still easily make high-level code with its (strict) type system. 
+The type system, as far as I can tell, is leaning towards how functional languages (primarily Haskell) work with type systems but that's another point to be discussed on another note. 
+
+Being a statically typed language, you would have to explicitly define variables and their type. 
+Though, it also has a https://doc.rust-lang.org/rust-by-example/types/inference.html[type inference system]. 
+The static typing system also goes with annotating your functions and data structures. 
+
+Another known feature of Rust is the automatic resource management without a garbage collector. 
+It mainly works through its unique system of the ownership and borrowing system. 
+This allows the compiler to insert the appropriate cleanup code at compile-time. 
+
+Rust is heavily known for having a strict enforcement of its principles through the compiler. 
+In other words, you would find yourself getting compile-time errors. 
+
+
+
+
+== Basics  
+
+As previously mentioned, Rust is a statically typed language which means you need to explicitly annotate data types in certain places. 
+(Well, not really which we'll see in a moment.) 
+
+Here's an example of a valid code block in Rust. 
+
+[source, rust]
+----
+<1>
+let integer: i64 = 23;
+let unsigned_integer: u64 = 23;
+let string = "Dogs";
+
+<2>
+fn subtract(x: i32, y: i32) -> i32 {
+    x - y
+}
+
+<3>
+println!("Hello world!");
+println!("I have {} dollars!", integer);
+----
+
+Let's discuss them quickly one at a time.
+
+<1> Variables are declared with the `let` keyword. 
+One of the more interesting features of the compiler is the **type inference**, reducing verbosity and eliminating the need to annotate the type. 
+Though, in some instances, it is still required to declare the type especially with the integers with differing types (i.e., unsigned or not) and sizes (i.e., 64-bit, 32-bit, 8-bit). 
+
+<2> Functions need to explicitly define the parameters and return types which is collectively referred to as the **function signature**. 
+Similarly to variable 
+
+<3> Rust also features **macros** influenced by C++. 
+You can distinguish them with the macro invocation symbol (`!`). 
+Macros are often used for metaprogramming or writing code that writes code (though we don't need to worry about that for now). 
+
+
+
+
+== Concepts  
+
+Rust, with the less historical baggage than say C/C++, has dealt things differently from its inspirations. 
+
+
+=== Mutability 
+
+First, the mutability of the variables and identifiers. 
+By default, all variables are immutable. 
+You cannot change (or mutate) the value and access them from another point. 
+
+In other words, this code will not compile. 
+
+[source, rust]
+----
+// The first complaint from the compiler...
+// There's more to come... Trust me. :)
+let num = 23;
+num = 3;
+----
+
+In order to pass through the compiler, you have to explicitly annotate that the variable is mutable with the `mut` keyword. 
+
+[source, rust]
+----
+let mut num = 23;
+num = 3;
+----
+
+Variables that have internal states (such as structs) cannot be changed by default unless it is mutable. 
+
+[source, rust]
+----
+struct Point {
+    x: i32, 
+    y: i32, 
+}
+
+// This will cause an error unless you have annotated it to be mutable
+let p: Point = Point { x: 2, y: 3 };
+p.x = 345;
+----
+
+
+=== Scopes 
+
+Identifiers in Rust have a limited lifetime throughout the program. 
+Each of them live in a block scope where they are only valid within a block and goes out of scope when the block is passed through. 
+
+[source, rust]
+----
+let mut num = 23;
+num = 3;
+
+{
+    let mut num = 2;
+    println!("{}", num);
+}
+
+println!("{}", num + 2);
+
+// 2
+// 5
+----
+
+One of the more important things to know about scopes is Rust allows variables to own resources similarly to C++ (especially if you're familiar with the https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization[RAII concept]) and Rust cleans up the resource once it goes out of scope. 
+
+The way how Rust was able to achieve cleaning up of resources without a garbage collector is through inserting cleanup code at compile time. 
+footnote:[You can also customize how it works with the https://doc.rust-lang.org/book/ch15-03-drop.html[`Drop` trait].] 
+
+
+=== Ownership 
+
+This is the unique central concept of Rust. 
+
+This is pretty much the reason why Rust was able to compile code with memory safety. 
+
+Some languages allow you to make memory unsafe code. 
+Two of the more common memory-related issues are https://stackoverflow.com/q/17997228[dangling pointers] and https://stackoverflow.com/q/21057393[double frees]. 
+Rust avoids it — though not entirely since you can still write unsafe code — with the ownership system and the strict static analysis of the compiler. 
+
+It will take some time to get used to it especially if you've come from the garbage-collected languages like Python. 
+
+With the ownership system in place, there are some rules to keep in mind. 
+Taken out from the https://doc.rust-lang.org/book/title-page.html[official Rust book], here are the listed rules. 
+
+* Each value in Rust has variable called an **owner**. 
+* A value can have only one owner at a time. 
+* When an owner goes out of scope, the value will be dropped. 
+
+Let's observe it in a practical setting. 
+The following code listing is a seemingly valid Rust code. 
+
+[source, rust]
+----
+let name = String::from("foo-dogsquared");
+
+let a = name;
+
+let b = name;
+----
+
+Initial expectations may be that the variables will hold a pointer similarly to C/C\++. 
+However, if you compile the code, it would cause an error. 
+
+[source, shell]
+----
+error[E0382]: use of moved value: `name`
+   --> src/main.rs:1:13
+    |
+148 |     let name = String::from("foo-dogsquared");
+    |         ---- move occurs because `name` has type `std::string::String`, which does not implement the `Copy` trait
+149 |     let a = name;
+    |             ---- value moved here
+150 |     let b = name;
+    |             ^^^^ value used here after move
+
+error: aborting due to previous error
+----
+
+Since values can only have one owner at any given time, it can be implied that values **move** from an owner to the next which is exactly what Rust is doing. 
+Another interpretation could be get from here is that Rust creates a shallow copy to the assigning variable then invalidates the previous variable. 
+
+By the time that we assign `name` to `a`, the value moved out from `name` to `a` leaving `name` to contain nothing. 
+From the point where we want to assign (or move out) the value from `name` to `b`, `name` contains no value anymore hence the error. 
+
+As your hindsight may call, this changes the way how we think and write about our code. 
+To make the previous code block to be valid and make the compiler happy, we simply assign `b` from `a` instead of `name`. 
+
+It also affects functions in a similar fashion to assignments. 
+Passing variables in a function can move out. 
+
+[source, rust]
+----
+fn takes_ownership(str: String) {
+    println!("{}", str);
+}
+
+fn main() {
+    let str = String::from("foo-dogsquared");
+    
+    takes_ownership(str);
+    
+    println!("{}", str);
+}
+----
+
+There are multiple ways on how to get around this. 
+
+* The ownership of a value can be transferred simply by returning it within the function. 
+The returned value simply moved out of the function. 
+* Pass a reference of the owner and **borrow** it instead. 
+
+**References** are a thing in Rust and can be produced with the ampersand (`&`) similar to C/C\++. 
+
+As previously mentioned, references passed in functions are borrowed which means no transfer of ownership will take place. 
+Another way of thinking borrowing is the real-life example of borrowing: you take an item from its owner then give it back once you're done. 
+
+Similar to variables, references are immutable by default so we cannot modify something that we borrowed. 
+To surpass this, we also need to define the reference as mutable with the `mut` keyword. 
+
+
+
+
+== Advanced data design 
+
+Rust offers various way on designing simple and advanced data. 
+This include **type aliases**, **enumerations** (enums), **structs**, and **traits** among them. 
+
+
+=== Type alias 
+
+Type aliases are similar to C and C++ with the `typedef` alias. 
+As the words describe itself, type aliases are basically names for a particular type. 
+This is mostly used to make the code more readable and less verbose. 
+
+[source, rust]
+----
+type Kilo = i64;
+type Mega = i64;
+type Giga = i64;
+
+let bytes: Kilo = 34;
+----
+
+
+=== Enumerations 
+
+Enumerations are similar to C\++: they allow you to set elements to a data set. 
+This is more useful for allowing only a limited amount of values. 
+
+[source, rust]
+----
+enum ColorModel {
+    RGB, 
+    HSL, 
+    Hex, 
+    Name, 
+}
+----
+
+Rust also allows setting a value within an enum variant. 
+
+[source, rust]
+----
+enum ColorModel {
+    RGB(u8, u8, u8), 
+    HSL(u8, u8, u8), 
+    Hex(String), 
+    Name(String), 
+}
+
+let rgb = ColorModel::RGB(0, 34, 23);
+let hsl = ColorModel::HSL(3, 32, 231);
+let hex = ColorModel::Hex(String::from("FFEEFF"));
+----
+
+
+=== Structs 
+
+Structs allow you to structure a bunch of primitive data into one unit of data. 
+In other words, it allows you to name certain parts of data. 
+
+However, Rust has various ways to structure your data. 
+
+The first is the https://en.wikipedia.org/wiki/Struct_(C_programming_language)[classic C structs]. 
+
+[source, rust]
+----
+struct Point {
+    x: i32, 
+    y: i32, 
+}
+----
+
+You can also have named tuples and unit structs as well. 
+
+[source, rust]
+----
+struct ZPoint(i32, i32, i32);
+
+struct Type;
+----
+
+
+=== Traits 
+
+Traits — may be known as interfaces in other languages — enable a way to share methods between different types. 
+
+This is useful for implementing unified set of methods between different abstracts. 
+It can also serve the same purpose (though dealt differently) with the conventional inheritance-based abstractions like defining classes and their methods. 
+
+Creating a trait requires the `trait` keyword. 
+Let's see an example. 
+
+[source, rust]
+----
+pub trait Organism {
+    fn genus(&self) -> String;
+    fn species(&self) -> String;
+    fn nomenclature(&self) -> String;
+}
+----
+
+In order to attach a trait to a type, you just need to declare it similarly with the `impl` keyword and implement the trait methods. 
+
+[source, rust]
+----
+struct Dog {
+    genus: String, 
+    species: String, 
+    breed, String, 
+}
+
+impl Organism for Dog {
+    fn genus(&self) -> String {
+        self.genus
+    }
+
+    fn species(&self) -> String {
+        self.species
+    }
+
+    fn nomenclature(&self) -> String {
+        format!("{} {}", self.genus, self.species)
+    }
+}
+----
+
+Traits can also have no defining methods at all. 
+
+Traits are not only useful for defining shared behaviors, they are also useful for narrowing parameters with unknown type. 
+
+[source, rust]
+----
+fn create_nomeclature_entry(organism: impl Organism) -> Result<(), Box<dyn std::error::Error>> {
+    // insert code here
+}
+----
+
+In the code listing, the function simply accepts anything with the `Organism` trait. 
+Otherwise, it would cause a compile-time error. 
+
+
+
+
+== Conclusion
+
+Unlike the conventional object-oriented languages like C/C\++, Java, and Python, Rust has more influence from functional languages like Haskell or OCaml so object-oriented programming is in the sidetracks. 
+The capacity to create low-level software with high-level code certainly makes Rust a great tool. 
+Learning Rust certainly requires a different mindset and it can take a while before getting used to it (I'm still not getting used to it). 
+
+When you pass the initial hurdle, that's when the party will start with the https://doc.rust-lang.org/nightly/nomicon/[Rustonomicon] and provide more options to create outstanding programs (maybe). 
+
+
+
+
+== Appendix 
+
+https://learnxinyminutes.com/docs/rust/[Learn Rust in Y Minutes]:: 
+A https://learnxinyminutes.com/[Learn X in Y Minutes] entry on the Rust language. 
+It can be a good introductory example but I find some of its sections to rush on the topics. 
+Also, its introduction is just scratching the surface which is why I recommend to go with the official sources. 
+
+https://www.rust-lang.org/learn[Rust official documentation]:: 
+Contains pointers to starting (and some advanced) resources you can start reading into. 
+Really, one of the nicest things on Rust is the documentation. 
+
+

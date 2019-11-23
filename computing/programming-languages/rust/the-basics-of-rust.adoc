@@ -9,14 +9,14 @@ For future references, the compiler (rustc) version is at `1.38`.
 
 
 
-= What is Rust 
+== What is Rust 
 
 First, we'll have to discuss what is Rust. 
 
 Simply put, Rust is a systems programming language with a static typing. 
 It is developed by Mozilla Research back in 2010 and ever since, it is still developing new features and improving issues. 
 
-Rust is known for having fast performance, safe code, and guaranteed memory safety. 
+Rust is known for having fast performance, safe code, and guaranteed memory safety (well, not really on the last part). 
 Over the past days using it, I think it is because of the strict compiler. 
 It is heavily opinionated and enforces a certain standard. 
 Thankfully, the compiler is pretty good especially when it comes to error reporting. 
@@ -45,7 +45,7 @@ Between the languages I've been fiddling over the past months, I only felt stron
 
 The biggest and most obvious difference is the how they manage third-party libraries. 
 
-As of 2019-10-27, http://www.open-std.org/jtc1/sc22/wg14/[C] and https://isocpp.org/[C++] does not a standardized way of integrating third-party libraries so everybody manages libraries in their own way. 
+As of 2019-10-27, http://www.open-std.org/jtc1/sc22/wg14/[C] and https://isocpp.org/[C+\+] does not a standardized way of integrating third-party libraries so everybody manages libraries in their own way. 
 Some of them have developed their own package manager, some of them simply includes the third-party in the repo, others have used CMake, and some of them utilized the version control system as the package manager. 
 Managing third-party in C++ can be like exploring in the Wild West. 
 It is not the worst problem. 
@@ -53,8 +53,9 @@ In fact, it can be "fun" exploring new things but it can be frustrating when sta
 
 Rust, on the other hand, manages to standardize the third-party code management with https://github.com/rust-lang/cargo[Cargo]. 
 Overall, this enforces developers to stick with the default since it is a first-party tool. 
+Rust also makes sure to have a great support for third-party code by having a centralized repository with https://crates.io/[crates.io] similar to https://www.npmjs.com/[npm] for Node. 
 
-Having an integrated set of tools also help for Rust. 
+Having an integrated set of tools definitely help for Rust to gain steam. 
 The most helpful example out there is the toolchain installer which it makes installing and managing versions a breeze. 
 
 Rust bears some similarities with C\++ but has a different approach in certain aspects such as the https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html[ownership system] and https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html[borrowing] for memory management. 
@@ -72,8 +73,8 @@ Despite that, you can still easily make high-level code with its (strict) type s
 The type system, as far as I can tell, is leaning towards how functional languages (primarily Haskell) work with type systems but that's another point to be discussed on another note. 
 
 Being a statically typed language, you would have to explicitly define variables and their type. 
-Though, it also has a https://doc.rust-lang.org/rust-by-example/types/inference.html[type inference system]. 
 The static typing system also goes with annotating your functions and data structures. 
+Though, it also has a https://doc.rust-lang.org/rust-by-example/types/inference.html[strong type inference system] allowing you to avert it in some cases. 
 
 Another known feature of Rust is the automatic resource management without a garbage collector. 
 It mainly works through its unique system of the ownership and borrowing system. 
@@ -227,7 +228,7 @@ let a = name;
 let b = name;
 ----
 
-Initial expectations may be that the variables will hold a pointer similarly to C/C\++. 
+Initial expectations may be that the variables will hold a pointer similarly to C/C++. 
 However, if you compile the code, it would cause an error. 
 
 [source, shell]
@@ -278,7 +279,7 @@ There are multiple ways on how to get around this.
 The returned value simply moved out of the function. 
 * Pass a reference of the owner and **borrow** it instead. 
 
-**References** are a thing in Rust and can be produced with the ampersand (`&`) similar to C/C\++. 
+**References** are a thing in Rust and can be produced with the ampersand (`&`) similar to C/C++. 
 
 As previously mentioned, references passed in functions are borrowed which means no transfer of ownership will take place. 
 Another way of thinking borrowing is the real-life example of borrowing: you take an item from its owner then give it back once you're done. 
@@ -433,7 +434,7 @@ Otherwise, it would cause a compile-time error.
 
 == Conclusion
 
-Unlike the conventional object-oriented languages like C/C\++, Java, and Python, Rust has more influence from functional languages like Haskell or OCaml so object-oriented programming is in the sidetracks. 
+Unlike the conventional object-oriented languages like C/C++, Java, and Python, Rust has more influence from functional languages like Haskell or OCaml so object-oriented programming is in the sidetracks. 
 The capacity to create low-level software with high-level code certainly makes Rust a great tool. 
 Learning Rust certainly requires a different mindset and it can take a while before getting used to it (I'm still not getting used to it). 
 
@@ -453,4 +454,6 @@ https://www.rust-lang.org/learn[Rust official documentation]::
 Contains pointers to starting (and some advanced) resources you can start reading into. 
 Really, one of the nicest things on Rust is the documentation. 
 
-
+https://play.rust-lang.org/[Rust playground]:: 
+The official Rust playground that can run and compile Rust code online. 
+This enables a quick and great way of sampling and sharing of code. 

@@ -1,0 +1,267 @@
+= Rust crates, modules, and packages
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-11-23
+
+Like most of the modern programming languages, Rust has a modern package system that is suitable for managing first- and third-party code. 
+
+Rust consistently uses different terminologies for its packaging system. 
+Those terms are **crates**, **packages**, and **modules**. 
+
+Even though packaging systems are quite common in modern programming languages — i.e., https://golang.org/[Go], https://www.typescriptlang.org/[TypeScript] — and works similarly from one system to another, inspecting closely to how Rust deals with this can help you to develop packages in Rust. 
+
+For more incentive, https://doc.rust-lang.org/cargo/[Cargo] — the package manager and build system of Rust — takes the full advantage of using this system to make project dependency and building management easier. 
+Knowing even just the related terminologies can go a long a way. 
+
+Without further ado, let's discuss the topic. 
+
+
+
+
+== Crates and packages
+
+**Crates** are referred to a single binary or library. 
+Each individual dependencies in your project is a crate. 
+
+Holistically, your project can be considered as one crate. 
+However, a project may consist of more than one crates with a library crate and one or several binary crates. 
+
+By definition (from the official documents), a package is a collection of crates (<=1) that provides a functionality. 
+A package should also contain at least one crate. 
+It should also have at most one library crate. 
+Meanwhile, a package can contain more than one binary crates footnote:[Which is mostly useful for executable images or developing a toolchain]. 
+
+If we base our definition of packages from the previous paragraph, our whole project is holistically a package. 
+A package that consists of several crates along with your own. 
+
+
+
+
+== The crate and the modules 
+
+At the start of the crate, there is the **crate root** — the file that the compiler starts from. 
+Most of the time, this file is `src/lib.rs` or `src/main.rs` if we use Cargo with the default settings. 
+
+Starting from the crate root, the **module tree** starts to form. 
+
+The module tree is as self-explanatory — it is a tree composed of **modules** along with their objects. 
+A module is an object containing other objects such as functions, structs, constants, and even other modules. 
+It is basically a namespacing tool allowing us to make groupings for the code (i.e., creating functions with the same name). 
+A module is also useful for controlling the scoping and privacy of the code. 
+
+The primary way to define modules is with the `mod` keyword and a block. 
+
+[source, rust]
+----
+use serde_json::Value;
+
+pub mod notes {
+    pub struct Note {
+        title: String, 
+    }
+    
+    impl Note {
+        // define some functions and methods
+    }
+}
+
+pub mod shelf {
+    pub struct Shelf {
+        path: std::path::PathBuf, 
+    }
+
+    impl Shelf {
+        // implementing some function and method logic here
+    }
+}
+
+pub mod subject {
+    pub struct Subject {
+        name: String, 
+        extra: Value, 
+    }
+
+    impl Subject {
+        // I'll think of something here, don't worry
+    }
+}
+----
+
+Take note that we can define nested modules — modules inside of a module. 
+We could simply define a nested module with `mod` or create the appropriate directory structure. 
+
+Now that we have defined our modules, we must find a way to refer to them. 
+
+An easy way of understanding how we refer to modules is comparing them with how we refer to items in a filesystem. 
+Seriously, the comparison between them is spot-on as you'll continue reading this. 
+
+Similar to how filesystem paths are separated with `/` (or `\` if you're using Windows), a crate path is separated with a pair of colons (`::`). 
+There are mainly two ways to refer to a module: the absolute and relative module path. 
+
+The absolute path is easy to spot and differentiate: it simply starts with `crate` and it starts with the crate root. 
+It is quite similar to refer to the filesystem root. 
+
+Meanwhile, a relative path may have the keywords `super`, `self`, or an identifier in the current module. 
+
+* The `super` keyword refers to the parent module similar to `../` when referring to filesystems. 
+This is mostly used for making https://doc.rust-lang.org/book/ch11-00-testing.html[unit tests]. 
+* The `self` keywords refers to the current module similar to starting with `./`. 
+* When starting with an identifier in the current module, it is similar to how we can refer to files starting with its name without `./`. 
+
+.Referring to modules with absolute and relative path
+[source, rust]
+----
+// Assuming that we're in `src/shelf.rs`. 
+
+// An absolute path
+crate::shelf;
+
+// A relative path
+shelf;
+self::shelf;
+
+// A struct referred with an absolute path
+crate::shelf::Shelf;
+
+// The same struct only referred with the relative path
+shelf::Shelf;
+
+// An struct from the official standard library 
+// This cannot be used with the absolute path starting from your crate 
+// However, if you intend to use the official standard library, this is technically the absolute path for the module 
+std::path::Path;
+----
+
+On certain cases where referring to the module or its objects can be tedious and repetitive (i.e., the https://doc.rust-lang.org/std/path/struct.PathBuf.html[PathBuf] of the https://doc.rust-lang.org/std/index.html[standard library]), the `use` keyword is a suitable use case to bring. 
+The `use` keyword allows us to further control the scope inside of our module. 
+
+[source, rust]
+----
+use std::path::PathBuf;
+
+struct Shelf {
+    path: PathBuf, // instead of referring to it with std::path::PathBuf
+}
+----
+
+The `use` keyword cannot be used if there are two objects with the same name. 
+Otherwise, there would be a compilation error. 
+
+[source, rust]
+----
+use std::io::Result;
+use std::result::Result;
+
+// Would result in the following error:
+//
+// error[E0252]: the name `Result` is defined multiple times
+// --> src/main.rs:5:5
+//  |
+//4 | use std::io::Result;
+//  |     --------------- previous import of the type `Result` here
+//5 | use std::result::Result;
+//  |     ^^^^^^^^^^^^^^^^^^^ `Result` reimported here
+//  |
+//  = note: `Result` must be defined only once in the type namespace of this module
+//help: you can use `as` to change the binding name of the import
+//  |
+//5 | use std::result::Result as OtherResult;
+//  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----
+
+As the compiler error report suggested in the above code listing, you can rename other identifiers with the `as` keyword. 
+Complying with the suggestion will make the compiler happy. 
+
+[source, rust]
+----
+use std::io::Result;
+use std::result::Result as OtherResult;
+
+// "Hooray!" says the compiler. 
+----
+
+Similar to importing Python modules, you can also make use of the glob operator to bring all of the public items from a module. 
+However, this makes it hard to know what items are in scope and modules might have the same identifiers so be careful when using this. 
+
+[source, rust]
+----
+use std::io::*;
+use std::path::*;
+----
+
+The module glob operator is mostly used for bringing all of the items for https://doc.rust-lang.org/book/ch11-00-testing.html[unit testing]. 
+
+
+
+
+== Modules with different files 
+
+The other way of defining modules is implicitly used with the files. 
+A Rust file is basically an entire module of itself. 
+It mainly uses the path and the filename as the name of the module. 
+
+A source file named `src/shelf.rs` has a module name of `shelf`, `src/subject.rs` as `subject`, `src/helpers/string.rs` as `helpers::string`, and so forth. 
+footnote:[If we use Cargo with the default settings, anyway.] 
+
+This is typical and perhaps footnote:[This is just based from my observation of using Rust in just a month.] one of the more common methods of defining modules. 
+
+The most important thing you need to know is the way how the module tree grows. 
+Unlike in certain languages like Python and JavaScript where you can import modules in different files as long as they're in the correct relative position, Rust does not build the module tree by itself. 
+In simpler words, you need to explicitly define the module tree. 
+This is great for finer control on how you define your project. 
+
+Though this can be daunting at first now that it is left at our hands to define how modules are built, it is not that scary as we'll see later on. 
+
+We can extend the module tree of our crate root with the `mod` keyword only without the block (`{}`). 
+This time, it loads the content of the file instead of defining it. 
+
+[source, rust]
+----
+// lib.rs
+
+use serde_json::Value;
+
+// located at `src/notes.rs`
+mod notes;
+
+// located at `src/subject.rs`
+mod subject;
+
+// located at `src/lib.rs`
+pub struct Shelf {
+    name: String, 
+    extra: Value,
+}
+
+impl Shelf {
+    pub fn new(name: String) {
+        // implementing logic code
+    }
+}
+----
+
+
+
+
+[appendix]
+== The `extern crate` keyword
+
+You may see the `extern crate` keyword being used in some documentations. 
+
+As self-explanatory as it is, `extern crate` is used for linking external packages as defined in the manifest (`Cargo.toml` in the root of the Rust project folder). 
+
+It is https://doc.rust-lang.org/edition-guide/rust-2018/module-system/path-clarity.html[clarified that it is no longer needed for Rust 2018 edition] but it still there just for compatibility and edge cases. 
+This is the result of the new changes for the module system introduced in the 2018 edition, simplifying the module system in the process. 
+
+If you want to be explicit with the external packages being used for readability purposes, you can still use it. 
+Using the `use` keyword also achieves the same goal. 
+
+
+
+
+== Appendix 
+
+https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html[_Chapter 7 - Managing Growing Projects with Packages, Crates, and Modules_ from "Rust Book" 2018 edition]:: 
+A dedicated chapter clearing up on the module system of Rust. 
+Really, nothing beats with the official documentation. 
+This is pretty much a recommended reading. 
+

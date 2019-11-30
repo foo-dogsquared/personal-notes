@@ -38,7 +38,7 @@ def create_new_note(title, path):
 
   with open(path, mode="w+") as new_note:
     today = datetime.today()
-    new_note.write(f"= {title}\nGabriel Arazas <foo.dogsquared@gmail.com>\n{today.strftime('%F')}")
+    new_note.write(f"= {title}\nGabriel Arazas <foo.dogsquared@gmail.com>\n{today.strftime('%F')}\n\n:stem:")
 
 
 def cli(args):

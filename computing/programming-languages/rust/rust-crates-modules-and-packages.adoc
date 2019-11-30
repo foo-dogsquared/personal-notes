@@ -43,8 +43,8 @@ Most of the time, this file is `src/lib.rs` or `src/main.rs` if we use Cargo wit
 
 Starting from the crate root, the **module tree** starts to form. 
 
-The module tree is as self-explanatory — it is a tree composed of **modules** along with their objects. 
-A module is an object containing other objects such as functions, structs, constants, and even other modules. 
+The module tree is as self-explanatory — it is a tree composed of **modules**. 
+A module is an object containing other identifers such as functions, structs, constants, and even other modules. 
 It is basically a namespacing tool allowing us to make groupings for the code (i.e., creating functions with the same name). 
 A module is also useful for controlling the scoping and privacy of the code. 
 
@@ -236,8 +236,21 @@ impl Shelf {
     pub fn new(name: String) {
         // implementing logic code
     }
+
+    pub fn add_note(note: &notes::Note) {
+        // implement some code here 
+    }
 }
 ----
+
+The way how we demonstrate it is not obvious. 
+The most effective of demonstrating it is by doing it wrong (purposefully). 
+
+Now implement some code that refer to the other imported modules. 
+Compile it successfully then remove the `mod` statements and compile it again. 
+The compiler should complain about it since it does not know where the identifiers that refer to the missing modules came from. 
+
+That's where building the module tree can be seen. 
 
 
 

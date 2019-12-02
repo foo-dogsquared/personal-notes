@@ -328,7 +328,8 @@ See the <<Automatic variables>> for more information.
 
 
 
-== Appendix 
+[appendix]
+== Additional readings  
 
 https://www.gnu.org/software/make/[GNU Make official website]:: 
 Self-explanatory description is self-explanatory. 

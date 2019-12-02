@@ -164,7 +164,8 @@ A dedicated note for the other versions of HTTP will be written in time.
 
 
 
-== Appendix
+[appendix]
+== Additional readings 
 
 https://developer.mozilla.org/en-US/docs/Web/HTTP[HTTP from MDN Web Docs]:: 
 A set of documentations of the protocol presented by https://developer.mozilla.org/en-US/[Mozilla Web Docs]. 

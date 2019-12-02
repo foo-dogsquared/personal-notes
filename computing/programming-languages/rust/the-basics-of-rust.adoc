@@ -443,7 +443,8 @@ When you pass the initial hurdle, that's when the party will start with the http
 
 
 
-== Appendix 
+[appendix]
+== Additional readings 
 
 https://learnxinyminutes.com/docs/rust/[Learn Rust in Y Minutes]:: 
 A https://learnxinyminutes.com/[Learn X in Y Minutes] entry on the Rust language. 

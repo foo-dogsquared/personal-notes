@@ -63,7 +63,8 @@ Verify the installation was successful simply by executing `fc-list`.
 
 
 
-== Appendix 
+[appendix]
+== Additional readings 
 
 https://linux.die.net/man/1/fc-cache[`fc-cache` manual page]:: 
 An online version of the `fc-`cache manual. 

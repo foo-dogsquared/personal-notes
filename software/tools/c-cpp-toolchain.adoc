@@ -105,7 +105,8 @@ footnote:[Unless you are very intrigued.]
 
 
 
-== Appendix 
+[appendix]
+== Additional readings  
 
 https://gcc.gnu.org/onlinedocs/[GCC online Manual]::
 Contains the manual for the GCC toolchain. 

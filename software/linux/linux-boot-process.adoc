@@ -107,7 +107,8 @@ image::linux-boot-process-overview.svg[Linux boot process flowchart]
 
 
 
-== Appendix 
+[appendix]
+== Additional readings 
 
 https://wiki.archlinux.org/index.php/Arch_boot_process[_Arch boot process_ from "Arch Wiki"]:: 
 An https://wiki.archlinux.org/[Arch wiki] entry on the boot loading process though it specifically documents on the Arch Linux process. 

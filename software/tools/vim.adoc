@@ -21,6 +21,9 @@ come with practice and time.
 
 So let's get right into it.
 
+
+
+
 == What is Vim?
 First, we'll have a talk about what is Vim.
 
@@ -53,6 +56,9 @@ inserting text, navigating through the file, and selecting text, etc. should
 be separated into actions. It may be uncomfortable to think about but it makes 
 the most sense once you use more of Vim.
 
+
+
+
 == How to use it?
 Check if Vim is installed with `vim --version` in your terminal. If it's not 
 installed yet, just go to the https://www.vim.org/download.php[download page of 
@@ -74,10 +80,14 @@ telling you the version and a handful of commands in order to get started.
 Furthermore, the first moment you entered into Vim, you cannot insert text 
 just yet. This is the first moment you should know about _modes_.
 
+
+
+
 == Modes
 We already tackled that Vim is a modal text editor which means there should be 
 a separate mode for each major actions in the file: inserting text, navigating 
 the file, doing something with the editor, and selecting text. 
+
 
 === Normal mode
 When you start out using Vim, you start in the _normal mode_, also known as 
@@ -144,6 +154,7 @@ Try navigating through the help section and see more available commands with it.
 You done now, right? I assume your comfortable with navigating now but it's quite 
 slow that you can only travel one character/line at the time. 
 
+
 ==== Summary
 In summary, normal mode is:
 
@@ -157,6 +168,7 @@ different modes.
 
 Now here's the part where we use Vim as we initially expected. As a part of your 
 reward, enter the `i` key and you'll be entering the...
+
 
 === Insert mode
 In Insert mode, you can enter characters now... and that's pretty much it. You can't 
@@ -178,6 +190,7 @@ mappings for entering to Insert mode with slight variations:
 
 Experiment it with a bit and after that, we can continue to downward spiral on the 
 Normal mode.
+
 
 === Mappings
 Mappings are functions binded to certain key combinations. Simply put, they are 
@@ -256,6 +269,7 @@ For referential purposes, here's a list of the special keys:
 |`<F1>` ~ `<F12>` 
 |the function keys 1 to 12
 |===
+
 Any combination with the special keys are also referred with angled brackets to differentiate 
 them with other keyboard combinations that may look like the same (`<Esc>` is the Escape key 
 and `Esc` is a mapping).
@@ -273,6 +287,7 @@ enter the command `:h jumplist`)
 
 Memorizing commands is one thing but understanding how these commands came into form is another.
 With the mostly keyboard setup that Vim provides, there is another way on how to do things faster.
+
 
 === Motions
 Enter the concept of _motions_. As you can understand from the word itself, motion describes an 
@@ -355,6 +370,9 @@ Take these commands, for example:
 You now see where this is getting at? Now go out there and experiment with Vim a little 
 bit and try if it's worth your time and effort to be included in your toolbelt.
 
+
+
+
 == Conclusion
 Vim, overall, is a very great tool. With practice and effort, it can help you on text editing 
 tremendously. Its simplicity and tinkerability is what makes it so great especially for developers 
@@ -368,6 +386,9 @@ us _feel_ productive but does it _make_ us truly productive?
 Like I said before I only use Vim for LaTeX, Asciidoc, and Markdown editing but I don't think 
 it'll be my go-to editing when coding my projects. It cannot be a total replacement especially when 
 other editors and tools do have a particular feature out-of-the-box.
+
+
+
 
 == What now after this?
 I recommend to learn about learning more motions and if you're going to expand Vim's features, 
@@ -383,7 +404,11 @@ a new color scheme, and a filesystem explorer, if you want any.
 For now, don't focus too much on those and practice on navigating and editing files with only the 
 vanilla version of Vim.
 
-== Other readings and references
+
+
+
+[appendix]
+== Additional readings 
 - https://www.reddit.com/r/vim/wiki/index[_/r/vim wiki_] - A wiki compiled by the 
 https://www.reddit.com/r/vim[/r/vim] community. It includes the best practices for managing Vim, 
 getting started, and exploring other features.

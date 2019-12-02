@@ -161,7 +161,8 @@ fn add(x: i32, y: i32) -> i32 {
 
 
 
-== Appendix 
+[appendix]
+== Additional readings 
 
 https://doc.rust-lang.org/reference/statements-and-expressions.html[_Statements and expressions_ from the official reference]:: 
 A section on the official reference that describes the statements and expressions of Rust. 

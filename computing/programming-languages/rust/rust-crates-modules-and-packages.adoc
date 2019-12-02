@@ -271,7 +271,8 @@ Using the `use` keyword also achieves the same goal.
 
 
 
-== Appendix 
+[appendix]
+== Additional readings 
 
 https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html[_Chapter 7 - Managing Growing Projects with Packages, Crates, and Modules_ from "Rust Book" 2018 edition]:: 
 A dedicated chapter clearing up on the module system of Rust. 

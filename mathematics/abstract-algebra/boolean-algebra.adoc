@@ -307,7 +307,8 @@ Basically, every combination of values plugged in the function will result in 1.
 
 
 
-== Appendix 
+[appendix]
+== Additional readings  
 
 https://www.allaboutcircuits.com/textbook/digital/chpt-7/[_Boolean Algebra_ from "All About Circuits textbook", Volume 4]:: 
 A chapter devoted to boolean algebra from the https://www.allaboutcircuits.com/textbook/[All About Circuits textbook]. 

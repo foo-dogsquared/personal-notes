@@ -1,0 +1,289 @@
+= Critical rendering path
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-12-08
+
+:stem: latexmath
+:toc:
+
+The web browser is a complex application. 
+Its daily use involves a lot of steps that includes communication between machines, error-handling for common errors, and rendering of the web page. 
+Web browsers are also one of the most commonly used software in the world especially that there are more options for the web to integrate with our lives. 
+With such scale, it is necessary for the browser to be optimized to gain a positive user experience. 
+
+This note will tackle the rendering part of the web page. 
+Even though each browser has its minor difference, the general process is overall the same. 
+
+As the title of this note indicates, it is referred to as **critical rendering path**. 
+This is the process where a browser will convert web resources (i.e., HTML documents, CSS and JavaScript files) into pixels on the screen. 
+
+
+
+
+== From the network to the bytes 
+
+Like most resources used in the browser, the web resources come from another location whether it is from the local filesystem or another server from a remote location. 
+
+For the sake of an example, let's assume that we want to fetch our set of files to be rendered on the browser. 
+We have a simple HTML file named `index.html` and a CSS file named `style.css`. 
+
+.`index.html`
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Web paaaage</title>
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <p>Hello <span>world!</span></p>
+</body>
+</html>
+----
+
+.`style.css`
+[source, css]
+----
+p { color: blue; }
+span { display: none; }
+----
+
+In order to have our own files to be received by the browser, we need to fetch them from a **network** whether by HTTPS, FTP, or from our local filesystem. 
+
+While the resources are being fetched, the browser may start to construct the **document object model (DOM) tree** as more bytes from the HTML file come from the network. 
+Due to the nature of the DOM tree and how HTML files are often incremental, this incremental building of the DOM tree is possible. 
+
+Fetching through the network generally receives the file from multiple parts called as packets. 
+Let's say in our HTML file, this is the first packet our browser has received. 
+
+[source, html]
+----
+<!doctype html>
+<html>
+    <meta charset="utf-8" />
+    <title>Web paaaaage</title>
+    <link href="style.css" rel="stylesheet" />
+----
+
+The browser may then start constructing the DOM tree. 
+Despite that HTML input is incomplete, the browser engine of major browsers (i.e., Gecko, WebKit) has high error tolerance allowing the browser to continue further. 
+If you want to look more into this, you can start reading <<The forgiving nature of HTML>> section in the appendix. 
+
+As more packets of the same HTML file has been fetched, the browser will incrementally build the DOM tree. 
+
+
+
+
+== The DOM tree
+
+// TODO: Create a visual aid for the DOM tree construction and put the image here
+
+In more detail, at the end of the fetching process, the different parts (or packets) of a file are received as bytes. 
+
+Eventually, these bytes are converted into characters. 
+The characters to be converted depend on the encoding of the file. 
+In the first packet (previous verbatim block), the encoding is in UTF-8. 
+
+Then, the browser will parse through the characters and create a token. 
+
+// TODO: Create a visual aid for the DOM tree based from the first packet example 
+
+The tokens then go through the lexer to create **nodes**. 
+The nodes may contain metadata and other nodes. 
+These nodes are then used to make up the DOM tree. 
+
+Going back to the context of our example, we know that the browser is creating the DOM tree as it receives the packets of the HTML file. 
+Let's say that the browser has the second packet, completing the whole HTML file (it's quite small, anyway). 
+
+[source, html]
+----
+</head>
+<body>
+    <p>Hello <span>world!</span></p>
+</body>
+</html>
+----
+
+As said previously, the browser will incrementally build the DOM tree as more bytes comes "on the wire". 
+This will simply cause the previously incomplete DOM tree to expand. 
+
+And there we have it, the DOM tree is complete. 
+Though, we only tackle one part of it. 
+Remember, a DOM tree is related to HTML files. 
+We still haven't discussed how CSS and JavaScript files come into play. 
+
+
+
+
+== The CSSOM tree
+
+For CSS, the browser has a separate tree for the CSS rules called the **CSS Object Model (CSSOM)**. 
+
+If the browser encountered a `<link>` tag that points to a CSS file while parsing through the HTML file, it will immediately send a response and continue parsing the HTML file. 
+In our example, the browser should send a request for the stylesheet when the first packet arrived. 
+
+[source, html]
+----
+<!doctype html>
+<html>
+    <meta charset="utf-8" />
+    <title>Web paaaaage</title>
+    <link href="style.css" rel="stylesheet" /> <!-- The point where the browser will send a request for the stylesheet. -->
+----
+
+Due to the cascading nature of CSS, the way how a CSSOM tree is constructed is a bit different from a DOM tree. 
+For starters, the whole CSS file should be fetched first before starting a CSSOM tree. 
+
+Overall, the creation of a CSSOM tree is similar to creating a DOM tree. 
+
+* We start from the network fetching the CSS file (except it waits for the entire file). 
+The resulting file is received as an array of bytes. 
+* The bytes are converted into characters. 
+* The characters are then scanned through a lexer to create tokens with their properties. 
+* The tokens are then parsed to create a node. 
+* The nodes are passed through to create the CSSOM. 
+
+At this point, we now have the DOM tree and the CSSOM tree. 
+However, this is not the point where the page would be rendered. 
+
+
+
+== The render tree and the layout
+
+When both object model (the DOM and CSSOM) are constructed, it is then combined into a **render tree**. 
+In order to create the render tree, the browser has to check starting from the root node of the DOM and inspect the CSS rules attached to it. 
+
+If the content of the node is visible, it will be a part of the render tree. 
+Thus, the tree only captures visible content so metadata (e.g., `<head>`) and nodes with no display rules (e.g., `display: 'none'`) and its descendants are generally not in the tree. 
+
+The render tree will also contain related style information (e.g., width, height, text and background color) to its elements. 
+
+Overall, the final output is a tree of elements along with their style information. 
+However, the page is not going to be rendered just yet. 
+
+The browser has yet to calculate the exact position of each node in the device screen. 
+This is where the next phase, the **layout phase**, comes into play. 
+This process is also referred to as the **reflow**. 
+
+The browser will now consider things such as the viewport of the device, the ordering of the nodes, the width and height of each element bound with a box, and the relation of elements to each other. 
+
+For example, by default, block elements are usually the same width as their parent while inline elements have its size dictated by the content size — i.e., an anchor element (`<a>`) will only have its width based on the length of the text. 
+Another example is considering the width of an element if its indicated with percentages — the width of an element will depend on the width of its parent. 
+
+
+
+
+== The painting stage
+
+After the render tree and the layout has been calculated, it is ready for rendering the page on screen. 
+
+This is one of the slowest (if not the slowest) processes in the entire process chain. 
+It is due to a variety of factors such as the size of the document, the number of nodes, the styling (i.e., gradient versus solid color, drop shadow versus no shadow), and the animation (or lack thereof). 
+
+The browser would then make an initial painting of the viewport (and even beyond the viewport which most browsers do nowadays). 
+Any elements that needs an update will be repainted and not the whole viewport. 
+This is how browsers optimize the repainting process. 
+
+Most browsers also take the advantage of **compositing** to reduce the required amount of (re)painting needed. 
+It also provides a way to handle animations and overlapping elements. 
+
+
+
+
+== JavaScript
+
+We have tackled how a browser render with HTML and CSS but there is a component missing which is JavaScript. 
+
+The state of the web of today wouldn't be possible without JavaScript. 
+It offers interactivity for your web page which can make it more dynamic. 
+JavaScript also makes web applications comparable to desktop apps possible to create. 
+
+The question is where does JavaScript fit in all of the phases. 
+
+Since JavaScript can query and manipulate both the DOM tree and CSSOM, a script will block every process (e.g., the construction of the DOM and CSSOM tree) by the time the browser encountered the script. 
+The browser will have to wait for the script to complete in order to continue parsing through. 
+It is done like that since the browser does not know what is the purpose and utility of the script. 
+The best generalized assumption it can make is the script will manipulate the DOM tree that the browser made at the time. 
+
+Over time, standards have made more options for how scripts affect the flow of the rendering. 
+
+One of them being by allowing scripts to be asynchronous. 
+Asynchronous scripts allow the browser to continue further the parsing when the script is fetched and only block when the script is fully downloaded and executed. 
+
+.Practical example of making asynchronous scripts
+[source, html]
+----
+<script src="myscript.js" async>
+// this will cause the browser to request for the script but not blocking it 
+// until the script is downloaded
+</script>
+----
+
+Since there can be a variety of factors which scripts will be downloaded first, this is not recommended for scripts that relies on another script. 
+It is not guaranteed that the scripts will execute in order. 
+However, this is useful for scripts that are not completely needed. 
+
+Another way to make scripts not affect the rendering workflow is by deferring them. 
+Deferring is mostly the same as making scripts asynchronous except the execution will only happen at the end of the parsing. 
+The scripts are also executed by the order they are encountered in the document. 
+
+.An example of deferring scripts in HTML
+[source, html]
+----
+<script src="myscript.js" defer>
+// the first script to be executed
+</script>
+
+<!-- ... -->
+
+<script src="anotherscript.js" defer>
+// the second script
+</script>
+----
+
+
+
+
+[appendix]
+== The forgiving nature of HTML 
+
+The nature of HTML has a "softer" syntax trying as best it can to produce the output with an invalid input. 
+In fact, it is the reason why web development is popular among the beginners for programming. 
+
+I think it's because of browser engines having complex and effective error tolerance when it comes to invalid HTML files. 
+It is the reason why it can still make a DOM tree even if the HTML (e.g., the first example packet) has numerous errors. 
+
+In our first packet example, the body tag and the closing tag for the head is missing. 
+Assuming it is the complete HTML file, it will result in a complete DOM tree. 
+Only then the body node has no children at all. 
+
+Another example is it can automatically infer that certain `<meta>` tags belong in the `<head>` even if the `<head>` tag is missing. 
+
+Another set of example is the implicit addition of closing element for container tags — tags that require an opening (`<NODE>`) and closing tag (`</NODE>`). 
+For empty tags — tags that does not need to be closed (i.e., `<body>`, `<meta>`, `<br>`, `<img>`)  — the browser engine can tolerate misplaced or missing closing tags. 
+
+If you want to have more information on this, you can visit the https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/[a comprehensive look of the components of a web browser by "HTML5 Rocks"] and https://hacks.mozilla.org/2017/05/quantum-up-close-what-is-a-browser-engine/#footnote-1-top[another one from "Mozilla Hacks"]. 
+
+
+
+
+[appendix]
+== Additional readings
+
+https://hacks.mozilla.org/2017/05/quantum-up-close-what-is-a-browser-engine/[__Quantum Up Close: What is a browser engine?__ from the "Mozilla Hacks"]:: 
+A detailed reading on the different parts of a browser engine. 
+As such, it gives perspective on how a web page is rendered on the screen from the very beginning of the network fetching process to constructing the data needed to paint the web page. 
+
+https://developers.google.com/web/fundamentals/performance/critical-rendering-path[__Critical Rendering Path__ from the "Google Web Fundamentals"]:: 
+A dedicated chapter from the https://developers.google.com/web[Google Web Docs] tackling the topic. 
+
+https://developer.mozilla.org/en-US/docs/Learn/Performance/Populating_the_page:_how_browsers_work[__Populating the page: how browsers work__ from "Mozilla Web Docs"]:: 
+A comprehensive article from https://developer.mozilla.org/[Mozilla Docs] on the general process of how a browser render a page. 
+It discuss the topic from the network up to detailing the internal processes of the browser. 
+
+https://www.youtube.com/watch?v=PkOBnYxqj3k[__Critical rendering path - Crash course on web performance__ from the "Fluent 2013 conference"]:: 
+A good presentation by Ilya Grigorik (the same author of the dedicated chapter from Google Web Fundamentals) on the topic. 
+It gives you the things you need to know about critical rendering path from the beginning to a practical example. 
+It can be useful when you prefer a visual and lightly detailed way of knowing the subject. 
+

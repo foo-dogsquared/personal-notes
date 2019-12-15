@@ -1,6 +1,7 @@
 = A two-themes toggle system
 Gabriel Arazas <foo.dogsquared@gmail.com>
 2019-09-16
+:toc:
 
 I always thought implementing a theme toggle system is somewhat complex. 
 It turns out it's not. 

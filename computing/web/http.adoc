@@ -1,6 +1,7 @@
 = Hypertext Transfer Protocol (HTTP)
 Gabriel Arazas <foo.dogsquared@gmail.com>
 2019-10-09
+:toc:
 
 The Hypertext Transfer Protocol (HTTP) is a protocol for transferring resources. 
 These resources include anything from raw text to HTML documents, graphics, videos, and more. 

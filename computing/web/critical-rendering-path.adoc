@@ -1,9 +1,9 @@
 = Critical rendering path
 Gabriel Arazas <foo.dogsquared@gmail.com>
 2019-12-08
+:toc:
 
 :stem: latexmath
-:toc:
 
 The web browser is a complex application. 
 Its daily use involves a lot of steps that includes communication between machines, error-handling for common errors, and rendering of the web page. 

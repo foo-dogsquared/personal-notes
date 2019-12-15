@@ -1,12 +1,17 @@
 all: build
 
+.PHONY = "build clean"
 output=.output
 
-build: compile.py
-	./compile.py --threadcount 8
+build:
+	make clean
+	./manager.py compile --threadcount 16
 
-clean: .output/
+clean:
 	rm -rf $(output)
 
 %.html : %.adoc
 	asciidoctor --attribute toc $< --out-file $(output)/$@
+
+%.pdf : %.adoc
+	asciidoctor --attribute toc $< --backend pdf --out-file $(output)/$@

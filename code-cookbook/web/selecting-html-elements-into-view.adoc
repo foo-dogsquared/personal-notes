@@ -1,0 +1,118 @@
+= Selecting HTML elements into view
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-12-15
+:toc:
+
+:stem: latexmath
+
+This note simply tackles different ways on how to make elements into view that should work for most browsers. 
+
+It's a niche topic but seeing as I have to review every single time I create projects that need this feature, I thought to make a quick note about it. 
+
+For additional context, here are the version of the major browsers as of writing. 
+
+[cols="3*", options="header"]
+|===
+| Browser name 
+| Version 
+| Additional notes 
+
+| Chromium 
+| 79.0.3945.79 
+| 
+
+| Mozilla Firefox 
+| 71.0 
+| 
+
+| Microsoft Edge 
+| 44.18362.449.0 
+| Retrieved from Wikipedia 
+
+|===
+
+
+
+
+== With anchor nodes (`<a>`) 
+
+Starting with the primitive way, one of the common way to make elements into view is attaching an ID (with the HTML attribute `id`) and linking them with the anchor node. 
+
+[source, html]
+----
+<h1 id="the-first-section">The first section</h1>
+
+<!-- ... -->
+
+<a href="#the-first-section>link to the section header</a>
+----
+
+However, this is only suitable when the web page primarily contains written content (i.e., blogs, forums). 
+When this is used for an application, this will break some of the accessibility guidelines. 
+For that, this solution can be considered as somewhat hacky when using it in that context. 
+
+
+
+
+== Window scroll methods 
+
+The second way of making elements scroll into view is through the use of the https://developer.mozilla.org/en-US/docs/Web/API/Window[Window API]. 
+The https://caniuse.com/#search=window[major browsers have this interface available]. 
+
+The window interface offers a neat way of accessing and setting the destination of the scrolling. 
+
+The methods that we are looking for are https://developer.mozilla.org/en-US/docs/Web/API/Window/scroll[`window.scroll`] and https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollBy[`window.scrollBy`]. 
+These methods both scroll to the given destination. 
+The only difference is the former scrolls to the given position (absolute positioning) while the latter scrolls relative to its current position (relative positioning). 
+
+[source, javascript]
+----
+// assuming that the current screen position is in (0, 0)
+
+// takes the screen to the start of x-axis and in the 750th pixel of the page 
+window.scroll(0, 750);
+
+// moves the screen 40 pixels relative to the current position
+window.scrollBy(0, 40); // should be in 790th pixel 
+----
+
+Though, that said, doing with this solution can be tedious since you also have to calculate the position of the element that you want to scroll into view. 
+
+Calculating the position of the element can be a hassle but it is worth to understand the underlying system of coordinates that the browser uses. 
+To know more about this, you can https://javascript.info/coordinates[take a look at the related article at javascript.info]. 
+
+Thankfully, the browsers have ways to refer to the element and its positioning. 
+The most common way to get the coordinates of the elements is combining the result from the https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect[`Element.getBoundingClientRect`] and the current scrolling position relative from the whole document. 
+
+[source, javascript]
+----
+let element = document.querySelector("#element");
+
+let rect = element.getBoundingClientRect();
+
+// Since the get bounding rectangle method returns the position relative to the viewport, 
+// it has to be calculated against the current X/Y position relative to the document.
+let element_y_pos = rect.top + window.scrollY;
+let element_x_pos = rect.left + window.scrollX;
+----
+
+
+
+
+== Elements `scrollIntoView` method 
+
+Lastly, the easiest and most convenient way to make elements scroll into view is by using the https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView[`Element.scrollIntoView`] (such an appropriate name). 
+
+This method is https://caniuse.com/#feat=scrollintoview[well supported among the modern major browsers] so there's not much worry for compatibility. 
+
+As self-explanatory as it is, this method simply makes the element scroll into view. 
+It is also possible to change certain aspects of the scrolling behavior such as the positioning of the element relative to the screen and the animation of the scrolling. 
+
+[source, javascript]
+----
+let element = document.querySelector("#element");
+
+element.scrollIntoView();
+----
+
+

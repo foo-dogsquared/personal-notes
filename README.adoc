@@ -1,15 +1,11 @@
 = personal-notes
 
-A repo of my notes that is about anything that is not too detailed 
-to talk about anything, really.
+A repo of my notes that is about anything that is not too detailed to talk about anything, really.
 
 If you want to find my detailed notes on anything that I don't know, you can find it 
 https://github.com/foo-dogsquared/a-remote-repo-full-of-notes-of-things-i-do-not-know-about[here].
-Bear in mind that unlike this repo which contains `.adoc` files, the
-previously linked repo contains LaTeX files which means you need to 
-have a LaTeX distribution to compile it. 
-If you're not familiar with LaTeX, I've written more about it how 
-you can compile it yourself in the said repo.
+Bear in mind that unlike this repo which contains `.adoc` files, the previously linked repo contains LaTeX files which means you need to have a LaTeX distribution to compile it. 
+If you're not familiar with LaTeX, I've written more about it how you can compile it yourself in the said repo.
 
 For now, enjoy my whatever-the-crap-that-is-put-in-here. Like with the 
 remote repo full of notes of things I do not know, the notes here are 
@@ -40,14 +36,25 @@ In order to fully utilize this repo, you need the following programs:
 Feel free to file an issue regarding the required minimum version. I'm not so 
 sure about it myself.
 
-There's a Python script named `compile.py` that compiles all of the Asciidoctor notes 
-into HTML. Just run that script at the shell and the resulting files should be 
-dropped off in a build directory. The script itself is a CLI program with options you 
-can add a help flag (`-h`) to see the possible options since the program can run 
-without given arguments.
+There's a Python script named `manager.py` that manages the Asciidoctor notes. 
 
-The build directory is located at `.output` with all of the directory structure 
-being retained.
+It's a CLI program and it can be run like a shell program. 
+
+[source, shell]
+----
+# List all of the subcommands and the flags.
+./manager.py --help
+
+# Compile all of the Asciidoctor documents with 16 threads. 
+# The compiled output is going to be in the `.output` folder. 
+./manager.py compile --threadcount 16
+
+# Create an Asciidoctor note. 
+# This will create an Asciidoctor file in `./path/to/folder/title-of-the-note.adoc`. 
+./manager.py create "Title of the note" --path ./path/to/folder
+----
+
+The build directory is located at `.output` with all of the directory structure being retained.
 
 
 
@@ -63,3 +70,4 @@ For a quick summary, there is the following list.
 It serves as the revision string of the document and should be updated in case the note is updated. 
 * Have the author name and the email present as well. 
 * Files should be named in kebab case. 
+* Document titles, sections, and subsections should be in sentence case. 

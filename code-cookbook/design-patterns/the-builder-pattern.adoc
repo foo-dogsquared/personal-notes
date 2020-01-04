@@ -1,0 +1,180 @@
+= The builder pattern
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2019-01-04
+:toc:
+
+:stem: latexmath
+
+This note introduces the builder pattern which is commonly seen in certain languages like https://www.rust-lang.org/[Rust]. 
+That said, this note in particular uses Rust as the language to be demonstrated. 
+
+
+
+
+== Context
+
+In order to fully understand about the builder pattern, we need the context. 
+
+Some data structures are hard to configure and need a lot of parameters. 
+One of the common examples is handling a data structure that contains a lot of parameters. 
+This may be an HTML node, constructing an HTTP request, or a complex app configuration. 
+
+Here's a hypothetical example code of a generic HTTP request library if we don't know about the builder design pattern. 
+
+[source, rust]
+----
+pub struct HttpRequest<'a> {
+    method: &'a str,
+    url: &'a str,
+}
+
+impl HttpRequest {
+    /// Create a new HTTP request instance. 
+    pub new<'a>(method: &'a str, url: &'a str) -> Self {
+        Self { method, url }
+    }
+
+    /// Receives the response as bytes. 
+    pub request(&self) -> Result<Vec<u8>, HttpRequestError> {
+        // HTTP request implementation...
+    }
+
+    // Other implementation methods...
+}
+
+let http_req = HttpRequest::new("GET", "https://examplecat.com/cat.txt");
+let http_res = http_req.request()?;
+----
+
+This is a simple example but if we want to have the data structure to contain more data, we could simply update the constructor function (`HttpRequest::new`). 
+As you may know, handling HTTP requests goes further than giving the method and the URL. 
+What if the library user wants to send requests with custom headers, other HTTP versions, a custom body, or any of the combinations? 
+
+If we would add it without the builder pattern, it is basically a massive parameter dump. 
+There are times where we don't want to add custom headers. 
+However, the constructor requires them every time. 
+
+[source, rust]
+----
+// After the `HttpRequest` struct has been updated. 
+
+let cat_http_req = HttpRequest::new("GET", "https://example.com/cat.txt", None, [], []);
+let cat_png_http_req = HttpRequest::new("GET", "https://example.com/cat.png", None, [], []);
+let dog_http_req = HttpRequest::new("GET", "https://example.com/dog.txt", None, [], []);
+----
+
+As you can predict, this can be stiff to use and configure. 
+Not to mention, it can be hard to read especially for other contributors. 
+
+Our solution? 
+As you can see from a mile away: the builder pattern. 
+
+
+
+
+== The builder pattern
+
+The builder pattern is design pattern that allows for (well...) building of a complex object in a step-by-step manner. 
+As a consequence, this allows for dynamic and approachable object construction. 
+
+Let's immediately see an example of a builder pattern. 
+
+Again, here's a hypothetical code example of that HTTP request struct without applying the builder pattern. 
+Take note that our HTTP request struct should be able to support other HTTP versions, setting custom headers, and adding a body to our request. 
+
+[source, rust]
+----
+let cat_http_req = HttpRequest::new("GET", "https://example.com/cat.txt", None, [], []);
+----
+
+Here's our hypothetical HTTP request struct if we apply the builder pattern. 
+
+[source, rust]
+----
+let mut cat_http_req = HttpRequest::new();
+
+cat_http_req
+    .method("GET")
+    .host("https://example.com")
+    .resource("/cat.txt");
+----
+
+If we want to add a body later on, we could do that. 
+
+[source, rust]
+----
+    .resource("/cat.txt");
+
+let cat_breed = "nyan";
+
+// ...
+
+if cat_breed == "nyan" {
+    cat_http_req.body("breed: nyan");
+}
+----
+
+As you can see, it is more readable and it is easier to manage the complexity of creating an object. 
+
+Implementing the builder pattern is easy. 
+It mainly works by returning the object (or a reference to the object) itself. 
+This allows for explicit setting and chaining of parameters which can be pleasure to read. 
+
+The HTTP request struct example is only one way of applying the builder pattern. 
+As previously said, one of the common applications of a builder is it allows for incremental construction of an object. 
+It allows to create different versions of the object explicitly. 
+
+Another way of applying the builder pattern is creating a separate interface for the actual object. 
+These usually are their own separate type named as stem:[T] `Builder` where stem:[T] is the object to be constructed. 
+
+If we apply our HTTP request struct in this approach, we would have a separate struct named `HttpRequestBuilder` that builds the HTTP request struct. 
+This allows separation of constructing an object and using the object. 
+Since there is already a builder that does constructing an HTTP request for us, we can then move the setter functions to the builder and have the HTTP request handles what an HTTP request usually do (e.g., sending requests to a server, receiving a response). 
+
+[source, rust]
+----
+struct HttpRequestBuilder {
+    host: String, 
+    resource: String, 
+    method: String, 
+    headers: HashMap<String, String>, 
+    body: String, 
+    // and other data an HTTP request might have 
+}
+
+impl HttpRequestBuilder {
+    /// Create a new builder for an HTTP request. 
+    pub new() -> Self {
+        Self { /* all of the fields initialized */ }
+    }
+
+    // all of the setter functions for each of the field
+    // ...
+
+    /// Build the actual HTTP request. 
+    pub build(self) -> HttpRequest {
+        // Create an HTTP request struct. 
+    }
+}
+----
+
+Creating a builder for a type usually has some things to keep in mind. 
+Take note this is not necessarily set in stone but type builders should have all of the required fields of the actual object. 
+A type builder should also have a method that actually builds the object. 
+
+Depending on the object, it can add more complexity but it eases the construction process of an object. 
+In our example, either of them can work but as there are more features come for the generic HTTP request library, it is more worth to construct a separate builder for our HTTP request struct. 
+
+
+
+
+[appendix]
+== Additional readings 
+
+https://sourcemaking.com/design_patterns/builder[_Builder Design Pattern_ from "Source Making"]:: 
+A good introductory article on the builder pattern. 
+
+https://doc.rust-lang.org/1.0.0/style/ownership/builders.html[_The builder pattern_ from the Rust Style Guidelines]:: 
+A reference to the builder pattern specifically made for the Rust style guidelines. 
+As previously mentioned, this pattern is commonly seen on Rust codebase. 
+

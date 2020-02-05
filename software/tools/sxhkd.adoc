@@ -1,0 +1,210 @@
+= SXHKD
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2020-02-04
+:toc:
+
+:stem: latexmath
+:name: sxhkd
+
+This note will tackle the utility of a hotkey daemon (specifically the SXHKD) and how to quickly use it. 
+Think of this note as a simple user guide. 
+footnote:[Though, I really recommend to read the manual instead since it is pretty clear. I'm just writing this one for some reason...] 
+
+For future references, the version of the program is at `0.6.0-3-g7124055` (as is the output from `{name} -version`. 
+
+Simple X Hotkey Daemon (`{name}`) is self-explanatory as it is. 
+It is basically a hotkey server for X11-based environments allowing to create universal hotkey bindings. 
+It is a pretty useful utility that can integrate easily for most of the Linux-based setups. 
+
+
+
+
+== How to start 
+
+Starting to use `{name}` is easy enough. 
+It needs a configuration file at `$XDG_CONFIG_HOME/{name}/{name}rc by default`. 
+Though, you can still have config files at other locations with the `-c` option — i.e., `{name} -c PATH_TO_THE_CONFIG_FILE. 
+
+The syntax for its configuration is simple and readable on its own. 
+Let's take a look at a real-life example (which is a part of https://github.com/foo-dogsquared/dotfiles/blob/master/sxhkd/sxhkdrc[my own {name} config]. 
+
+[source, sxhdrc]
+----
+# Basic binds (inspired from the previous i3 config). 
+super + Return 
+    $TERMINAL
+
+# A dropdown terminal. 
+# Requires tmux and tdrop for this to work. 
+super + shift + Return
+    tdrop -ma -w -4 -y "$PANEL_HEIGHT" -s dropterm $TERMINAL
+
+super + q
+    $TERMINAL -e ranger
+
+super + t
+    $HOME/bin/toggle-bin screenkey
+
+# Kill the focused window. 
+super + shift + q
+    bspc node -c
+----
+
+Once you have a config file at the ready, you can then execute the program. 
+Take note that `{name}` does not watch the config file. 
+It will only have its keybindings at the time of execution. 
+
+To update, you can simply kill the process and restart it. 
+Fortunately, you can also send a `USR1` signal to the process and it will reload the config. 
+
+In my configuration, I have a simple keybinding with the following command to simply reload the config for convenience. 
+
+[source, sxhkdrc]
+----
+shift + super + r
+    pkill -USR1 sxhkd && notify-send "SXHKD config has successfully reloaded." 
+----
+
+Another way of easily reloading is simply executing the command when you're saving it in Vim. 
+
+
+
+
+== Configuration
+
+Now let's take a closer look at the configuration. 
+
+There are simply three main rules when it comes to parsing the config file. 
+As said from the manual: 
+
+* If the line is empty or starts with `#`, it is ignored (i.e., a comment). 
+* If the line starts with a space, it is a **command**. 
+* Otherwise, the line is read as a **hotkey**. 
+
+Let's start with the main starting point when configuring {name}: the hotkeys. 
+
+A hotkey is basically a keyboard shortcut. 
+Each hotkey can only have one command which is basically entered as you would in the (default) shell. 
+footnote:[Since it is not possible to do multiple commands similar to GNU Make, you can simply create a shell script for that.] 
+
+There are certain names to refer to commonly used special keys such as `super`, `meta`, `alt`, `shift`, and `control`/`ctrl`. 
+You can also view the common keys and their names by running `xmodmap`. 
+
+For the obscure and uncommon keys, you can use the keysym output from running `xev` (with the `-event keyboard` option to make your life easier). 
+
+For mouse events, you can refer to it with `button1`, `button2, `button3`, and so on. 
+
+By default, the commands are executed during the key press event which can be dangerous on certain situations. 
+You can change it to run on key release simply by adding a `@` in front of the keysym. 
+
+
+=== Key chords 
+
+One of the greatest things about {name} is enabling you to create **key chords** (or chord chains) similar to https://www.gnu.org/software/emacs/[Emacs], https://www.vim.org/[Vim], and https://code.visualstudio.com/[VS Code] shortcuts. 
+
+Let's take a look at this example. 
+
+[source, sxhkdrc]
+----
+super + a ; f
+    firefox
+
+super + a ; t
+    thunderbird
+
+super + a ; c
+    code
+----
+
+To create a key chord, simply the hotkeys with a semicolon (`;`). 
+
+In the example config, it simply bind `Super + a` and an additional key to open certain applications. 
+
+To open Firefox, simply press `Super + a` then `f`. 
+For Thunderbird, `Super + a` then `t` and so on. 
+In my workflow, this is inspired from https://i3wm.org/docs/userguide.html#binding_modes[i3 modes]. 
+
+On a similar note to i3 modes, you can cancel a key chord with the Escape key. 
+
+In our examples where we could have multiple applications to bind, we could simply list all in a separate hotkey rule in the config. 
+
+[source, sxhkdrc]
+----
+super + a ; z
+    zathura
+
+super + a ; x
+    vim
+
+super + a ; c
+    code
+
+super + a ; v
+    inkscape
+
+super + a ; b
+    blender
+
+super + a ; n
+    lmms
+
+super + a ; f
+    firefox
+
+super + a ; t
+    thunderbird
+----
+
+As you can see, this can be pretty tedious. 
+Fortunately, {name} has a way of condensing this into a concise form with sequences. 
+
+[source, sxhkdrc]
+----
+super + a ; {z, x, c, v, b, n, f, t}
+    { zathura, vim, code, inkscape, blender, lmms, firefox, thunderbird }
+----
+
+If you want to represent an empty sequence element, you can use the underscore (`_`). 
+This can be useful to set optional key sequences and/or command strings. 
+
+Here's a real-life example of the feature. 
+This is based from my own config. 
+
+[source, sxhkdrc]
+----
+{_, control +} {_,shift +} Print
+    $HOME/bin/screenshot {_,--select} {_,--delay 3}
+----
+
+The above configuration example is the equivalent of the following. 
+
+[source, sxhkdrc]
+----
+{shift +} Print
+    $HOME/bin/screenshot {--delay 3}
+
+control + {shift + } Print
+    $HOME/bin.screenshot --select {--delay 3}
+----
+
+This maps to the following combinations of hotkeys with the resulting commands: 
+
+* `Print` - `$HOME/bin/screenshot`
+* `Shift + Print` - `$HOME/bin/screenshot --delay 3`
+* `Control + Print` - `$HOME/bin/screenshot --select`
+* `Control + Shift + Print` - `$HOME/bin/screenshot --select --delay 3`
+
+
+
+
+[appendix]
+== Additional readings
+
+https://www.youtube.com/watch?v=2ClckQzJTlk[_Binding Keys Universally in Linux_ by "Luke Smith"]:: 
+A good tutorial by Luke Smith on the Simple X Hotkey Daemon. 
+
+https://github.com/baskerville/sxhkd/blob/master/doc/sxhkd.1.asciidoc[The manual page of `sxhkd`]:: 
+The manual page of the tool originally written from an AsciiDoc document. 
+That said, I wholly recommend to read the manual pages of the tool. 
+Not everything in this user guide/student note has been covered. 
+

@@ -1,0 +1,109 @@
+= Linux signals
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2020-02-06
+:toc:
+
+:stem: latexmath
+
+This note will tackle the concept of Linux signals. 
+
+A signal is a form of communication between processes and the operating system. 
+Practically, we already interact with signals in a way most likely with the shell. 
+For example, pressing `Ctrl + C` sends a terminating signal (specifically a `SIGINT` signal) to the process currently running. 
+footnote:[For a list of signals, you can go to the http://man7.org/linux/man-pages/man7/signal.7.html[related manual page].] 
+
+[source, shell]
+----
+$ yes
+y
+y
+y
+# and so on...
+^C
+----
+
+Signals are received and can be handled by the process. 
+Even if you didn't program to handle the signal, there are default actions to take place (as specified from https://github.com/torvalds/linux/blob/master/include/linux/signal.h#L317[the source code]). 
+
+In the following example Python script, we can ignore the terminating signal and continue doing its process. 
+
+[source, python]
+----
+#!/usr/bin/env python
+import signal, time
+
+def handler(signum, time):
+    print("\nI got a SIGINT, but I am not stopping")
+
+signal.signal(signal.SIGINT, handler)
+i = 0
+while True:
+    time.sleep(.1)
+    print("\r{}".format(i), end="")
+    i += 1
+----
+
+To kill the previous program, now we have to rely with other terminating signals (specifically the `SIGQUIT` signal) which is usually mapped with `Ctrl + \`. 
+
+Let's get a bit more dangerous. 
+We can also ignore some other signals. 
+We just have to modify the script a little. 
+
+[source, python]
+----
+#!/usr/bin/env python
+import signal, time
+
+def handler(signum, time):
+    print("\nI got a signal of {}, but I am not stopping".format(signum))
+
+signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGQUIT, handler)
+signal.signal(signal.SIGTSTP, handler)
+signal.signal(signal.SIGTERM, handler)
+i = 0
+while True:
+    time.sleep(.1)
+    print("\r{}".format(i), end="")
+    i += 1
+----
+
+In this modified version, we ignore the `SIGQUIT` (which can be done with `Ctrl + \`), `SIGTSTP` (signal for terminal stop which can be sent with `Ctrl + Z`), and `SIGTERM` (a generic terminating signal). 
+
+To terminate the program, we have to send the other terminating signals that we didn't handle. 
+In this example, we can still terminate our program with the `SIGKILL`. 
+The `SIGKILL` (along with the `SIGSTOP`) signal cannot be blocked. 
+
+Since we cannot do much within the terminal, we have to use other tools. 
+This will also demonstrate that signals are a form of communication between different processes. 
+(The obvious and pragmatic solution is to close the terminal window or use a task manager but for now let's not do that.) 
+
+To successfully terminate the dangerous program, we can use the `kill` command which sends the specified signal (`SIGTERM` by default) to the specified process ID. 
+If you don't know the PID of the running program, you can also use the `pkill` command which is similar to `kill` except it finds the process by name. 
+
+[source, shell]
+----
+# Assuming this is the only Python instance running.
+pkill --signal SIGKILL python
+----
+
+Signals are not only used for terminating processes, they can be used for other things as well. 
+For example, `SIGSTOP` (and `SIGTSTP`) is used for suspending processes, `SIGCONT` for continuing suspended processes, `SIGPOLL` for watching files, and `SIGUSR1` and `SIGUSR2` which has no meaning and intended for developers to do whatever they want. 
+footnote:[Simple X Hotkey Daemon, for example, reloads its config file when it receives a `SIGUSR1` signal.] 
+
+
+
+
+[appendix]
+== Additional readings
+
+https://missing.csail.mit.edu/2020/command-line/[_Command-line Environment_ from the "The Missing Semester of Your CS Education"]:: 
+A dedicated chapter for the command line from the https://missing.csail.mit.edu/["The Missing Semester of Your CS Education"], a course by MIT for explaining the common tools. 
+Within the chapter, it shortly explains the concept of signals in a practical way. 
+
+http://man7.org/linux/man-pages/man7/signal.7.html[Linux Programmer's Manual - signal]:: 
+The official manual page for the signals. 
+
+https://en.wikipedia.org/wiki/Signal_(IPC)[_Signal (IPC)_ from "Wikipedia"]:: 
+It's a good reference for explaining the POSIX signals. 
+

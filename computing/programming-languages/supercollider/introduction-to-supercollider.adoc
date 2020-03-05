@@ -1,0 +1,466 @@
+= Introduction to SuperCollider
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2020-02-05
+:toc:
+
+:stem: latexmath
+:name: SuperCollider
+:version: 3.10.4
+
+This is a brief and bare introduction for http://supercollider.github.io/[SuperCollider], a platform for audio synthesis. 
+
+For future references, the version I'm using is at {name} {version} running on an Arch Linux machine. 
+
+NOTE: I assume you're familiar with the basics of programming (e.g., strings, functions, variables). 
+I'll also assume you're a bit familiar with the official {name} IDE. 
+The official IDE is intuitive so even if you haven't used it yet, you can easily pick it up. 
+(Maybe aside from the keyboard shortcuts.) 
+
+
+
+
+== The {name} workflow 
+
+To use {name} up and running, the most recommended and beginner-friendly way is to simply open the {name} IDE that is a part of the package. 
+The IDE will automate certain parts and it is tightly integrated with the rest of the official toolkit. 
+
+In the grand picture of things, the workflow of {name} is made up of three programs to get it running: 
+
+* The server which does the calculation and synthesis. 
+* The {name} language which controls the server and our primary way of doing things in {name}. 
+* The interpreter that executes the language and evaluate the results. 
+
+The code is executed and interpreted, then sends the output to the server where it will calculate and generate the sounds. 
+
+The interpreter and the server communicates through the https://en.wikipedia.org/wiki/Open_Sound_Control[**Open Sound Control**] (OSC) which is a protocol built on top of UDP/TCP (the same protocol as the internet was built upon). 
+This also means that outside of {name}, third-party programs can also communicate with it (mainly with the OSC). 
+
+When the official {name} IDE is successfully booted, it will first activate the {name} language interpreter (with the binary name `sclang`) in a separate process. 
+However, at default settings, the server is not automatically activated at successful boot. 
+We'll have to manually activate it either through the interpreter (execute `s.boot`) or the IDE (press `Ctrl + B`). 
+
+The IDE will also automate certain processes using the interpreter and the server. 
+As previously mentioned, the tight integration of the IDE between the official toolkit makes it easier for a beginner to get started. 
+footnote:[Talking about that to a first-timer will be painful so it will be for later or another note.] 
+
+
+
+
+== {name} language
+
+The {name} language is the primary gateway for using {name}. 
+Its primary purpose is to control and communicate with the server and evaluate and manipulate the results. 
+
+To make use of the language, we have to boot up the interpreter (`sclang`). 
+The language interpreter can be used to create GUIs (provided that certain dependencies are installed), send and receive data through OSC and MIDI, and compile {name} code. 
+
+With that said, let's get familiar with the basic syntax and concepts of the language. 
+As we'll see later on, the interpreter presents some quirks that'll make programming music a bit different. 
+
+
+=== Statements 
+
+As of tradition, let's start with the "Hello World" program: 
+
+[source, supercollider]
+----
+"Hello World".postln;
+----
+
+This will simply log a line containing the string "Hello World" and return the string itself. 
+Which means you can also log the string multiple times. 
+
+It also demonstrates what a statement look like in {name}. 
+All statements should end in a semicolon. 
+Though, the interpreter can implicitly insert semicolons at the last statement. 
+
+[source, supercollider]
+----
+// This is valid. 
+"Hello World"; 5;
+
+// This is still valid...
+"Hello World"; 5
+
+// This will result in an error.
+"Hello World" 5;
+
+// Especially this one...
+"Hello World" 5
+----
+
+
+=== Basic data types 
+
+In {name}, the basic data types that are common in programming are here: strings, numbers, and array. 
+
+Each of them also has a set of associated methods. 
+
+[source, supercollider]
+----
+// Here's a string...
+"Hello World";
+"Hello World".endsWith("World"); // true
+"Hello World".rotate(4); // orldHello W
+
+// Here's a number.
+// This is a float.
+3.14;
+3.14.isFloat; // true
+3.14.isInteger; // false
+
+// This is an integer.
+3;
+3.isFloat; // false
+3.isInteger; // true
+
+// This is an array. 
+// It can hold anything (strings, numbers, arrays). 
+[ 1, 2, 3, 4, 5, "Hello" ];
+[ 1, 2, 3, 4, 5, "Hello" ].scramble; // the elements are now in random order
+----
+
+In {name}, you might also see **symbols**. 
+These are a sequence of characters (similar to strings) and are used to easily identify objects. 
+In basic practice, you use symbols almost similar to strings. 
+Keep in mind that strings should be mainly used for processing textual data. 
+
+
+=== Variables and functions 
+
+Let's make our basic program a bit more dynamic with functions. 
+(Don't worry, the exciting stuff will be here soon.) 
+
+[source, supercollider]
+----
+var hello = { arg name = "World"; "Hello " ++ name; };
+
+hello.value(); // "Hello World"
+hello.value("foo-dogsquared"); // "Hello foo-dogsquared"
+----
+
+TIP: The function can also be written as `{ |name = "World"| "Hello " ++ name; }`. 
+
+The previous code listing demonstrate of variables and functions (and comments). 
+Variables and functions work in the same way as other programming languages. 
+
+In {name}, identifiers (the name of variables) can only start with lowercase characters followed with <=0 valid characters (alphanumeric characters and underscore). 
+
+[source, supercollider]
+----
+// Valid identifiers. 
+var h;
+var hello_world;
+var helloWorld;
+var hello_W0r1d;
+
+// Illegal identifiers. 
+var Hello_world;
+var 0_h;
+var _h;
+----
+
+When the interpreter is booted, there are certain variables that are already declared. 
+These are called **interpreter variables** and are composed of the lowercase letters (`a-z`). 
+You may use this set of variables for your own and nothing in {name} stops you from doing so. 
+However, certain variables such as `s` contains a value (i.e., the server). 
+It is also recommended to leave certain variables untouched. 
+
+In some cases, you may also see variables that starts with a tilde (`~`). 
+These are referred to as **environment variables**. 
+Despite the name, they are not derived from shell environment variables. 
+Rather, they are variables that is always available in the global scope (environment) once declared. 
+
+[source, supercollider]
+----
+// Environment variables are still available once the scope they are declared on is out of scope. 
+(
+    ~hello = "HELLO WORLD";
+)
+
+~hello.postln; // HELLO WORLD
+
+// However, local variables does not. 
+(
+    var hello = "HELLO WORLD";
+)
+
+hello.postln; // The interpreter will throw an error. 
+
+// Using one of the interpreter variables. 
+h = "HELLO WORLD";
+(
+    var h = "HELLO DWORL";
+    h.postln; // HELLO DWORL
+)
+h.postln; // HELLO WORLD
+----
+
+In summary: 
+
+* Variables declared with `var` are locally scoped. 
+Once the scope they are declared in are out of scope, so does the variable. 
+
+* Interpreter and environment variables are more or less global variables. 
+They can be used and reassigned in your own whim. 
+
+
+=== Functions 
+
+Functions work in a similar manner compared to other programming languages. 
+They are simply a set of instructions that can accept arguments and return a value. 
+
+We have already seen a function in the previous sections. 
+
+In {name}, a function is declared by delimiting them with a pair of curly brackets (`{}`). 
+You can also make the function accept arguments by creating an argument declaration statement. 
+
+[source, supercollider]
+----
+// Yes, this is a function that simply returns a string containing "Hello World". 
+~f1 = { "Hello World" };
+~f1.value(); // Hello World
+~f1.value("WHAT?"); // Still the same and no error was thrown. 
+
+// A function that accepts one argument. 
+~f2 = { arg name; "Hello " ++ name; };
+~f2.value(); // Hello nil
+~f2.value("World"); // Hello World
+
+// A function with a default value. 
+~f3 = { arg name = "World"; "Hello " ++ name };
+~f3.value(); // Hello World
+~f3.value("foo-dogsquared"); // Hello foo-dogsquared
+~f3.value(name: "foo-dogsquared"); // Same as above. Just with explicitly named parameters. 
+----
+
+In the next code block, we assigned the dynamic "Hello World" function in a variable named `hello` and used it a couple of times. 
+
+Take note the return value of the function is simply the resulting last statement. 
+This is also true when a block is evaluated and printed in the post window. 
+
+[source, supercollider]
+----
+var hello = { arg name = "World"; "Hello " ++ name; }; <.>
+
+hello.value(); // Hello World
+hello.value("foo-dogsquared"); // Hello foo-dogsquared
+----
+
+<.>: We simply overridden the return value to be `5`. 
+Now the intended value of our functions will be useless. 
+
+
+=== Code blocks 
+
+A code block is simply a group of code statements. 
+Practically, it is useful when trying to execute more than one line of {name} code. 
+
+To group these statements together, we can enclose them with a pair of parenthesis. 
+
+[source, supercollider]
+----
+(
+    var hello = { arg name = "World"; "Hello " ++ name; };
+
+    hello.value(); // "Hello World"
+    hello.value("foo-dogsquared"); // "Hello foo-dogsquared"
+)
+----
+
+When the entire code block is executed, it will only post the latest statement (`"Hello foo-dogsquared"`) in the post window. 
+If you want the values to be logged in the post window, simply add the `postln` method. 
+
+A code block will also dictate the scope of the values. 
+Once the block is out of scope, so does its values. 
+Accessing them will cause the interpreter to throw an error. 
+
+[source, supercollider]
+----
+(
+    var answer_to_everything = 42;
+
+    answer_to_everything.postln;
+
+    (
+        var inner_var = answer_to_everything + 5;
+        inner_var.postln;
+    )
+
+    // It will return an error. 
+    inner_var.postln;
+)
+
+// The variable is now out of scope. 
+// Thus, it will throw an error. 
+answer_to_everything.postln;
+----
+
+
+=== Object-oriented nature 
+
+That said, let's get into the nature of the language itself. 
+
+The http://doc.sccode.org/Guides/Intro-to-Objects.html[official documentation] states that all entities are an object. 
+This includes strings, numbers, symbols, and functions. 
+
+The object-oriented nature is more obvious with functions where unlike other programming languages, we don't define functions in the same way as {name}. 
+Rather, we usually create them and store it in a variable. 
+
+The definition of an object-oriented language as explained from the documentation is closer to the http://www.purl.org/stefan_ram/pub/doc_kay_oop_en["message passing" definition originally defined by its creator]. 
+
+To make an operation to an object, one should invoke a **message** with the said object as the receiver. 
+A message is simply a request for an operation to the receiver. 
+
+Changing the object's internal state, deriving another object, or producing another object can only be done by sending messages. 
+Which means binary operators (e.g., `+`, `-`, `/`, `*`)  are also considered as invoking a message. 
+
+In {name}, there are multiple ways to write a message. 
+
+[source, supercollider]
+----
+// This pair of syntax is equivalent. 
+receiver.message(args,...);
+message(receiver, args,...);
+
+// This (contrived) real-life example is just the same. 
+"Hello World".postln;
+postln("Hello World");
+
+// Another (contrived) example. 
+"Hello World".rotate(4);
+rotate("Hello World", 4);
+----
+
+Writing them in certain style mostly boils down in personal (or team) preferences. 
+Although there are some instances where one style are more suitable for readability. 
+
+TIP: Regarding operators, {name} also supports operator overloading. 
+
+
+=== Precedence 
+
+If you've worked with other programming languages, you can easily familiarize with the language. 
+However, like all programming languages, there are some specific quirks you might want to know. 
+
+For example, operator precedence (especially mathematical operators) does not exist in {name}. 
+Rather, it has a left-to-right precedence regardless of operation. 
+
+Take the following mathematical expression, for example. 
+
+[source, supercollider]
+----
+8 + 9 * 2 // 34
+----
+
+If executed in {name}, it will not result in `26`. 
+Rather, it will be `34`. 
+
+A simple solution is simply forcing the intended precedence with a pair of parenthesis. 
+
+[source, supercollider]
+----
+8 + (9 * 2) // 26
+----
+
+
+
+
+== Interaction with audio 
+
+Now that we have tackled most of the basic stuff, let's get into the real deal of {name}: interacting with audio. 
+In this section, we'll go way off our teachings here but it'll serve as the first taste of what {name} can do. 
+
+CAUTION: {name} cannot protect you from distorted or loud outputs. 
+Be sure to have your headphones set at minimal level. 
+
+All types of activities have some sort of a "Hello World" thing. 
+In audio programming languages, most of the time it's a sine wave. 
+Let's do just that. 
+
+[source, supercollider]
+----
+{SinOsc.ar(mul: 0.1)}.play;
+----
+
+You may notice that the audio output is only on one side of the audio device. 
+We'll see later why it is the case. 
+
+Anyway, it can get boring quickly with a simple example. 
+Let's spice that up a bit. 
+
+[source, supercollider]
+----
+{SinOsc.ar(mul: LFNoise1.kr(8))}.play;
+----
+
+Now we have an offbeat sine wave created by overlapping it with a low-filter noise. 
+As you might have noticed, it just plays the same note. 
+Let's change that. 
+
+[source, supercollider]
+----
+(
+{SinOsc.ar(
+    freq: LFNoise1.kr(16).range(200, 1000),
+    mul: LFNoise1.kr(8),
+)}.play
+)
+----
+
+The previous code block now sounds like a generic sound effect you would see with an alien-related scene. 
+
+If you want to add a more deterministic and musical approach with your sounds. 
+We can make use of **patterns** which serves more of a recipe/music sheet for your synths. 
+
+[source, supercollider]
+----
+(
+var keys = [0, 1, 2, 3, 4, 5, 6, 7];
+Pbind(
+    \degree, Pseq(list: keys, repeats: inf),
+    \dur, 0.2,
+    \amp, 0.2,
+).play;
+)
+----
+
+You can also create interactive pieces with certain objects. 
+The most ubiquitous examples are used with GUI but let's stay GUI-less for now. 
+
+The following example lets you create an interactive piece that plays a sine wave with the mouse acting like a theremin! 
+
+[source, supercollider]
+----
+{SinOsc.ar(freq: MouseX.kr(220, 880), mul: MouseY.kr(0, 1))}.play;
+----
+
+With the rudimentary stuff has been introduced, let's take a look into the fundamentals of {name}. 
+Unlike this note, each fundamental concepts will be explained in individual notes. 
+footnote:[This note is also getting too long so that's another reason to modularize this document.] 
+
+
+
+
+[appendix]
+== Additional readings
+
+http://doc.sccode.org/Tutorials/Getting-Started/00-Getting-Started-With-SC.html[Official tutorial documentation from SuperCollider]:: 
+A comprehensive tutorial series officially provided from the community. 
+It is included in the built-in documentation browser from the IDE. 
+
+http://doc.sccode.org/[Official documentation of {name}]:: 
+The official documentation of {name}. 
+It is useful to explore the plethora of classes and options for your sounds. 
+It also leaves a couple of helpful documents such as the previously linked tutorial series. 
+
+https://ccrma.stanford.edu/~ruviaro/texts/A_Gentle_Introduction_To_SuperCollider.pdf[_A Gentle Introduction to SuperCollider_, 2nd revision (2015-10-20) by "Bruno Ruviaro"]:: 
+Self-explanatory title is self-explanatory. 
+With the different approach this book takes, it can help you further in understanding SuperCollider. 
+This note was written with the similar approach from this reference. 
+
+https://www.youtube.com/playlist?list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC[_SuperCollider Tutorials_ by "Eli Fieldsteel"]:: 
+A video tutorial series by https://www.youtube.com/channel/UCAf4fP8QzKkJ_t-c1F2v27Q[Eli Fieldsteel] that comprehensively introduces SuperCollider. 
+Despite the publication date from 2013, I still recommend this video series especially if you have trouble understanding the official getting started series from the documentation. 
+It also gets a bit more advanced and gives out a few practical pointers once you're done with the basics. 
+

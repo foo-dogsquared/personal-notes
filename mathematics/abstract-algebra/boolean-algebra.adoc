@@ -1,7 +1,9 @@
 = Boolean algebra 
 Gabriel Arazas <foo.dogsquared@gmail.com>
 2019-11-09
+:toc:
 
+:stem: latexmath
 
 In this note, it tackles the basics of boolean algebra commonly found in electronic systems and engineering. 
 
@@ -52,11 +54,13 @@ The process of conjunction needs at least two values to compare similar to the e
 
 [stem]
 ++++
-1 \land 1 \implies 1
-0 \land 0 \implies 0 
+\begin{align}
+1 \land 1 \implies 1 \\
+0 \land 0 \implies 0 \\
 
-1 \land 1 \land 0 \implies 0
-1 \land 1 \land 1 \implies 1
+1 \land 1 \land 0 \implies 0 \\
+1 \land 1 \land 1 \implies 1 \\
+\end{align}
 ++++
 
 Since the scope of boolean algebra is quite small compared to the algebra we've all known, we can list out all of the possible combinations from the number of the given values. 
@@ -101,12 +105,14 @@ Similar to conjunction, the process of disjunction needs at least two values to 
 
 [stem]
 ++++
-1 \lor 1 \implies 1
-0 \lor 0 \implies 0
+\begin{align}
+1 \lor 1 \implies 1 \\
+0 \lor 0 \implies 0 \\
 
-1 \lor 1 \lor 0 \implies 1 
-1 \lor 0 \lor 0 \implies 1
-0 \lor 0 \lor 0 \implies 0
+1 \lor 1 \lor 0 \implies 1 \\
+1 \lor 0 \lor 0 \implies 1 \\
+0 \lor 0 \lor 0 \implies 0 
+\end{align}
 ++++
 
 For an example, let's formally list out all of the truth conditions of the OR operation with two labelled values, stem:[X] and stem:[Y]. 
@@ -148,7 +154,7 @@ Thus, the truth table is smaller than the rest.
 [cols="2*"]
 |===
 | stem:[X] 
-| stem:[\not(X)] 
+| stem:[\lnot(X)] 
 
 | 0 
 | 1 
@@ -174,9 +180,11 @@ First, operators produce boolean values and only boolean values.
 
 [stem]
 ++++
-A \land B = X \text{ where $X$ \in \{ 0, 1 \}  }
+\begin{align}
+A \land B &= X \text{ where $X$ $\in$ \{ 0, 1 \}  } \\
 
-\lnot(A) = X 
+\lnot(A) &= X 
+\end{align}
 ++++
 
 Second, being operators, we can combine them. 
@@ -193,9 +201,11 @@ They are basically the same thing except it is suited for the system of boolean 
 .Examples of boolean functions
 [stem]
 ++++
-f(x) = x \lor \lnot(x)
-g(x) = x \land (x \land \lnot(x))
-h(x) = f(x) || g(x)
+\begin{align}
+f(x) &= x \lor \lnot(x) \\
+g(x) &= x \land (x \land \lnot(x)) \\
+h(x) &= f(x) \parallel g(x)
+\end{align}
 ++++
 
 
@@ -222,9 +232,11 @@ To put it mathematically, here are the equations.
 
 [stem]
 ++++
-\lnot(A \land B) = \lnot(A) \lor \lnot(B)
+\begin{align}
+\lnot(A \land B) &= \lnot(A) \lor \lnot(B) \\
 
-\lnot(A \lor B) = \lnot(A) \land \lnot(B)
+\lnot(A \lor B) &= \lnot(A) \land \lnot(B)
+\end{align}
 ++++
 
 
@@ -268,9 +280,11 @@ The resulting expression looks like the following.
 
 [stem]
 ++++
-A \lor (\lnot(A) \lor B)
+\begin{align}
+A \lor (\lnot(A) \lor B) \\
 
 (A \lor \lnot(A)) \lor B
+\end{align}
 ++++
 
 Take note that we can apply the associative law in here. 
@@ -295,11 +309,13 @@ Here is the original expression wrapped as a function with its simplifications.
 
 [stem]
 ++++
-f(A, B) = \lnot(\lnot(A) \land (A \land \lnot(B))) 
+\begin{align}
+f(A, B) &= \lnot(\lnot(A) \land (A \land \lnot(B))) \\
 
-f(A, B) = (A \lor \lnot(A)) \lor B 
+f(A, B) &= (A \lor \lnot(A)) \lor B \\
 
-f(A, B) = 1 
+f(A, B) &= 1 \\
+\end{align}
 ++++
 
 Basically, every combination of values plugged in the function will result in 1. 

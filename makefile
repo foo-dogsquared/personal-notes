@@ -11,7 +11,7 @@ clean:
 	rm -rf $(output)
 
 %.html : %.adoc
-	asciidoctor --attribute toc $< --out-file $(output)/$@
+	asciidoctor -T .templates --attribute toc $< --out-file $(output)/$@
 
 %.pdf : %.adoc
-	asciidoctor --attribute toc $< --backend pdf --out-file $(output)/$@
+	asciidoctor -r asciidoctor-pdf -b pdf --attribute mathematical-format=svg --attribute toc --attribute 'imagesdir=$(realpath $(output)/$(dir $@))' -r asciidoctor-mathematical $< --out-file $(output)/$@

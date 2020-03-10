@@ -2,6 +2,7 @@
 <html<%= (attr? :nolang) ? nil : %( lang="#{attr :lang, 'en'}") %>>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<%= attr :encoding %>">
+<meta charset="utf-8">
 <meta name="generator" content="Asciidoctor <%= attr 'asciidoctor-version' %>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><%
 [:description, :keywords, :author, :copyright].each do |key|
@@ -9,7 +10,8 @@
 <meta name="<%= key %>" content="<%= attr key %>"><%
   end
 end %>
-<title><%= doctitle(:sanitize => true) || (attr 'untitled-label') %></title><%
+<title><%= doctitle(:sanitize => true) || (attr 'untitled-label') %></title>
+<%
 if Asciidoctor::DEFAULT_STYLESHEET_KEYS.include?(attr :stylesheet)
   if @safe >= Asciidoctor::SafeMode::SECURE || (attr? :linkcss) %>
 <link rel="stylesheet" href="<%= normalize_web_path(Asciidoctor::DEFAULT_STYLESHEET_NAME, (attr :stylesdir, '')) %>"><%
@@ -150,15 +152,44 @@ end %><%= (docinfo_content = (docinfo :footer)).empty? ? nil : %(
 </div><%
 end %>
 <% if attr? 'stem' %>
-<script>
-    window.addEventListener("load", function () {
-        const script = document.createElement("script");
-        script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-        script.async = true
+  <% if attr? 'offline' %>
+    <% folder_location = Pathname.new(base_dir).relative_path_from(Pathname.getwd)
+    root_output_folder = Pathname.new(".output") 
+    output_subject_folder = root_output_folder + folder_location %>
+    <style>
+    @font-face {
+      font-family: 'MJX_Math';
+      src: url("<%= root_output_folder.relative_path_from(output_subject_folder) + '.fonts/STIX2Text-Italic.woff2' %>") format("woff2");
+    }
 
-        document.head.appendChild(script);
-    })
-</script>
+    @font-face {
+      font-family: 'MJX_Main';
+      src: url("<%= root_output_folder.relative_path_from(output_subject_folder) + '.fonts/STIX2Math.woff2' %>") format("woff2");
+    }
+    .MathJax {
+      font-family: MJX_Math;
+      font-size: 131%;
+      line-height: .8em;
+    }
+    .MathJax {
+      font-family: MJX_Main;
+      font-size: 131%;
+      line-height: .8em;
+    }
+    </style>
+    <script src="<%= root_output_folder.relative_path_from(output_subject_folder) + Pathname.new("mathjax.js")
+  %>"></script>
+  <% else %>
+    <script>
+        window.addEventListener("load", function () {
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+            script.async = true
+
+            document.head.appendChild(script);
+        })
+    </script>
+  <% end %>
 </body>
 <% end %>
 </html>

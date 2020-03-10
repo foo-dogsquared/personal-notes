@@ -10,6 +10,9 @@ from queue import Queue
 from threading import Thread
 from pathlib import Path
 
+OUTPUT_DIRECTORY = ".output/"
+
+
 def kebab_case(string, separator="-"):
   whitespace_split = re.compile(r"\s+")
   invalid_characters = re.compile(r"[^A-Za-z0-9]")
@@ -95,7 +98,7 @@ def asciidoctor_process(file_queue):
         break
 
     file_relative_path = os.path.relpath(asciidoctor_file)
-    file_compile_path = ".output/" + file_relative_path[:-(len(asciidoctor_file.suffix))] + ".html"
+    file_compile_path = OUTPUT_DIRECTORY + file_relative_path[:-(len(asciidoctor_file.suffix))] + ".html"
     try:
       compilation_result = subprocess.run([
         "asciidoctor",

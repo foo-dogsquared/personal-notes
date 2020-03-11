@@ -1,7 +1,7 @@
 # topmost editorconfig file
 root = true
 
-[*.py]
+[*.{py,rb}]
 indent_style = space
 indent_size = 2
 charset = utf-8

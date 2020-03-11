@@ -24,9 +24,9 @@ In order to fully utilize this repo, you need the following programs:
 | Minimum version
 | My version of the program as of this writing
 
-| https://www.python.org/[Python 3]
-| 3.5
-| 3.7.3
+| https://www.ruby-lang.org/en/[Ruby]
+| 2.7.0
+| 2.7.0
 
 | https://asciidoctor.org/[Asciidoctor]
 | 2.0

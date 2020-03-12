@@ -2,14 +2,22 @@
 
 # A simple notes manager specifically for this setup.
 
+require 'erb'
 require 'fileutils'
 require 'optparse'
 require 'pathname'
 
 require 'asciidoctor'
 
-OUTPUT_DIRECTORY = ".output"
-TEMPLATES_DIRECTORY = "templates/output"
+
+$OUTPUT_DIRECTORY = ".output"
+$TEMPLATES_DIRECTORY = "templates"
+
+DEFAULT_TEMPLATE = "= <%= title %>
+:toc:
+
+:stem: latexmath
+"
 
 
 def kebab_case string, separator = "-"
@@ -88,10 +96,10 @@ end
 
 
 def compile_asciidoctor_doc path = nil, offline = false
-  asciidoctor_doc = Asciidoctor.load_file path, safe: :safe, template_dir: TEMPLATES_DIRECTORY, header_footer: true
+  asciidoctor_doc = Asciidoctor.load_file path, safe: :safe, template_dir: "#{$TEMPLATES_DIRECTORY}/output", header_footer: true
   asciidoctor_doc.set_attribute('toc', '')
 
-  output_file_dir = Pathname.new(OUTPUT_DIRECTORY) + path.dirname
+  output_file_dir = Pathname.new($OUTPUT_DIRECTORY) + path.dirname
   FileUtils.mkpath(output_file_dir)
   output_file = output_file_dir + path.basename(".*").sub_ext(".html")
   file = File.new output_file, mode = "w+"
@@ -101,7 +109,35 @@ def compile_asciidoctor_doc path = nil, offline = false
 end
 
 
-def compile_all_asciidoctor_docs path = nil, thread_count = 1, offline = false
+def create_document kwargs
+  title = kwargs.fetch(:title, "Untitled")
+  template_file = kwargs.fetch(:template_file, "#{$TEMPLATES_DIRECTORY}/input/document.adoc.erb")
+  path = kwargs.fetch(:path, "./")
+  template_file = Pathname.new template_file
+  path = Pathname.new path
+
+  file_name = kebab_case title
+  if path.directory?
+    path += file_name + ".adoc"
+  end
+
+  begin
+    template = File.read template_file
+  rescue
+    template = DEFAULT_TEMPLATE
+  end
+
+  b = binding
+  erb = ERB.new template
+  output_file = File.new path.to_s, mode = "w+"
+  output_file.write erb.result b
+end
+
+
+def compile_all_asciidoctor_docs kwargs = {}
+  path = kwargs.fetch(:dir, nil)
+  thread_count = kwargs.fetch(:thread_count, 1)
+  offline = kwargs.fetch(:offline, false)
   path = check_path_is_directory path
 
   asciidoctor_files = path.glob("**/*.adoc")
@@ -111,7 +147,7 @@ def compile_all_asciidoctor_docs path = nil, thread_count = 1, offline = false
   mutex_lock = Mutex.new
   total_files_count = files_queue.length
   compiled_files_count = 0
-  progress_bar_spacing = 15
+  progress_bar_spacing = 20
 
   puts "Found #{files_queue.length} files to compile."
 
@@ -144,6 +180,7 @@ def compile_all_asciidoctor_docs path = nil, thread_count = 1, offline = false
 
   threads.each { |thread| thread.join }
 end
+
 
 def recursively_create_index path = nil
   path = check_path_is_directory path
@@ -197,6 +234,7 @@ end
 subcommands = {
   "create" => OptionParser.new do |opts|
     options[:create] = {}
+
     opts.banner = "Usage: #{__FILE__} create [options]"
 
     opts.on("-pPATH", "--path=PATH", "set the path of the newly created document") do |path|
@@ -206,14 +244,16 @@ subcommands = {
     opts.on("-tTITLE", "--title=TITLE", "set the title of the document") do |title|
       options[:create][:title] = title
     end
+
+    opts.on("-TTITLE", "--template=TITLE", "set the title of the document") do |file|
+      options[:create][:template_file] = file
+    end
   end,
   "compile" => OptionParser.new do |opts|
     options[:compile] = {}
-    options[:compile][:dir] = "."
-    options[:compile][:output_dir] = options[:compile][:dir]
 
     opts.on("--thread-count=NUMBER", Integer, "set the number of threads for simultaneous compilation") do |num|
-      options[:compile][:threadcount] = num
+      options[:compile][:thread_count] = num
     end
 
     opts.on("--offline", "set if the documents are set to be read in an offline environment") do |v|
@@ -240,8 +280,8 @@ subcommands[command].order!
 
 case command
 when "compile"
-  compile_all_asciidoctor_docs options[:compile][:dir], options[:compile][:threadcount]
+  compile_all_asciidoctor_docs({ **options[:compile] })
 when "create"
-  puts "WORLD"
+  create_document({ **options[:create] })
 end
 

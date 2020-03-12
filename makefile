@@ -5,7 +5,7 @@ output=.output
 
 build:
 	make clean
-	./manager.py compile ./notes --threadcount 16
+	./manager.rb compile ./notes --threadcount 16
 
 clean:
 	rm -rf $(output)

@@ -1,0 +1,324 @@
+= Introduction to concurrency
+Gabriel Arazas <foo.dogsquared@gmail.com>
+2020-03-18
+:toc:
+
+:stem: latexmath
+
+With the advent of hardware getting more powerful, I feel there is still a lack of need to understand concurrency overall. 
+This includes myself until I have to implement an application that takes advantage of multiple threads for faster execution. 
+
+This note will tackle concurrency on a conceptual level. 
+Despite discussing it holistically, it will use https://www.rust-lang.org/[Rust] as the language since I'm using it as of 2019-12-10. 
+footnote:[Also, I find how Rust tackle the problem of concurrency somewhat intuitive. It also opens up the problems associated with concurrency so more reason for me to use it.] 
+
+
+
+
+== What is concurrency
+
+Even though it can be explained from looking at the word, let's tackle what is concurrency really is. 
+
+With the average hardware getting more transistors and cores, programs can take advantage of those upgrades. 
+With more transistors comes more speed which passively affect the program execution but with more cores, programs have to explicitly use them. 
+
+**Concurrency** is the ability to run parts of a program independently. 
+
+There is also a similar concept called **parallelism** which describes the ability to run multiple parts at the same time. 
+Parallel processes are often concurrent but not all concurrent processes are parallel. 
+There is a great talk by Rob Pike titled https://player.vimeo.com/video/49718712[Concurrency is not parallelism] that deals to differentiate what is concurrency. 
+
+Taking the definition from the linked talk, concurrency further deals with the design and composition of parts of the programs 
+while parallelism deals with the execution of the tasks. 
+In simpler words, concurrency deals with the tasks and parallelism does the tasks simultaneously. 
+
+
+
+
+== The operating system, processes, and threads
+
+The operating system (and the processor/s) plays a large role in enabling concurrency for your applications. 
+
+Its role is to manage and schedule tasks which will be done by the processor. 
+It can do multitasking which gives the ability to run multiple programs at the same time — e.g., playing music while browsing the net, creating 3D models while following a video tutorial. 
+
+These user programs such as the web browser or the media player are known to the processor as **processes**. 
+Not all processes are necessarily user applications but all user applications are considered as a process. 
+Examples of other processes are https://en.wikipedia.org/wiki/Daemon_(computing)[daemons] — processes that run in the background. 
+
+Spawning processes can be a bit heavy on the resources which is why a process can spawn additional unit of work called **threads** (or fibers) which take less resources to spawn, switch, and despawn. 
+A thread also share the same memory pool with the rest of the threads spawned from the same process. 
+
+There are many programs that take advantage of multiple threads that is found on common computer programs. 
+
+* Word processors like Microsoft Word and LibreOffice Writer where there might be a separate thread for its spell checker. 
+* Media players like Windows Media Player or VLC where one (or more) worker might have the task of rendering the file. 
+* Computer-aided design programs like AutoCAD and FreeCAD where there are separate workers for rendering and calculating the output. 
+* Video games especially where there might be threads that are for rendering the graphics, playing sounds and music, and toggling the settings. 
+
+
+
+
+== Problems with multithreaded programs 
+
+At this point, you know the point the concurrency. 
+Let's take a look at the potential challenges that pop in creating multithreaded programs. 
+
+
+=== Race conditions 
+
+A **race condition** somewhat speaks for itself. 
+
+It can be imagined as a literal competitive race where you and other competitors have to compete for the first place. 
+It could also be a race for something (i.e., concert ticket, albums, limited T-shirts, physical CD) before it sold out. 
+It could also be a game of "Bring Me" where it is a race for bringing the specified item first. 
+
+In the context of programming, a race condition can affect the correctness of the program. 
+
+An example of a race condition in programming is simply multiple threads that executes asynchronous code. 
+A lone asynchronous operation does not create a race condition. 
+Two asynchronous HTTP requests for the same resource, multiple syscalls for a file request, and for JavaScript, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race[`Promise.race`] method. 
+
+Speaking of JavaScript, let's take a closer example of a race condition that can be found on web browsers. 
+
+Let's say a web page is requesting multiple JavaScript files asynchronously. 
+However, one of the scripts relies on one of them. 
+This creates a race condition where the parent module should be parsed first. 
+Otherwise, it would throw out an error and create an incomplete page. 
+Let's take the following program as an specific example. 
+
+NOTE: A simple solution for the race condition is delaying the child module to the end of the script. 
+Preferably by enabling the https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script[`defer`] attribute. 
+
+Now that we saw some examples, let's recreate a race condition for ourselves. 
+
+[source, rust]
+----
+use std::thread;
+
+static mut VALUE: i32 = 0;
+
+fn main() {
+    let mut threads = vec![];
+    for t in 0..10 {
+        let thread = thread::spawn(move || {
+            println!("---- THREAD {} START ----", t);
+            for _ in 1..1000 {
+                unsafe {
+                    println!("THREAD {}: Getting value: {}", t, VALUE);
+                    VALUE += 1;
+                    println!("THREAD {}: Adding value: {}", t, VALUE);
+                }
+            }
+            println!("---- THREAD {} END ----", t);
+        });
+
+        threads.push(thread);
+    }
+
+    // This is just to give some little time for our program to fill those values. 
+    thread::sleep(std::time::Duration::from_micros(43));
+
+    unsafe { println!("{}", VALUE); }
+}
+----
+
+Since the main function doesn't wait for the spawned threads, the program will end by the time the main function end. 
+This causes the final value of `result` to be different in each run. 
+Sometimes, the program will not even run at all and `result` will still cause 0. 
+At other times, the program may also end in a panic. 
+
+The order of the output itself can be considered as a race condition itself whether this matters for the user. 
+
+
+=== Data races 
+
+**Data races**, simply put, is a scenario when two (or more) processes try to change a resource at the same time. 
+
+Data races are narrowly defined compared to race conditions as we will see. 
+Taken from the https://doc.rust-lang.org/book/title-page.html[official Rust book] of the "References and Borrowing" section, a data race is identified with the following conditions: 
+
+* Two or more pointers access to the same data at the same time. 
+* One of them is a write operation. 
+* One of them is unsynchronized. 
+
+In other words, a data race refers to the unsynchronized memory operations with the intent of changing the resource to the same memory address. 
+
+Let's take another contrived example. 
+
+[source, rust]
+----
+use std::thread;
+
+static mut VALUE: i32 = 0;
+
+fn main() {
+    let mut threads = vec![];
+    for _ in 0..10 {
+        threads.push(thread::spawn(move || {
+            for _ in 0..1000 {
+                let value_1 = unsafe { &mut VALUE };
+
+                *value_1 += 1;
+            }
+        }));
+    }
+
+    // Waiting for all threads to finish. 
+    for th in threads {
+        th.join().unwrap();
+    }
+
+    unsafe { println!("{}", VALUE); }
+}
+----
+
+The result is almost always less than 10,000 (10 threads * 1000). 
+Some of the operations from the threads step over an operation from the other threads resulting in the inconsistent value in each run. 
+
+To mitigate against data races, there are some solutions for it. 
+One of it is simply making the accessed data or the update operation to be atomic. 
+
+One of the most common way to do it is locking it behind a mutual exclusion lock or mutex lock for short. 
+Proceed to the (hopefully) well-commented code to see what's the deal with mutexes. 
+
+[source, rust]
+----
+use std::sync::{Arc, Mutex};
+use std::thread;
+
+// We don't really need this anymore but it is just for the sake of example. 
+static mut VALUE: i32 = 0;
+
+fn main() {
+    // Putting the value inside of a mutex. 
+    // A mutex is basically a guard that required to lock to get the value. 
+    // The lock allows for accessing the data one thread at a time. 
+    let value_mutex = Mutex::new(unsafe { VALUE });
+
+    // Then we put the mutex inside an atomic reference counter to make the mutex thread-safe. 
+    let atomic_value = Arc::new(value_mutex);
+
+    // Creating at least 10 threads. 
+    let mut threads = vec![];
+    for _ in 0..10 {
+        let arc = Arc::clone(&atomic_value);
+        threads.push(thread::spawn(move || {
+            for _ in 0..1000 {
+                // Get the value inside of the mutex. 
+                // The method called allows for a synchronization mechanism to form for our value. 
+                let mut atomic_value = arc.lock().unwrap();
+                *atomic_value += 1;
+            }
+        }));
+    }
+
+    // Waiting for all threads to be done. 
+    for th in threads {
+        th.join().unwrap();
+    }
+
+    // Access the value inside of the mutex and print it. 
+    println!("{:?}", *atomic_value.lock().unwrap());
+}
+----
+
+Now our code guarantees the final value to be at 10,000. 
+
+
+=== Deadlocks 
+
+Think of a situation where you're driving towards in an intersection. 
+You've encountered three other cars in each side of the intersection. 
+Since you're a good boi/gal, you waited for others to go ahead first. 
+But the other drivers are also good bois and gals, they also wait for others to go ahead before they go. 
+This creates a (contrived) problem where neither one of the cars will proceed. 
+This is an example of a **deadlock**. 
+
+Deadlock can be summed with https://upload.wikimedia.org/wikipedia/commons/4/4b/Alphonsegaston.jpg[this image I found from a popular Stack Overflow post]. 
+
+Commonly, deadlocks involve sharing a resource. 
+In the given example, the shared resource is the road and the task is you're only proceeding if all of them proceeded first. 
+
+In a programming context, this usually involve a lock being acquired and never completing the task. 
+Tools such as mutexes are indeed powerful for concurrent programming but it can cause trouble if mishandled. 
+
+Let's create a deadlock for ourselves. 
+
+[source, rust]
+----
+use std::sync::{Arc, Mutex};
+use std::thread;
+
+// Not this again but we're doing it for the sake of the example. 
+static mut VALUE: i32 = 0;
+
+fn main() {
+    // Putting the value inside of a lock and an atomic reference. 
+    let value_mutex = Mutex::new(unsafe { VALUE });
+    let atomic_value = Arc::new(value_mutex);
+
+    // Duplicating the reference to the mutex to be captured by the closure. 
+    let atomic_value_clone = Arc::clone(&atomic_value);
+
+    // Acquiring the lock for the main thread. 
+    // It will only give the lock back until the end of the block. 
+    let value = atomic_value.lock().unwrap();
+
+    // Creating a thread that will return the value inside of the lock. 
+    let thread = thread::spawn(move || {
+        let value = atomic_value_clone.lock().unwrap();
+        *value
+    });
+
+    // Using the value we got from the lock because why not. 
+    println!("{}", value);
+
+    // Waiting for the thread to complete. 
+    // However, it will not finish since the main thread has the lock. 
+    thread.join().unwrap();
+}
+----
+
+As you might have imagined from the examples, a deadlock can occur on certain conditions. 
+Those conditions are the following: 
+
+* When the resource is non-shareable or is in mutual exclusion. 
+* When the resource can only be released by the process holding it. 
+* When the requested resource has to wait and the requesting process holds a resource. 
+* When there is a circular wait and hold among the processes. 
+
+One of the simplest solutions in dealing against a deadlock is to terminate the process. 
+Another is be good at managing locks. 
+
+You could also remove the lock but it depends if the program can afford the problem of potential data races and race conditions. 
+
+More elegant and sophisticated solutions are available. 
+In fact, there are a couple of problems to illustrate designing against deadlocks. 
+One of the more popular problems presented is the https://en.wikipedia.org/wiki/Dining_philosophers_problem["Dining philosophers problem"]. 
+
+
+
+
+[appendix]
+== Additional readings
+
+https://en.wikipedia.org/wiki/Concurrent_computing[__Concurrent computing__ from "Wikipedia"]:: 
+A https://en.wikipedia.org/[Wikipedia] entry on concurrency on the practical application of computing. 
+
+
+https://doc.rust-lang.org/book/ch16-00-concurrency.html[__Fearless Concurrency__ from the "Rust book"]:: 
+A dedicated chapter on concurrency from the https://doc.rust-lang.org/book/title-page.html[Rust book]. 
+Even though it explains how it applied specifically to Rust, it is still a good introduction on concurrency overall. 
+This is where I've mostly understood the potential benefits and problems with multithreading. 
+
+https://www.youtube.com/watch?v=Dbytx0ivH7Q[__Rust Concurrency Explained__ from the code::dive 2017 conference]:: 
+An hour-long presentation by Alex Crichton detailing the concurrency model of Rust. 
+Even though it is specifically applied to Rust, the overall concept is the same throughout. 
+
+https://player.vimeo.com/video/49718712[__Concurrency is not Parallelism__ from "Waza 2012"]:: 
+A great talk by Rob Pike (known for creating the Go language from Google) that describes what is concurrency and how it differs from parallelism. 
+
+https://www.internalpointers.com/post/gentle-introduction-multithreading[__A gentle introduction to multithreading__ from "Internal Pointers"]:: 
+A comprehensive yet simple article (as its title indicates) that tackles multithreading. 
+

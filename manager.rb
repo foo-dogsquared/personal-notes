@@ -13,7 +13,7 @@ require 'asciidoctor'
 $OUTPUT_DIRECTORY = ".output"
 $TEMPLATES_DIRECTORY = "templates"
 
-DEFAULT_TEMPLATE = "= <%= title %>
+$DEFAULT_TEMPLATE = "= <%= title %>
 :toc:
 
 :stem: latexmath
@@ -95,9 +95,35 @@ def create_asciidoctor_string path = nil
 end
 
 
-def compile_asciidoctor_doc path = nil, offline = false
-  asciidoctor_doc = Asciidoctor.load_file path, safe: :safe, template_dir: "#{$TEMPLATES_DIRECTORY}/output", header_footer: true
-  asciidoctor_doc.set_attribute('toc', '')
+def create_document kwargs
+  title = kwargs.fetch(:title, "Untitled")
+  template_file = kwargs.fetch(:template_file, "#{$TEMPLATES_DIRECTORY}/input/document.adoc.erb")
+  path = kwargs.fetch(:path, "./")
+  template_file = Pathname.new template_file
+
+  # Creating the directories of the path
+  path = Pathname.new path
+  FileUtils.mkpath(path)
+
+  file_name = kebab_case title
+  path += file_name + ".adoc"
+
+  begin
+    template = File.read template_file
+  rescue
+    template = $DEFAULT_TEMPLATE
+  end
+
+  b = binding
+  erb = ERB.new template, :trim_mode => "-"
+  output_file = File.new path.to_s, mode = "w+"
+  output_file.write erb.result b
+end
+
+
+def compile_asciidoctor_doc path = nil, offline = false, template_dir = "#{$TEMPLATES_DIRECTORY}/output"
+  asciidoctor_doc = Asciidoctor.load_file path, :safe => :safe, :header_footer => true, :template_dir => "./templates/output"
+  asciidoctor_doc.set_attribute('toc', 'left')
 
   output_file_dir = Pathname.new($OUTPUT_DIRECTORY) + path.dirname
   FileUtils.mkpath(output_file_dir)
@@ -109,45 +135,24 @@ def compile_asciidoctor_doc path = nil, offline = false
 end
 
 
-def create_document kwargs
-  title = kwargs.fetch(:title, "Untitled")
-  template_file = kwargs.fetch(:template_file, "#{$TEMPLATES_DIRECTORY}/input/document.adoc.erb")
-  path = kwargs.fetch(:path, "./")
-  template_file = Pathname.new template_file
-  path = Pathname.new path
-
-  file_name = kebab_case title
-  if path.directory?
-    path += file_name + ".adoc"
-  end
-
-  begin
-    template = File.read template_file
-  rescue
-    template = DEFAULT_TEMPLATE
-  end
-
-  b = binding
-  erb = ERB.new template
-  output_file = File.new path.to_s, mode = "w+"
-  output_file.write erb.result b
-end
-
-
 def compile_all_asciidoctor_docs kwargs = {}
   path = kwargs.fetch(:dir, nil)
   thread_count = kwargs.fetch(:thread_count, 1)
   offline = kwargs.fetch(:offline, false)
+  templates_dir = kwargs.fetch(:templates, "#{$TEMPLATES_DIRECTORY}/output")
   path = check_path_is_directory path
 
+  # Setting up the task list
   asciidoctor_files = path.glob("**/*.adoc")
   files_queue = Queue.new
   asciidoctor_files.each { |path| files_queue << path }
-
-  mutex_lock = Mutex.new
   total_files_count = files_queue.length
   compiled_files_count = 0
+
+  # Setting up the progress bar variables
+  mutex_lock = Mutex.new
   progress_bar_spacing = 20
+  tasks_per_block = total_files_count.to_f / progress_bar_spacing
 
   puts "Found #{files_queue.length} files to compile."
 
@@ -158,15 +163,13 @@ def compile_all_asciidoctor_docs kwargs = {}
         file = files_queue.pop
 
         begin
-          compile_asciidoctor_doc file
-
           # updating the progress bar
           # we have to update them through a mutex since we are in a separate thread 
           # and the variables we're updating are local variables
           mutex_lock.synchronize do
+            compile_asciidoctor_doc file, offline: offline, template_dir: templates_dir
             compiled_files_count += 1
             ratio = (compiled_files_count.to_f / total_files_count) * 100
-            tasks_per_block = total_files_count.to_f / progress_bar_spacing
             progress = "=" * (compiled_files_count.to_f / tasks_per_block).round unless compiled_files_count < tasks_per_block
             printf("\r[%-#{progress_bar_spacing}s] %d/%d %d%%", progress, compiled_files_count, total_files_count, ratio)
          end
@@ -206,7 +209,8 @@ subtext = <<HELP
 Commonly used command are:
    create  :     create a document from an ERB template
    compile :     compile a set of Asciidoctor notes
-See 'opt.rb COMMAND --help' for more information on a specific command.
+
+See '#{__FILE__} COMMAND --help' for more information on a specific command.
 HELP
 
 

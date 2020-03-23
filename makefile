@@ -1,14 +1,17 @@
 all: build
 
-.PHONY = "build clean"
+.PHONY = "build clean setup"
 output=.output
 
 build:
 	make clean
-	./manager.rb compile ./notes --threadcount 16
+	./manager.rb compile --directory ./notes
 
 clean:
 	rm -rf $(output)
+
+setup:
+	gem install asciidoctor slim
 
 %.html : %.adoc
 	asciidoctor -T .templates --attribute toc $< --out-file $(output)/$@

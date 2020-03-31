@@ -1,0 +1,185 @@
+= File descriptors
+Gabriel Arazas <foo.dogsquared@gmail.com>
+:revnumber: 0.1
+:revdate: 2020-03-31
+:revremark: First draft of {doctitle}
+:toc:
+
+:stem: latexmath
+
+
+When I first heard of file descriptors, I thought they are exclusively a Bash thing. 
+Now that I know it — it's (obviously) not. 
+File descriptors is an operating system kernel thing. 
+Specifically, it is a part of a Unix-based system (like Linux). 
+
+Without further ado, let's take a bit of a deep gander at file descriptors. 
+
+NOTE: Heads up that we'll be constructing some programs with C. 
+For future references, the compiler and its version that we'll be using in this note is `gcc v9.3.0`. 
+
+
+
+
+== What are file descriptors? 
+
+Combining the definitions from the https://en.wikipedia.org/wiki/File_descriptor[Wikipedia] and http://mywiki.wooledge.org/EnglishFrontPage[some guy's wiki] (seriously though, it's good), a file descriptor is a handle for a resource (e.g., a file, a socket, a pipe) represented with a positive integer. 
+Managing file descriptors are done by the operating system kernel. 
+In Linux (and maybe most Unix-based systems), each process has its own set of file descriptors called the **file descriptor table** that is already filled with at least three values: 0 (`stdin`), 1 (`stdout`), and 2 (`stderr`). 
+A process could also have as many file descriptors open as the operating system permits. 
+
+File descriptors are often seen in shell scripting. 
+If you're using something like https://www.gnu.org/software/bash/[GNU Bash] or https://www.zsh.org/[Zsh], most likely you're familiar with the following code. 
+
+[source, bash]
+----
+echo "DOGS" 1>/dev/null # <.>
+----
+
+<.> The `echo` command will print to `stdout` (which has the file descriptor value of 1) of the process. 
+In the following code, it will redirect the standard output stream to `/dev/null` which immediately throws out the value. 
+In other words, it will print nothing. 
+
+It's not a surprise but file descriptors are used with varying programming languages. 
+(It is one of the components in a Unix-based system, after all.) 
+In fact, most likely, you've already used it. 
+
+
+
+
+== Interacting with file descriptors 
+
+The most common interaction with file descriptors is interacting with files — e.g., creating, reading, and writing over files. 
+For example, the type `FILE` in C is a high-level interface built with file descriptors. 
+
+However for now, let's interact with raw file descriptors. 
+
+Here's one example well-commented and (hopefully) self-explanatory code programmed with C. 
+
+[source, c]
+----
+// Import references to the common file descriptors — e.g., `stdin`, `stdout`, and `stderr`. 
+#include <stdio.h>
+
+// This is needed for the flags in `open()`. 
+#include <fcntl.h>
+
+// Import the file descriptors functions. 
+#include <unistd.h>
+
+#define EXAMPLE_FILE "/tmp/example.file"
+
+int main() {
+    // Opening a file and returns an available file descriptor.
+    // Since, Unix processes already has the first three integers (including zero), it should result in an integer of >= 3. 
+    int fd = open(EXAMPLE_FILE, O_RDONLY | O_CREAT);
+
+    // Let's check it out.
+    printf("%i\n", fd);
+
+    // Now let's close it out. 
+    close(fd);
+
+    // According to the manual, it should return an integer for the available file descriptor. 
+    fprintf(stdout, "STDOUT, ready for printing!\n");
+    fprintf(stderr, "STDERR is here.\n");
+
+    // In this case, we closed out the file descriptor of 1 (which is the `stdout` stream) of this process. 
+    // Since we close it, there should no stuff to print out the next time we log something into `stdout`. 
+    close(1);
+
+    // Print it again. 
+    // This should print nothing. 
+    fprintf(stdout, "I've heard the stdout stream is closed. Testing.\n");
+
+    // How about stderr? 
+    fprintf(stderr, "I miss STDOUT. :(\n");
+
+    // Let's close it too. >:)
+    close(2);
+    fprintf(stderr, "No please...\n");
+    fprintf(stderr, "Noooooooooooooooooooo...\n");
+
+    // Deleting the file. 
+    unlink(EXAMPLE_FILE);
+
+    // We're outta here. 
+    return 0;
+}
+----
+
+If you're using a Unix system, you might have heard of the saying https://en.wikipedia.org/wiki/Everything_is_a_file["Everything in Unix is a file."] 
+Since file descriptors are basically resources, they have to be present in the filesystem somewhere. 
+Let's get inspect them up close and personal this time. 
+
+First, let's create a tiny program that'll last for a while. 
+The following C program simply is a tiny timer with its process ID (PID) already printed. 
+
+[source, c]
+----
+// timer.c
+#include <stdio.h>
+#include <sys/types.h>
+
+// The header where the sleep() is different between platforms. 
+#ifdef _WIN_32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
+int main() {
+    int seconds = 0;
+    pid_t pid = getpid();
+    while (1) {
+        printf("\r[%i]: %i", pid, seconds);
+        // `stdout` is buffered and will not print unless there is a newline so we'll have to immediately flush it out. 
+        fflush(stdout);
+        sleep(1);
+        seconds++;
+    }
+
+    return 0;
+}
+----
+
+Just compile and run it then a similar output should be like the following: 
+
+[source, shell]
+----
+$ make timer && ./timer
+[40369]: 0
+----
+
+Now let's open another terminal and explore `/proc/$PID/fd`. 
+The https://en.wikipedia.org/wiki/Procfs[`/proc`] is a special filesystem in Linux where process-related files are stored. 
+(And `fd` obviously means the file descriptors.) 
+
+[source, shell]
+----
+$ ls /proc/40369/fd
+0 1 2
+----
+
+Those numbers seems familiar... 
+No beating around, those are the file descriptors opened in our tiny C program. 
+
+NOTE: The numbers of file descriptors may vary depending on where you executed the program. 
+If you have opened the program on an integrated terminal in Visual Studio Code, for example, it will have more than the standard file descriptors. 
+For this, I recommend to run it in a bare terminal. 
+
+In our timer program, try to open up a few files and see what additional stuff has been opened up. 
+
+
+
+
+[appendix]
+== Additional readings 
+
+http://mywiki.wooledge.org/FileDescriptor[__File descriptors__ from GreyCat's Wiki] (retrieved 2020-03-31):: 
+A personal wiki by Greg (also known as GreyCat). 
+It just so happens they have a page about file descriptors in the context of Bash. 
+
+https://stackoverflow.com/q/5256599[__What are file descriptors, explained in simple terms?__ from "Stack Overflow"] (retrieved 2020-03-31):: 
+A Stack Overflow question that encourages explaining file descriptors in laymen terms. 
+

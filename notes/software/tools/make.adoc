@@ -148,7 +148,7 @@ $foo # nah
 
 Variables in Make can come from different places such as the command line arguments, environment variables, and inside of the makefile. 
 
-Declaring variables from command line arguments is simple enough as you would declare a Make variable—e.g. `make foo=VALUE bar=VALUE2 target`. 
+Declaring variables from command line arguments is simple enough as you would declare a Make variable — e.g. `make foo=VALUE bar=VALUE2 target`. 
 
 Environmental variables are detected by Make so there's no need for additional actions or anything. 
 Simply refer to them as such (e.g. `$(PATH)`) and Make will be able to know it just fine. 
@@ -157,7 +157,7 @@ Variables from various places also have different priorities.
 
 Here is a list of variable sources with the priority starting from the most prioritized. 
 
-. Explicitly overriden variables—these are variables defined with the `override` keyword. 
+. Explicitly overriden variables — these are variables defined with the `override` keyword. 
 . Command line arguments. 
 . Defined variables in the makefile. 
 . Environmental variables. 
@@ -171,7 +171,7 @@ Here is a list of variable sources with the priority starting from the most prio
 It would be great if Make provides an interface to easily update a part of the rule such as the name of the target and the prerequisite in your recipe. 
 Fortunately, Make exactly provides that through automatic variables. 
 
-Automatic variables let you easily refer to certain parts of the rule—eliminating manual updating in the process. 
+Automatic variables let you easily refer to certain parts of the rule — eliminating manual updating in the process. 
 
 Here's an example of a rule using an automatic variable. 
 

@@ -1,0 +1,110 @@
+= Running only one instance of the script at a time in Bash
+Gabriel Arazas <foo.dogsquared@gmail.com>
+:revnumber: 0.1
+:revdate: 2020-04-03
+:revremark: First draft of {doctitle}
+:toc:
+
+:stem: latexmath
+
+:bash_version: 5.0.16
+
+
+Managing only one instance of a script or even just a part of it to run in the shell (or at least in Bash). 
+In order to do that, we have to implement some form of mutual exclusion. 
+
+NOTE: For future references, the version of Bash we're using for this note is {bash_version}. 
+
+
+
+
+== The code 
+
+In order to do that, we need a locking mechanism for our script. 
+Locks are one of the common way to check if one instance is already running. 
+Essentially, we're doing https://en.wikipedia.org/wiki/File_locking[file locking] which is a mutual exclusion mechanism for files. 
+
+Here's one basic way on how to do such thing. 
+
+.A naive lockfile mechanism
+[source, bash]
+----
+#!/usr/bin/bash
+
+lockfile="/tmp/somefile"
+if [[ -f $lockfile ]]; then
+    echo "An instance is already running"
+    exit 1
+else
+    # Provide automatic handling with `trap`. 
+    trap "rm $lockfile" 0
+    trap "rm $lockfile" ERR
+
+    # Create the lock. 
+    touch $tempfile
+
+    # Do your stuff. 
+fi
+----
+
+If you would show this script to a professional, they would probably slap you for all the wrong practices in this script. 
+Nonetheless, this works. 
+
+However, checking the existence of a file/directory then creating after are two operations which means it has a window for other processes to act on it. 
+What we need is an atomic operation that can check and create the lockfile. 
+Fortunately, there is `mkdir` which return with an error if the directory already exists. 
+If you're using a file as the lock, you can simply move it in the lock. 
+
+[source, bash]
+----
+#!/usr/bin/bash
+
+lock="/tmp/script-lockdir"
+if mkdir $lock 
+then
+    # Provide automatic handling with `trap`. 
+    trap "rm -rf $lock" 0 
+    trap "rm -rf $lock" ERR
+
+    # Do your stuff. 
+else
+    echo "An instance is already running."
+    exit 1
+fi
+----
+
+In some cases, this is still considered as a bad practice. 
+footnote:[Aside from creating a lock directory with fixed name and creating it in `/tmp` among other things.] 
+The implementation isn't durable by any means but it does file locking a bit better. 
+
+If you're mainly using Linux, you can also use https://linux.die.net/man/1/flock[`flock`] which uses the underlying https://linux.die.net/man/2/flock[system call for file locking provided by the kernel]. 
+
+[source, bash]
+----
+#!/bin/bash
+
+file=$HOME/.testfile
+
+exec 9>$file
+if ! flock -n 9  ; then
+    echo "An instance is already running";
+    exit 1
+else
+    trap 'rm -f $file' 0
+    trap 'rm -f $file' ERR
+
+    # Do your stuff
+fi
+----
+
+
+
+
+[appendix]
+== Additional readings 
+
+http://mywiki.wooledge.org/BashFAQ/045[__How can I ensure that only one instance of a script is running at a time (mutual exclusion, locking)?__, Bash FAQ #45 from "Greg's Wiki"]:: 
+It's the wiki of http://mywiki.wooledge.org/EnglishFrontPage[GreyCat] where it is mostly known for its comprehensive content for Bash scripting. 
+https://gavv.github.io/articles/file-locks/[__File locking in Linux__ by "Victor Gaydov"]:: 
+A comprehensive introductory article about the file locking mechanism. 
+

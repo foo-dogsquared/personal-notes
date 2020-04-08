@@ -1,0 +1,120 @@
+= Generating color palettes with ImageMagick
+Gabriel Arazas <foo.dogsquared@gmail.com>
+:revnumber: 0.1
+:revdate: 2020-03-27
+:revremark: First draft of {doctitle}
+:toc:
+
+:stem: latexmath
+
+https://imagemagick.org/index.php[ImageMagick] is a set of software tools for raster images. 
+It can identify, convert, and manipulate images provided it's supported in ImageMagick. 
+You could also make graphics with ImageMagick if you want and doesn't mind the textual nature of using the command prompt. 
+
+NOTE: The version this note is using is at v7.0.13. 
+
+In this tiny note, I'll simply explain how to generate color palettes of an image with ImageMagick. 
+On the bigger picture, it is a https://imagemagick.org/index.php[huge tool] almost in the same rein as https://ffmpeg.org/[FFmpeg]. 
+
+
+
+
+== The command
+
+Without further ado, let's take a look with the command. 
+
+[source, shell]
+----
+magick convert $IMAGE_FILE -colors 16 -unique-colors txt:-
+----
+
+Let's break the command down. 
+
+[source, shell]
+----
+magick convert $IMAGE_FILE # <.>
+-colors 16 -unique-colors # <.>
+txt:- # <.>
+----
+
+<.> The starting ImageMagick command to convert an image into another form of data. 
+You can also simply type in `convert` as an alias. 
+
+<.> Get only 16 unique colors out of the whole image. 
+
+<.> Lastly, this convert the image to text and print the result to standard output. 
+Converting an image to text without any options simply lists all of the pixels with their data. 
+For example, try removing the limit of choosing colors entirely. 
+
+
+
+
+== Where to go from here? 
+
+While we're still on the topic of ImageMagick and converting them to textual data, we can do other things with ImageMagick to extract data. 
+
+For example, instead of simply listing all of the pixels, we could extract some data with `miff` which contains all of the attributes associated with the image. 
+[source, shell]
+----
+magick convert $IMAGE_FILE miff:-
+
+// id=ImageMagick  version=1.0
+// class=DirectClass  colors=16  alpha-trait=Undefined
+// columns=16  rows=1  depth=8
+// colorspace=sRGB
+// page=16x1+0+0
+// rendering-intent=Perceptual
+// gamma=0.454545
+// red-primary=0.64,0.33  green-primary=0.3,0.6  blue-primary=0.15,0.06
+// white-point=0.3127,0.329
+// date:create=2019-12-23T03:23:51+00:00
+// date:modify=2019-12-22T04:17:27+00:00
+// jpeg:colorspace=2
+// jpeg:sampling-factor=2x2,1x1,1x1
+----
+
+We could also get additional data with `histogram` which is just `miff` with some comments (which is mostly a list of colors extracted from the image). 
+
+[source, shell]
+----
+magick convert $IMAGE_FILE histogram:-
+
+// Same as `miff` output except with a comment.
+// <--snip-->
+// comment={         1: (31.9694,41.8189,120.114) #202A78 srgb(12.537%,16.3996%,47.1034%)
+//         1: (42.0147,50.2111,142.65) #2A328F srgb(16.4763%,19.6906%,55.9412%)
+//         1: (43.6433,50.2164,154.673) #2C329B srgb(17.115%,19.6927%,60.6561%)
+//         1: (74.171,153.192,191.544) #4A99C0 srgb(29.0867%,60.0752%,75.1152%)
+//         1: (79.3029,58.0557,177.636) #4F3AB2 srgb(31.0992%,22.767%,69.6613%)
+//         1: (85.8152,71.7449,186.919) #5648BB srgb(33.653%,28.1353%,73.3015%)
+//         1: (109.654,157.433,183.855) #6E9DB8 srgb(43.0015%,61.7385%,72.1001%)
+//         1: (149.354,166.303,188.103) #95A6BC srgb(58.5703%,65.217%,73.7661%)
+//         1: (164.87,174.608,196.352) #A5AFC4 srgb(64.6549%,68.4737%,77.0006%)
+//         1: (171.204,100.266,207.041) #AB64CF srgb(67.1388%,39.3201%,81.1926%)
+//         1: (210.682,175.865,190.723) #D3B0BF srgb(82.6203%,68.9668%,74.7932%)
+//         1: (214.98,169.917,200.683) #D7AAC9 srgb(84.3058%,66.634%,78.6993%)
+//         1: (237.311,217.346,224.642) #EDD9E1 srgb(93.0633%,85.2337%,88.0951%)
+//         1: (240.1,182.256,206.167) #F0B6CE srgb(94.1567%,71.4731%,80.8498%)
+//         1: (248.878,203.832,213.035) #F9CCD5 srgb(97.5993%,79.934%,83.5432%)
+//         1: (252.363,218.195,225.681) #FCDAE2 srgb(98.966%,85.5666%,88.5023%)
+//}
+// <--snip-->
+----
+
+
+
+
+[appendix]
+== Additional readings 
+
+https://github.com/dylanaraps/pywal[Pywal]:: 
+It's the inspiration for this post. 
+Specifically, you could take a look in the https://github.com/dylanaraps/pywal/blob/master/pywal/backends/[`backends/`] of the source code. 
+
+https://imagemagick.org/script/command-line-processing.php[__Command-line processing__ from the official ImageMagick website]:: 
+A simple introductory note on using the command line with ImageMagick. 
+
+https://www.imagemagick.org/Usage/files/[__Image File Handling__ from "ImageMagick v6 Examples"]:: 
+A manual containing usage examples of ImageMagick v6. 
+Despite using the older version, it is still mostly applicable with the newer version (or at least the version this note uses). 
+

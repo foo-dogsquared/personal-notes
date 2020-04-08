@@ -1,0 +1,87 @@
+= Screencasting with FFmpeg
+Gabriel Arazas <foo.dogsquared@gmail.com>
+:revnumber: 1.0
+:revdate: 2020-04-07
+:revremark: The note is mostly complete. 
+:toc:
+
+:stem: latexmath
+
+:name: FFmpeg
+
+
+{name} is the Swiss knife for interacting with audio and video interface (e.g., codecs, drivers, and files). 
+It provides complete and comprehensive options for your multimedia needs though it can be overwhelming with the number of stuff laid out for the user. 
+
+I use {name} with the usual requirements: converting multimedia files into certain format, minimal amount of editing which makes video editing on the command line possible (aside with https://www.mltframework.org/docs/melt/[Melt]), and recording stuff which is the main subject of this note. 
+This dedicated note simply shows how to record with {name}. 
+
+NOTE: For future references, the version that this document refers to is at v4.2.2. 
+
+
+
+
+== The command 
+
+Let's inspect the arbitrarily chosen command in all of its glory. 
+
+[source, sh]
+----
+ffmpeg -f x11grab -s 1280x720 -i :0.0+0,0 output.mkv
+----
+
+* `-f x11grab` is simply the device for our input which grabs the X11 display. 
+In case you don't have the device, you can view your other options with `-devices`. 
+footnote:[Or it might not be packaged with the option included so you may have to compile {name} on your own.] 
+
+* `-s 1280x720` is the size of the input file. 
+Take note that the {name} program has separate options for our input and output file. 
+If we would put this after the input (i.e., `-i` option), it would have the default size footnote:[In my case, it's 640x480.] for our input and 1280x720 for our output. 
+As an exercise, try the 'erroneous' command on purpose to what it's about. 
+
+* `-i :0.0+0,0` is the name of the input. 
+Normally, this would be the path of the input but since we're using `x11grab`, it has https://www.ffmpeg.org/ffmpeg-devices.html#toc-x11grab[a certain format] we have to follow. 
+footnote:[In case the link is lost or moved, the format of our device input is `\[hostname\]:display_number.screen_number\[+x_offset,y_offset\]`.] 
+
+* `output.mkv` is... the output file where the recording will be stored. 
+
+Try to play some music while recording and it will not be included in the output file. 
+The command only grabs with the device `x11grab` which only captures the X11 display and nothing else. 
+
+To include the audio, mix another device into the input. 
+In this case, we'll use https://www.ffmpeg.org/ffmpeg-devices.html#toc-pulse[`pulse`] as our audio device since I have https://www.freedesktop.org/wiki/Software/PulseAudio/[PulseAudio] enabled at most times. 
+
+[source, sh]
+----
+ffmpeg -f x11grab -s 1280x720 -i :0.0+0,0 -f pulse -i default output.mkv
+----
+
+If you're using https://www.alsa-project.org[ALSA] as your audio server, the following command would be the equivalent of it. 
+
+[source, sh]
+----
+ffmpeg -s 1280x720 -f x11grab -i :0.0+0,0 -f alsa -ac 2 -i hw:0 output.mkv
+----
+
+
+
+
+[appendix]
+== Additional readings 
+
+https://trac.ffmpeg.org/wiki/Capture/Desktop[__Capturing your desktop__ from the Trac wiki of {name}] (retrieved 2020-04-08):: 
+A dedicated wiki page for capturing your desktop with {name}. 
+There's also a wiki entry for https://trac.ffmpeg.org/wiki/Capture/ALSA[capturing ALSA]. 
+
+https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenurecord[`dmenurecord` script from Luke Smith's dotfiles] (retrieved 2020-04-08):: 
+A real-life example of recording with webcam and other video capture devices. 
+footnote:[I don't have a webcam yet so I can't give an example on this one (yet). 
+So I just linked this one for future references.]
+
+https://github.com/leandromoreira/ffmpeg-libav-tutorial[__FFmpeg libav tutorial__ by "Leandro Moreira"] (retrieved 2020-04-08):: 
+A comprehensive entry-level tutorial for interacting with {name}. 
+Definitely recommend if you're not familiar with {name} and how multimedia works under the hood. 
+
+https://ffmpeg.org/ffmpeg.html[Official {name} manual page] (retrieved 2020-04-08):: 
+A comprehensive manual page for using the tool on the command line. 
+

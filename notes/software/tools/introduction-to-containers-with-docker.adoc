@@ -1,0 +1,210 @@
+= Introduction to containers with Docker
+Gabriel Arazas <foo.dogsquared@gmail.com>
+:revnumber: 0.1
+:revdate: 2020-04-10
+:revremark: First draft of {doctitle}
+:toc:
+
+:stem: latexmath
+
+
+Containerizing your application has been a trend and proposed as a way of deploying your software. 
+In this simple note, we'll take a peek what is containerization with the help of https://www.docker.com/[Docker] and what we can do with it. 
+
+NOTE: For future references, the version I'm using for this note is Docker 19.03.8, Community Edition. 
+
+
+
+
+== What are containers? 
+
+A container is a package containing the project and its dependencies to run in an isolated virtual system. 
+This allows to run anywhere uniformly regardless of the setup its running on, eliminating the "it works on my machine" problem. 
+
+It can be another way of shipping your software and is especially useful if the project is built with multiple software — e.g., a project composed of an API server built with Ruby, a frontend built with PHP, and a database with MariaDB. footnote:[The example is an overkill but you get the idea.] 
+
+The nature of setting an isolated virtual environment can create comparisons between a container and a https://en.wikipedia.org/wiki/Virtual_machine[virtual machine] (VM). 
+On a quick note, let's clear that up. 
+
+Virtual machines are often made as a hardware abstraction and usually emulate entire operating systems along with its own app, drivers, kernel, and everything in between. 
+Thus, they often take some time; 
+not to mention the space for each installation that usually takes from a few hundred megabytes up to a few gigabytes. 
+Containers, on the other hand, only https://en.wikipedia.org/wiki/OS-level_virtualization[emulates the image at operating system level] thus reducing the overhead and resources needed for them to boot. 
+
+With containers, it is easier to create a consistent environment that all developers can work with even if their current setup is all different from one another. 
+The developers can just pull the image, create the container instance, change it from their local setup, and push it back for testing. 
+Or it could be used for deploying your services with multiple containers and all of them work will the same as you configured from your local machine. 
+
+
+
+
+== A gander of containers through Docker 
+
+To get into the world of containers, we'll use Docker as it is one of the most popular platform for managing containers. 
+In fact, it could be said that Docker is the de facto tool for software containers. 
+The company behind it spearheaded the development of containerization and has created a https://www.opencontainers.org/[standard for software containers]. 
+
+Docker works similarly to popular VM tools like https://www.virtualbox.org/[VirtualBox] or https://www.qemu.org/[QEMU] that it creates virtual environments from an **image**. 
+Each image can run multiple instances of itself called **containers**. 
+
+Assuming Docker is already installed, let's start up the application. 
+What keeps Docker running is its backend called the Docker Engine. 
+The engine runs in a server-client model with a daemon (server) and a CLI (client). 
+The daemon does the heavy work of managing Docker objects such as images, containers, and a few others which we'll see in a moment. 
+The client and the server communicates through a REST API. 
+
+Let's demonstrate one simple trick with Docker. 
+First, let's simply boot up an https://alpinelinux.org/[Alpine Linux] image since it's a distro that focuses on simplicity. 
+footnote:[Alpine Linux is also the distro of https://training.play-with-docker.com[Training with Docker] for the same reason.] 
+
+NOTE: You may have to execute the `docker` with superuser privileges unless you've configured the service (i.e., https://docs.docker.com/engine/install/linux-postinstall/[for Linux]). 
+
+[source, shell]
+----
+docker container run alpine hostname 
+----
+
+This will create and run a container from an image named `alpine` from our local list of images and execute the `hostname` command. 
+If the `alpine` image does not exist, it will pull the image from its https://hub.docker.com/[online repositories] instead which will likely be the case. 
+Each of the container will have a container ID and a name for easy referencing. 
+
+After the command has exited, the container will go to an exit state and will remain until it is removed. 
+You can see this container is still in the daemon with `docker container ls --all`. 
+To remove this container in the list, we can simply remove it with `docker container rm <NAME>`. 
+
+It would easier if we want to remove this automatically after the exit. 
+Fortunately, there is an easy way by simply adding the `--rm` flag when running the container (e.g., `docker container run --rm alpine hostname`). 
+
+It would great if we could see how far Docker emulates the virtual environment. 
+Fortunately, there is a way with the following command. 
+
+[source, shell]
+----
+docker container run --interactive --tty --rm alpine sh
+----
+
+Here we have seen two additional options: 
+
+* `--interactive` creates an interactive session. 
+* `--tty` creates a https://unix.stackexchange.com/questions/4126/what-is-the-exact-difference-between-a-terminal-a-shell-a-tty-and-a-con[TTY]. 
+
+The first two options would enable interaction with the container with its shell. 
+You can then execute commands such as `uname -a`, `cat /etc/issue`, and `ps aux` as an indicator for testing how well the virtual environment is. 
+
+
+
+
+== Containerizing your programs
+
+Now that we have introduced containers with minimal interaction, what now? 
+The practical pointer from here is to show containerization of your applications. 
+
+Containerizing enables your program to be portable and easy-to-use like a canned tuna with a pull-tab. 
+The best thing with tools like Docker is it doesn't interfere with the already existing setup. 
+
+For example, we'll containerize https://github.com/foo-dogsquared/personal-notes/[this repo] by adding a Dockerfile to the project root. 
+footnote:[There is a https://github.com/asciidoctor/docker-asciidoctor/[Docker image] for Asciidoctor but we'll pretend it doesn't exist for the sake of example.] 
+The https://docs.docker.com/get-started/part2/[Dockerfile] is a specific file for Docker that contains the metadata for our customized container. 
+
+In our to-be-containerized project, we use the following dependencies: 
+
+* https://www.gnu.org/software/make/[GNU Make] 
+* https://www.ruby-lang.org/[Ruby] 
+* https://asciidoctor.org/[Asciidoctor] 
+* http://slim-lang.com/[Slim] 
+* Some fonts
+
+Great! 
+Now that we listed the dependencies, it's time to get started in creating the container. 
+
+The base image of our container would use https://www.alpinelinux.org/[Alpine Linux] since our required installation is quite minimal and Alpine Linux is a fit for that while offering a variety of tools with its https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management[package manager]. 
+
+[source, dockerfile]
+----
+FROM alpine <.>
+
+<.>
+# Install main dependencies
+RUN apk add --no-cache \
+    font-bakoma-ttf \
+    make \
+    ruby \
+    ruby-mathematical \
+    ruby-rake \
+    ttf-liberation \
+    ttf-dejavu
+
+# Install Ruby packages
+RUN apk add --no-cache --virtual .rubymakedepends \
+    ruby-dev \
+    && gem install asciidoctor slim thread_safe rouge tilt \
+    && apk del -r --no-cache .rubymakedepends
+
+# Create a `project` directory where this will project will be stored. <.>
+WORKDIR /project
+----
+
+It is slightly self-explanatory but there are a couple of things we may not know here. 
+
+<.> Basing our container from the Alpine Linux image which is one of the go-to choices for minimal Linux installations. 
+
+<.> Installing dependencies of our project. 
+Since we're using Alpine Linux, we have to use their package manager. 
+
+<.> Create a directory in `/project` where the project is stored. 
+
+Now that we have our Dockerfile set, we now have our setup containerized but we should see it for ourselves if it's working. 
+To access our containerized program, we have to build the project image first. 
+
+[source, shell]
+----
+docker image build --tag personal-notes:1.0 .
+----
+
+In the containerized program, we're supposed to bind our project filesystem into the container with a https://unix.stackexchange.com/q/198590[bind mount]. 
+Fortunately, Docker can support just that with the following command. 
+
+[source, shell]
+----
+docker container run --interactive --tty --rm --name personal-notes --mount type=bind,source=`pwd`,target=/project personal-notes:1.0
+----
+
+It should create a container and immediately run a shell with `/project` as the present working directory (as configured from the Dockerfile). 
+From there, you can now do whatever you want. 
+Install Vim and edit the documents, compile the output, or just hit `make` and be done with it. 
+
+The only noticeable thing in the given command is the `--mount` option which requires some verbose arguments. 
+Though in our example, it should be self-explanatory. 
+If you need some understanding of the `--mount` option, https://docs.docker.com/storage/volumes/[there is a page that explains it]. 
+
+Congratulations! 
+You've containerized my personal notes setup and tasted what containerization is mostly about. 
+
+
+
+
+== Where to go from here? 
+
+The answer is the same as my usual answer for life-related questions: "It depends." 
+If you're wanting to dig deeper into containers, you may want to look into https://docs.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices[microservice architecture] where it demonstrates how containers can be useful in various setups. 
+You can create a practical example such as making a multi-service application stack or splitting an already existing monolith application into individual services just glued together. 
+
+https://training.play-with-docker.com/[Play with Docker classroom] pretty much sums it up what you can do with Docker (and validates why this note shouldn't exist as a general source of info). 
+
+
+
+
+[appendix]
+== Additional readings 
+
+https://www.ibm.com/cloud/learn/containerization[__Containerization__ by "IBM Cloud Education"]:: 
+A primer from the IBM Cloud Learn Hub explaining what containerization is all about. 
+
+https://en.wikipedia.org/wiki/Docker_(software)[__Docker__ from "Wikipedia"]:: 
+A Wikipedia entry for Docker. 
+It also describes how it work on most cases. 
+
+https://training.play-with-docker.com[Play With Docker]:: 
+The official Docker interactive tutorial which introduces you to Docker from head to toe. 
+It also describes what things can you do with Docker such as introducing you to the microservice architecture. 
+

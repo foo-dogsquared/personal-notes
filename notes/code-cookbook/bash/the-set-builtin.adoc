@@ -1,0 +1,189 @@
+= The set builtin
+Gabriel Arazas <foo.dogsquared@gmail.com>
+:revnumber: 0.1
+:revdate: 2020-04-03
+:revremark: First draft of {doctitle}
+:toc:
+
+:stem: latexmath
+
+
+This note will point out some of the little helpful tidbits in Bash I found in few weeks of scripting on and off in Bash. 
+One of them is the https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#The-Set-Builtin[`set` builtin]. 
+
+NOTE: The version of Bash we'll be referring to is 5.0.16 on a x86-64 Linux machine. 
+
+
+
+
+== What is the `set` builtin
+
+The https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#The-Set-Builtin[`set` builtin] is a... builtin of the Bash that offers a tremendous amount for your script but we'll be focusing on a few things. 
+
+For a more 'technical' explanation, `set` simply sets certain attributes for the Bash shell environment. 
+Basically, it can change the default behavior of shells which we'll see some of them. 
+On further note, `set` will only exit with a non-zero if the given option is invalid. 
+
+
+
+
+== Immediate exit when error 
+
+One of the most helpful option is the `-e` option. 
+As said from the https://www.gnu.org/software/bash/manual/[official documentation of GNU Bash], the `-e` option exits the pipeline (e.g., a simple command, a https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Compound-Commands[compound command], or a chain of commands) immediately by the time one of them returns a non-zero status code. 
+This is useful for immediate exits on error without relying too much on chaining commands together with `&&`. 
+
+Let's see a simple example on it. 
+Say that we want to create a directory and do stuff with it. 
+However, we only want the script to continue if the directory was successfully created. 
+
+Like the saying goes, "There are multiple ways to skin a cat." 
+If we're to do this without relying on the builtin, we could simply create a conditional. 
+
+[source, bash]
+----
+if mkdir "$dirpath"
+    // Do your stuff
+    trap "rm $dirpath" 0
+
+    echo "Has acquired a lock" 
+fi
+----
+
+Or we could make it as a list of commands. 
+But this solution is not elegant for longer scripts. 
+
+[source, bash]
+----
+mkdir "$dirpath" && command_1 && command_2 && and_so_on_and_so_forth
+----
+
+With `set -e`, we could simply do the following. 
+Now the script will exit immediately when one of the commands has failed. 
+
+[source, bash]
+----
+set -e
+# Deleting the directory when the script has successfully exit. 
+trap "rm $dirpath" 0
+
+mkdir "$dirpath"
+// Do your stuff 
+----
+
+What if we want to add some steps in case our script fails? 
+We could simply create a dedicated function for it and set it with `trap` when exiting with errors. 
+
+[source, bash]
+----
+set -e
+
+# Deleting the directory when the script has successfully exit. 
+trap "rm $dirpath" 0
+
+# Deleting the directory when the script has encountered an error. 
+trap "rm $dirpath" ERR
+
+mkdir "$dirpath"
+// Do your stuff 
+----
+
+We could also simply use a conditional and execute the `set` and `trap`. 
+
+[source, bash]
+----
+if mkdir "$dirpath"
+    set -e
+    trap "rm $dirpath" 0
+
+    echo "Has acquired a lock" 
+else
+    rm "$dirpath"
+fi
+----
+
+All in all, the `-e` can make your script robust. 
+However, it is also easy to abuse it and it can be unintuitive at times which is why some of the programmers consider `set -e` to be a bad practice. 
+For more information about this, you can look at https://mywiki.wooledge.org/BashFAQ/105[Greg's Wiki notes on how confusing it can get]. 
+
+
+
+
+== Printing the stack trace 
+
+Debugging Bash can consist of rerunning the script to see what's wrong. 
+The formal (and easier) way of debugging Bash scripts is by setting the `-x` option which prints the stack trace of the script: the statements, functions, and variables. 
+
+[source, bash]
+----
+#!/usr/bin/bash
+
+# Printing the stack trace 
+set -x
+
+hello() {
+    local name=${1:-"world"}
+    echo "Hello $name"
+}
+
+hello_earth() {
+    hello "earth"
+}
+
+i=0
+((i++))
+echo "$i"
+
+hello_earth
+hello "WORLD"
+----
+
+
+
+
+== Unsetting the options 
+
+To unset the options, simply change the `-` in `-$OPTION` with a plus sign `+` (e.g., `-x` to `+x`, `-e` with `+e`). 
+
+CAUTION: Despite there is an `unset` builtin, it does not unset what you've changed with `set`. 
+It simply unset identifiers like variables and functions. 
+
+Here's an example of selectively printing debug messages with `set -x` and `set +x`. 
+
+[source, bash]
+----
+#!/usr/bin/bash
+
+# Printing the stack trace 
+set -x
+
+<-- snip -->
+
+# Stopping the printing here 
+set +x
+----
+
+Here's what it'll look like when executed on the shell. 
+
+[source, sh]
+----
++ i=0
++ (( i++ ))
++ echo 1
+1
++ set +x
+Hello earth
+Hello WORLD
+----
+
+
+
+
+[appendix]
+== Additional readings
+
+https://www.gnu.org/software/bash/manual/[The official GNU Bash manual] (retrieved 2020-04-03):: 
+Self-explanatory is self-explanatory. 
+As with most of GNU's software, they offer comprehensive documentations for them. 
+
+

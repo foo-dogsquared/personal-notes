@@ -33,10 +33,10 @@ If you're using something like https://www.gnu.org/software/bash/[GNU Bash] or h
 
 [source, bash]
 ----
-echo "DOGS" 1>/dev/null # <.>
+echo "DOGS" 1>/dev/null
 ----
 
-<.> The `echo` command will print to `stdout` (which has the file descriptor value of 1) of the process. 
+The `echo` command will print to `stdout` (which has the file descriptor value of 1) of the process. 
 In the following code, it will redirect the standard output stream to `/dev/null` which immediately throws out the value. 
 In other words, it will print nothing. 
 
@@ -80,8 +80,8 @@ int main() {
     // Now let's close it out. 
     close(fd);
 
-    // According to the manual, it should return an integer for the available file descriptor. 
-    fprintf(stdout, "STDOUT, ready for printing!\n");
+    // Now meet stdout and stderr, the stars of the show. 
+    fprintf(stdout, "STDOUT, ready for printing! *snores*\n");
     fprintf(stderr, "STDERR is here.\n");
 
     // In this case, we closed out the file descriptor of 1 (which is the `stdout` stream) of this process. 
@@ -90,7 +90,7 @@ int main() {
 
     // Print it again. 
     // This should print nothing. 
-    fprintf(stdout, "I've heard the stdout stream is closed. Testing.\n");
+    fprintf(stdout, "What happened? Did I get fired or something?\n");
 
     // How about stderr? 
     fprintf(stderr, "I miss STDOUT. :(\n");

@@ -4,12 +4,14 @@
 
 require 'erb'
 require 'fileutils'
+require 'logger'
 require 'optparse'
 require 'pathname'
 
 require 'asciidoctor'
 
 
+# Setting the global variables
 $OUTPUT_DIRECTORY = ".output"
 $TEMPLATES_DIRECTORY = "templates"
 
@@ -18,6 +20,13 @@ $DEFAULT_TEMPLATE = "= <%= title %>
 
 :stem: latexmath
 "
+
+# Setting up the global logger
+$LOGGER = Logger.new(STDOUT)
+$LOGGER.formatter = proc do |severity, datetime, progname, msg|
+  "[#{severity}] (#{datetime}): #{msg}"
+end
+$LOGGER.datetime_format = "%F %T"
 
 
 def kebab_case string, separator = "-"
@@ -95,6 +104,7 @@ def create_asciidoctor_string path = nil
 end
 
 
+# Create a document and return the resulting file name.
 def create_document kwargs
   title = kwargs.fetch(:title, "Untitled")
   template_file = kwargs.fetch(:template_file, "#{$TEMPLATES_DIRECTORY}/input/document.adoc.erb")
@@ -114,16 +124,21 @@ def create_document kwargs
     template = $DEFAULT_TEMPLATE
   end
 
+  # Create a binding object with the current context.
+  # All variables in this function will be included.
   b = binding
   erb = ERB.new template, :trim_mode => "-"
   output_file = File.new path.to_s, mode = "w+"
   output_file.write erb.result b
+
+  path
 end
 
 
 def compile_asciidoctor_doc path = nil, offline = false, template_dir = "#{$TEMPLATES_DIRECTORY}/output"
   asciidoctor_doc = Asciidoctor.load_file path, :safe => :safe, :header_footer => true, :template_dir => "./templates/output"
   asciidoctor_doc.set_attribute('toc', 'left')
+  asciidoctor_doc.set_attribute('icons', 'font')
 
   output_file_dir = Pathname.new($OUTPUT_DIRECTORY) + path.dirname
   FileUtils.mkpath(output_file_dir)
@@ -136,10 +151,12 @@ end
 
 
 def compile_all_asciidoctor_docs kwargs = {}
+  # Getting the values from the keyword arguments
   path = kwargs.fetch(:dir, nil)
   thread_count = kwargs.fetch(:thread_count, 1)
   offline = kwargs.fetch(:offline, false)
   templates_dir = kwargs.fetch(:templates, "#{$TEMPLATES_DIRECTORY}/output")
+  with_index = kwargs.fetch(:with_index, false)
   path = check_path_is_directory path
 
   # Setting up the task list
@@ -156,22 +173,31 @@ def compile_all_asciidoctor_docs kwargs = {}
 
   puts "Found #{files_queue.length} files to compile."
 
+  # Setting up the threads for compiling
   threads = []
-  thread_count.times do 
+  thread_count.times do
     threads << Thread.new {
       while files_queue.size > 0
         file = files_queue.pop
 
         begin
           # updating the progress bar
-          # we have to update them through a mutex since we are in a separate thread 
+          # we have to update them through a mutex since we are in a separate thread
           # and the variables we're updating are local variables
           mutex_lock.synchronize do
-            compile_asciidoctor_doc file, offline: offline, template_dir: templates_dir
-            compiled_files_count += 1
-            ratio = (compiled_files_count.to_f / total_files_count) * 100
-            progress = "=" * (compiled_files_count.to_f / tasks_per_block).round unless compiled_files_count < tasks_per_block
-            printf("\r[%-#{progress_bar_spacing}s] %d/%d %d%%", progress, compiled_files_count, total_files_count, ratio)
+            if with_index
+              recursively_create_index file.parent
+            end
+
+            begin
+              compile_asciidoctor_doc file, offline: offline, template_dir: templates_dir
+              compiled_files_count += 1
+              ratio = (compiled_files_count.to_f / total_files_count) * 100
+              progress = "=" * (compiled_files_count.to_f / tasks_per_block).round unless compiled_files_count < tasks_per_block
+              printf("\r[%-#{progress_bar_spacing}s] %d/%d %d%%", progress, compiled_files_count, total_files_count, ratio)
+            rescue StandardError => e
+              $LOGGER.error("#{file} has failed to compile. See the following error:\n#{e.full_message}\n")
+            end
          end
 
         rescue
@@ -182,12 +208,14 @@ def compile_all_asciidoctor_docs kwargs = {}
   end
 
   threads.each { |thread| thread.join }
+  puts ""
 end
 
 
 def recursively_create_index path = nil
   path = check_path_is_directory path
 
+  # Iterating through the nodes and creating an index file if the node is a directory
   for node in path.children
     if node.file?
       next
@@ -260,8 +288,12 @@ subcommands = {
       options[:compile][:thread_count] = num
     end
 
+    opts.on("--with-index", "create an 'index.html' that list all of the pages and subdirectories recursively") do |v|
+      options[:compile][:with_index] = v
+    end
+
     opts.on("--offline", "set if the documents are set to be read in an offline environment") do |v|
-      options[:compile][:offline] = v 
+      options[:compile][:offline] = v
     end
 
     opts.on("-dPATH", "--directory=PATH", "set the directory of the starting path; default is the current directory") do |dir|
@@ -278,6 +310,7 @@ subcommands = {
   end
 }
 
+# Parsing the command line arguments.
 global_parser.order!
 command = ARGV.shift
 subcommands[command].order!
@@ -286,6 +319,7 @@ case command
 when "compile"
   compile_all_asciidoctor_docs({ **options[:compile] })
 when "create"
-  create_document({ **options[:create] })
+  note_path = create_document({ **options[:create] })
+  puts note_path
 end
 

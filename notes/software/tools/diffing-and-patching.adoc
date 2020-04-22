@@ -1,0 +1,231 @@
+= Diffing and patching
+Gabriel Arazas <foo.dogsquared@gmail.com>
+:revnumber: 0.1
+:revdate: 2020-04-20
+:revremark: First draft of {doctitle}
+:toc:
+
+:stem: latexmath
+
+
+I've encountered the concept of https://en.wikipedia.org/wiki/Patch_(computing)[patches] (for Linux-specific systems, anyway) from trying to install and use https://suckless.org/[suckless] tools (specifically https://st.suckless.org/[st]).
+In general, suckless programs are minimalist and small to the point where the code is the documentation.
+To provide some features, they use patches as a way to distribute the code without fully distributing another build.
+
+NOTE: We're using the GNU implementation of `diff` and `patch` from https://www.gnu.org/software/diffutils/[`diffutils`] v3.7 for this note, if that makes any difference at all (which I'm sure it will at some point).
+I also assume you're using GNU Bash just so we're clear.
+
+
+
+
+== Comparing with `diff`
+
+Without further ado, let's proceed with a contrived example of applying patches.
+
+Say that you've "forked" one of Robert Frost's famous poem https://en.wikipedia.org/wiki/The_Road_Not_Taken[__The Road Not Taken__].
+This is how you've set up your project.
+
+....
+homework
+├── forked-poem.txt
+└── poem.txt
+....
+
+You don't know any version control systems like https://git-scm.com/[Git] or https://www.mercurial-scm.org/[Mercurial] so you're doing the next best thing: eyeballing the differences between each file.
+Since they're just plain text files, it should be possible to create a program that tells the difference given two files.
+Enter the `diff` program which simply logs the difference between from the given file to another file.
+
+In this situation, you want how different your fork from the original with `diff`.
+The command for that is simple: `diff forked-poem.txt poem.txt`.
+It should give an output with a similar format.
+
+[source, shell]
+----
+1,2c1,2
+< Two roads diverged in a golden wood,
+< And I could not travel both
+---
+> Two roads diverged in a yellow wood,
+> And sorry I could not travel both
+6d5
+< This is the line I've added, lel;
+16,17c15,16
+< Oh, I kept the first for another time!
+< Yet knowing how way leads on to crime,
+---
+> Oh, I kept the first for another day!
+> Yet knowing how way leads on to way,
+20c19
+< I shall be telling this with a snore
+---
+> I shall be telling this with a sigh
+22c21
+< Two roads diverged in a wood, and more—
+---
+> Two roads diverged in a wood, and I—
+24,25c23
+< And that has made all the difference,
+< From the grasps of codependence.
+---
+> And that has made all the difference.
+----
+
+This looks like a mess.
+Let's examine the output for a bit.
+
+The diff output shows the individual differences of lines in a certain format.
+Since citing them individually can be difficult to comprehend, `diff` divides nearby lines into a group called a **hunk**. 
+In the above example, our hunk looks like this:
+
+[source, shell]
+----
+1,2c1,2 <.>
+<.>
+< Two roads diverged in a golden wood,
+< And I could not travel both
+--- // <.>
+<.>
+> Two roads diverged in a yellow wood,
+> And sorry I could not travel both
+----
+
+<.> The leading indicator of a hunk which is the location of the lines.
+<.> The text of the first input (`forked-poem.txt`) from the given location.
+<.> The separator between the files.
+<.> The text of the second input (`poem.txt`) as indicated from the location.
+
+The text of the input may be absent indicating it's a removed/added line in the first input.
+
+Well, this is for the default format anyways which can be a strain to see which eyeballing may be better.
+`diff` (or at least from GNU diffutils, anyways) offers https://www.gnu.org/software/diffutils/manual/diffutils.html#Output-Formats[a variety of output formats].
+
+My favorite output format is the unified format (i.e., `diff -u forked-poem.txt poem.txt`) simply because this is default format of https://git-scm.com/docs/git-diff[git diffs].
+
+[source, shell]
+----
+--- forked-poem.txt	2020-04-21 01:55:34.174428709 +0800
++++ poem.txt	2020-04-21 01:50:36.311101779 +0800
+@@ -1,9 +1,8 @@
+-Two roads diverged in a golden wood,
+-And I could not travel both
++Two roads diverged in a yellow wood,
++And sorry I could not travel both
+ And be one traveler, long I stood
+ And looked down one as far as I could
+ To where it bent in the undergrowth;
+-This is the line I've added, lel;
+
+ Then took the other, as just as fair,
+ And having perhaps the better claim,
+@@ -13,13 +12,12 @@
+
+ And both that morning equally lay
+ In leaves, no step had trodden black.
+-Oh, I kept the first for another time!
+-Yet knowing how way leads on to crime,
++Oh, I kept the first for another day!
++Yet knowing how way leads on to way,
+ I doubted if I should ever come back.
+
+-I shall be telling this with a snore
++I shall be telling this with a sigh
+ Somewhere ages and ages hence:
+-Two roads diverged in a wood, and more—
++Two roads diverged in a wood, and I—
+ I took the one less traveled by,
+-And that has made all the difference,
+-From the grasps of codependence.
++And that has made all the difference.
+----
+
+Now each individual hunk look like the following in unified format:
+
+[source, shell]
+----
+@@ -1,9 +1,8 @@ // <.>
+<.>
+-Two roads diverged in a golden wood,
+-And I could not travel both
++Two roads diverged in a yellow wood,
++And sorry I could not travel both
+ And be one traveler, long I stood
+ And looked down one as far as I could
+ To where it bent in the undergrowth;
+-This is the line I've added, lel;
+
+ Then took the other, as just as fair,
+ And having perhaps the better claim,
+----
+
+<.> The location of each files to be compared.
+Each of the file is indicated with certain symbols which is indicated in the first two lines of the output.
+It is also the sole reason why I prefer this format.
+
+<.> The text.
+Unlike the previous format, it's now... unified with each changed line indicated which file it came from.
+
+
+
+
+== Patching with `patch`
+
+Isn't `diff` handy?
+With the tools we have, we can amp its usefulness up to eleven with `patch`.
+
+`patch` makes use of **patches**: a file that contains the difference of a file without fully showing the whole file.
+This is useful for cutting some file size and reducing the clutter by showing only the differences.
+
+In our case, these patches are just the output of `diff` and usually has a file extension of `.diff` or `.patch`.
+Let's create a patch for the original text file with `diff -u poem.txt forked-poem.txt > poem.diff`.
+
+Now merge the patch in the original simply with `patch < poem.diff` and check the original file.
+
+`patch` is smart: it can infer the format of the patch and apply individual changes to the correct file.
+Since we've created the patch from the original compared to the fork, `patch` will apply the changes from individual hunks for the original file.
+
+`patch` also has a lot of options so it has a sane default behavior.
+Since the original data can lose when applying a change, it will create a backup named `$FILE.orig`.
+`patch` also worries when applying changes since it can fail for various reasons (i.e., the original file may have changed a lot after the patch file is created).
+For each failed hunk, `patch` will store them in `$FILE.rej`.
+From that point, you may try to patch it again or patch it yourself.
+
+
+
+
+[appendix]
+== Git
+
+Git features diffing and patching between commits with https://git-scm.com/docs/git-diff[`git diff`] and https://git-scm.com/docs/git-apply[`git apply`].
+However, it also has some convenient functions for patching.
+For example, https://git-scm.com/docs/git-format-patch[`git format-patch`] simply creates e-mail-ready patches per commit starting from a certain point and we can apply those patches with https://git-scm.com/docs/git-am[`git am`].
+
+[source, shell]
+----
+// Shows an output of diff.
+git diff HEAD~2
+
+// Applies the patch.
+git apply *.patch
+
+// Creates 2 ready-to-send patch files for each commit starting 2 commits behind the HEAD.
+// Also prints the path of the patch files.
+git format-patch HEAD~2
+
+// Applies the patches created with 'git format-patch'.
+// This will also create commits.
+git am *.patch
+----
+
+
+
+
+[appendix]
+== Additional readings
+
+https://www.youtube.com/watch?v=-CiLU9-RAGk[__Wrap around your brain around 'Patch' and 'Diff' on Linux__ by "Luke Smith"] (retrieved 2020-04-20)::
+An introductory video by https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA[Luke Smith] on the tools `diff` and `patch`.
+
+https://www.gnu.org/software/diffutils/manual/[The official GNU `diffutils` manual] (retrieved 2020-04-21):: 
+The manual for GNU `diffutils`.
+Since this is the program used for this note, it makes sense to refer to this manual. :)
+

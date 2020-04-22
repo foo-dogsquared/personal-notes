@@ -2,63 +2,93 @@
 
 A repo of my notes that is about anything that is not too detailed to talk about anything, really.
 
-If you want to find my detailed notes on anything that I don't know, you can find it 
+If you want to find my detailed notes on anything that I don't know, you can find it
 https://github.com/foo-dogsquared/a-remote-repo-full-of-notes-of-things-i-do-not-know-about[here].
-Bear in mind that unlike this repo which contains `.adoc` files, the previously linked repo contains LaTeX files which means you need to have a LaTeX distribution to compile it. 
+Bear in mind that unlike this repo which contains `.adoc` files, the previously linked repo contains LaTeX files which means you need to have a LaTeX distribution to compile it.
 If you're not familiar with LaTeX, I've written more about it how you can compile it yourself in the said repo.
 
-For now, enjoy my whatever-the-crap-that-is-put-in-here. 
+For now, enjoy my whatever-the-crap-that-is-put-in-here.
 Like with the remote repo full of notes of things I do not know, the notes here are written with the priniciple of https://collegeinfogeek.com/feynman-technique/[Feynman technique].
 At the very least, you could find something useful here.
 
 
 
 
-== Documentation
+== Setup
 
-In order to fully utilize this repo, you need the following programs:
+In order to fully utilize this repo, you need the following programs installed:
 
 [cols=3*,options=header]
 |===
 | Program
-| Minimum version
 | My version of the program as of this writing
+| Optional
 
 | https://www.ruby-lang.org/en/[Ruby]
 | 2.7.0
-| 2.7.0
+|
 
 | https://asciidoctor.org/[Asciidoctor]
-| 2.0
 | 2.0.9
+|
+
+| http://slim-lang.com/[Slim]
+| 4.0.1
+| Yes
+
+| https://github.com/asciidoctor/asciidoctor-pdf[asciidoctor-pdf]
+| 1.5.3
+| Yes
+
+| https://github.com/jirutka/asciidoctor-html5s[asciidoctor-html5s]
+| 0.2.0
+| Yes
 |===
 
-You could also install other packages like http://slim-lang.com/[Slim] to use Slim templates. 
 
-NOTE: You could also use `make setup` for a quick setup. 
-Be sure to review it first before running. 
+NOTE: You could also use `make setup` for a quick setup.
+Be sure to review it first before running.
 
-Assume the Asciidoctor installation is system-/user-wide. 
 
-Feel free to file an issue regarding the required minimum version. 
-I'm not so sure about it myself.
 
-There's a Ruby script named `manager.rb` which is a basic notes manager for the setup. 
 
-It's a CLI program and it can be run like a shell program. 
+== Tour of the setup
+
+Here's what the setup should look like:
+
+[source]
+----
+personal-notes
+├── notes/
+├── templates/
+│   ├── input/
+│   └── output/
+├── LICENSE*
+├── makefile*
+├── manager.rb*
+└── README.adoc*
+----
+
+* `notes/` is entryway to all of the notes, obviously.
+
+* `templates/` is where the templates files are stored.
+There should be two more directories named `input/` and `output/`.
+
+* There's a Ruby script named `manager.rb` which is a basic notes manager for the setup.
+It's a CLI program and it can be run like a shell program.
 
 [source, shell]
 ----
 # List all of the subcommands and the flags.
 ./manager.rb --help
 
-# Compile all of the Asciidoctor documents with 16 threads. 
-# (Depending on the count of the notes, it is better to make it one since creating threads also take resources.) 
-# The compiled output is going to be in the `.output` folder. 
+# Compile all of the Asciidoctor documents with 16 threads.
+# (Depending on the count of the notes, it is better to make it one since creating threads also take resources.)
+# The compiled output is going to be in the `.output` folder.
 ./manager.rb compile --threadcount 16 --directory ./notes
 
-# Create an Asciidoctor note. 
-# This will create an Asciidoctor file in `./path/to/folder/title-of-the-note.adoc`. 
+# Create an Asciidoctor note.
+# This will create an Asciidoctor file in `./path/to/folder/title-of-the-note.adoc`.
 # (I recommend to use Hantemcli [https://github.com/foo-dogsquared/hantemcli] instead for this.)
 ./manager.rb create --title "Title of the note" --path ./path/to/folder
 ----
@@ -68,15 +98,16 @@ The build directory is located at `.output` with all of the directory structure 
 
 
 
-== Style guide 
+== Style guide
 
-The style guide of writing and expanding the notes can be found in my https://github.com/foo-dogsquared/personal-style-guides[repo of personal style guides]. 
+The style guide of writing and expanding the notes can be found in my https://github.com/foo-dogsquared/personal-style-guides[repo of personal style guides].
 
-For a quick summary, there is the following list. 
+For a quick summary, there is the following list.
 
-* Use https://asciidoctor.org/[Asciidoctor] for writing notes. 
-* Make sure a date string formatted in https://www.iso.org/iso-8601-date-and-time-format.html[ISO 8601 standard] is present. 
-It serves as the revision string of the document and should be updated in case the note is updated. 
-* Have the author name and the email present as well. 
-* Files should be named in kebab case. 
-* Document titles, sections, and subsections should be in sentence case. 
+* Use https://asciidoctor.org/[Asciidoctor] for writing notes.
+* Make sure a date string formatted in https://www.iso.org/iso-8601-date-and-time-format.html[ISO 8601 standard] is present.
+It serves as the revision string of the document and should be updated in case the note is updated.
+* Have the author name and the email present as well.
+* Files should be named in kebab case.
+* Document titles, sections, and subsections should be in sentence case.
+
